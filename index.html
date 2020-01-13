@@ -18,26 +18,38 @@ p.titre {
 abbr {
 border:none;
 color:#05f;
-cursor:help;
+cursor:zoom-in;
+}
+
+div.menu { top:33px;
 }
 
 .inactif {color:lightgray;}
 </style>
 
-<div class="w3-container w3-orange">
-  <p class="titre">gilboonet cartonnage numérique de récupération</p>
+<div class="w3-container w3-orange" style="position:fixed; top:0;width:100%">
+
   <div class="w3-bar" style="font-weight:bold; color:white">
     <a href="#" class="w3-bar-item w3-button w3-khaki w3-hover-lightGray"><i class="fa fa-home"></i></a>
-    <a href="#PStatues" class="w3-bar-item w3-button w3-hover-lightGray">Statues</a>
+    <div class="w3-dropdown-hover">
+    <button class="w3-bar-item w3-button">Statues&raquo;</button>
+    <div class="w3-dropdown-content w3-bar-block w3-card-4 menu" >
+      <a href="#PStatues" class="w3-bar-item w3-button">Statues</a>
+      <a href="#PStatTranch1" class="w3-bar-item w3-button">- en tranches / 1 axe</a>
+      <a href="#PStatTranch1Vox" class="w3-bar-item w3-button">- voxelisées en tranches / 1 axe</a>
+      <a href="#PStatTranch2" class="w3-bar-item w3-button">- en tranches / 2 axes</a>
+      <a href="#PStatFacet" class="w3-bar-item w3-button">- en facettes</a>
+    </div>
+    </div>
     
     <div class="w3-dropdown-hover">
-    <a href="#PObjets" class="w3-bar-item w3-button">Objets</a>
-    <div class="w3-dropdown-content w3-bar-block w3-card-4">
+    <a href="#PObjets" class="w3-bar-item w3-button">Objets&raquo;</a>
+    <div class="w3-dropdown-content w3-bar-block w3-card-4 menu">
       <a href="#PObjets" class="w3-bar-item w3-button">Objets</a>
-      <a href="#PObjVases" class="w3-bar-item w3-button">- Vases/Bols</a>
-      <a href="#PObjBoites" class="w3-bar-item w3-button">- Boites</a>
-      <a href="#PObjAjours" class="w3-bar-item w3-button">- Volumes ajourés</a>
-      <a href="#PObjCadres" class="w3-bar-item w3-button">- Cadres</a>
+      <a href="#PObjVases" class="w3-bar-item w3-button">&nbsp;Vases/Bols</a>
+      <a href="#PObjBoites" class="w3-bar-item w3-button">&nbsp;Boites</a>
+      <a href="#PObjAjours" class="w3-bar-item w3-button">&nbsp;Volumes ajourés</a>
+      <a href="#PObjCadres" class="w3-bar-item w3-button">&nbsp;Cadres</a>
     </div>
     </div>
     
@@ -49,8 +61,9 @@ cursor:help;
   </div> 
 </div>
 
-<div class="w3-container w3-khaki">
-  <p>Bienvenue sur <a href="https://gilboonet.github.io/">gilboonet.github.io</a>, site dédié au <abbr title="Artisanat utilisant l'outil numérique dans au moins une des étapes de fabrication de volumes en carton">cartonnage numérique.</abbr></p>
+<div class="w3-container w3-khaki" style="margin-top:30px">
+  <h3 style="text-align:center">Bienvenue sur <a href="https://gilboonet.github.io/">gilboonet.github.io</a><h3>
+  <h3 style="text-align:center">Site dédié au <abbr title="Artisanat utilisant l'outil numérique dans au moins une des étapes de fabrication de volumes en carton">cartonnage numérique.</abbr></h3>
   
   <p>Ce site présente mes créations en cartonnage numérique : <b>statues</b>, <b>objets</b>, et <b>meubles</b>. En outre, j'y documente les techniques que j'utilise à travers <b>méthodes</b>, <b>articles</b> et <b>autres</b> ressources qui, je l'espère, seront utiles à celles et ceux qui veulent se lancer dans ce savoir-faire de notre époque.</p>
   <p>Ma philosophie est d'utiliser au maximum des ressources existantes et faciles à travailler : dans le réel, le carton et dans le virtuel, <a href="https://openjscad.org"  target="_blank"><abbr title="Logiciel libre permettant de créer des modèles 3d paramétriques par codage javascript en utilisant la géométrie de construction de solides.">jscad</abbr></a>, <a href="http://www.wings3d.com/"  target="_blank"><abbr title="Logiciel libre de modélisation polygonale en trois dimensions par surface de subdivision.">wings 3d</abbr></a> et <a href="http://www.meshlab.net/"  target="_blank"><abbr title="logiciel libre de traitement de maillages 3D importants.">meshlab</abbr></a>.</p>
@@ -58,12 +71,11 @@ cursor:help;
   <div class="w3-container">
   <p class="w3-card-4 w3-blue w3-padding-large">Apprendre ici le <b>cartonnage numérique</b> ne vous demandera pas de programmer ou faire des calculs scientifiques, mais d'<b>utiliser des logiciels</b> sur pc à la souris, voire de <b>taper des commandes</b> au clavier dans une console. De même, si la plupart des volumes sont faisables à la main, un petit nombre nécessitent la découpe numérique. N'hésitez pas à vous rapprocher du <abbr title="Atelier mettant à la disposition du public des outils de fabrication d'objets assistée par ordinateur."><a href="https://www.fablabs.io/labs?country=fr">FabLab</a></abbr> le plus proche de chez vous, vous y trouverez de l'aide pour être à l'aise avec les usages du numérique.</p>
   </div>
-  <br>
-  
-  <h2 id="PStatues">Statues</h2>
+  <!--br-->
+  <h2 id="PStatues"><br/>Statues</h2>
   <p>J'utilise quatre techniques permettant de fabriquer une <abbr title="Ouvrage de sculpture représentant en entier un être vivant">statue</abbr> en carton depuis un <abbr title="représentation numérique de la géométrie d'un objet en trois dimensions.">modèle 3d</abbr>.</p>
   <div class="w3-container">
-  <h3>Statues en tranches sur un axe</h3>
+  <h3 id="PStatTranch1"><br/>Statues en tranches sur un axe</h3>
   <p>Technique basique et nécessitant le plus de carton, donne un bon rendu, peut servir pour faire un moule.</p>
 	<div class="w3-third"><div class="w3-card">
       <a href="https://lh3.googleusercontent.com/kqEl-MlbHvML0yjLbHSgFab8EoTsnajaoRi1YARYWQVhj95qoKLCeM7tmsniL2bsPc0EJU1yq79EmYatO0CdShk8ON8duHEitc_ET760RiD4nrmM803AWTFbCUaf2P2QSC6zDsOJkw=w1007-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/kqEl-MlbHvML0yjLbHSgFab8EoTsnajaoRi1YARYWQVhj95qoKLCeM7tmsniL2bsPc0EJU1yq79EmYatO0CdShk8ON8duHEitc_ET760RiD4nrmM803AWTFbCUaf2P2QSC6zDsOJkw=w1007-h942-no" style="width:100%"></a>
@@ -85,7 +97,7 @@ cursor:help;
   <br/>
   
   <div class="w3-container">
-    <h3>Statues voxelisées en tranches sur un axe</h3>
+    <h3 id="PStatTranch1Vox"><br/>Statues voxelisées en tranches sur un axe</h3>
     <p>rendu "pixellisé", nécessite de voxeliser (discrétiser) le modèle 3d, mais après les calculs sont grandement simplifiés</p>
     <div class="w3-third"><div class="w3-card">
       <a href="https://lh3.googleusercontent.com/sLdXCttAPL1Ukq8lhmPD1ZX4-ykVHkR9hs4riE7BOcDWR6LacigGisbmjI-v-pm2lymiqDIoWp_6nVWlMP1Xr499Ilt1HpBsy6-zeVq-pvKa3JNcXRy_RzOzWeSVq67CAWWDr5UBmw=w1416-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/sLdXCttAPL1Ukq8lhmPD1ZX4-ykVHkR9hs4riE7BOcDWR6LacigGisbmjI-v-pm2lymiqDIoWp_6nVWlMP1Xr499Ilt1HpBsy6-zeVq-pvKa3JNcXRy_RzOzWeSVq67CAWWDr5UBmw=w1416-h942-no" style="width:100%"></a>
@@ -104,10 +116,8 @@ cursor:help;
   
   </div>
   
-  <br/>
-
   <div class="w3-container">
-    <h3>Statues en tranches sur deux axes</h3>
+    <h3 id="PStatTranch2"><br/>Statues en tranches sur deux axes</h3>
     <p>le tranchage sur deux axes : économe en carton mais le rendu est peu détaillé, parfait pour un squelette de meuble</p>
     <div class="w3-third"><div class="w3-card">
       <a href="https://lh3.googleusercontent.com/72Da9dDcbwVde-x7JvqvQeFec5A7pJwf-lZPCC2XIcyUroHJ5BhDAp2vHJDmnhGqtzENDGiwCZGDpkkERrMwiJBYUVRmB3KVrlsl1H3Q-C0_Thu7oJC7tndjCLSyFssi35TNfX-YUg=w1416-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/72Da9dDcbwVde-x7JvqvQeFec5A7pJwf-lZPCC2XIcyUroHJ5BhDAp2vHJDmnhGqtzENDGiwCZGDpkkERrMwiJBYUVRmB3KVrlsl1H3Q-C0_Thu7oJC7tndjCLSyFssi35TNfX-YUg=w1416-h942-no" style="width:100%"></a>
@@ -125,32 +135,28 @@ cursor:help;
     </div></div>
     
   </div>
-
-  <br/>
   
   <div class="w3-container">
-    <h3>Statues en facettes</h3>
+    <h3 id="PStatFacet"><br/>Statues en facettes</h3>
     <p>le dépliage des facettes : complexe à calculer et fabriquer, parfait pour un habillage de meuble</p>
     <div class="w3-third"><div class="w3-card">
       <a href="https://lh3.googleusercontent.com/7r9e4zsLQROSeKbJC5xx91iEl_3yCNM72CyFhML9-B3d_qxNNFVdVgKk7PM_YRF0MKmJXRDUmRFZ_WLCAfpO_XbrpXU8vKZpS_60ywZCNj45cyuZDfQDyjM4nROtw9AZv8n7XLQKSg=w1256-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/7r9e4zsLQROSeKbJC5xx91iEl_3yCNM72CyFhML9-B3d_qxNNFVdVgKk7PM_YRF0MKmJXRDUmRFZ_WLCAfpO_XbrpXU8vKZpS_60ywZCNj45cyuZDfQDyjM4nROtw9AZv8n7XLQKSg=w1256-h942-no" style="width:100%"></a>
       <div class="w3-container"><h5>Statues en facettes de carton, 2017</h5></div>
-    </div></div> 
+    </div></div>
 
 	<div class="w3-third"><div class="w3-card">
       <a href="https://lh3.googleusercontent.com/oqORqI3A1OeHNAzRSDQmJSse1B86b1tSBYaGFZU9hdaLlTWNjvHCH0-QOHDUpoRAOZLjLOP-e26iJ5rj0E6c8EtIKA2G0kt0_N5tLeXePcoX8y9lnbHLyN3EjVNPiM2rx5WYCdcq5Q=w1256-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/oqORqI3A1OeHNAzRSDQmJSse1B86b1tSBYaGFZU9hdaLlTWNjvHCH0-QOHDUpoRAOZLjLOP-e26iJ5rj0E6c8EtIKA2G0kt0_N5tLeXePcoX8y9lnbHLyN3EjVNPiM2rx5WYCdcq5Q=w1256-h942-no" style="width:100%"></a>
       <div class="w3-container"><h5>Petit et grand <b>éléphant</b>, resp. 800 et 2000 facettes, 2018 et 2019</h5></div>
-    </div></div> 
-  
+    </div></div>  
 
     <div class="w3-third"><div class="w3-card">
       <a href="https://lh3.googleusercontent.com/gm4PKOF17h6-vjpN2zYhmFMis-3-ni2Vu6-a4hP2zCdHfGXuIRkR2DN0Eb-jAd-9lSQ5uZ7e93EZXVPZzHj2SVKbqdyD7IM3QSco4tqjHUYbzBg7KSLhmzIiIdY8V6xylcu3S2ldpA=w1005-h754-no" target="_blank"><img src="https://lh3.googleusercontent.com/gm4PKOF17h6-vjpN2zYhmFMis-3-ni2Vu6-a4hP2zCdHfGXuIRkR2DN0Eb-jAd-9lSQ5uZ7e93EZXVPZzHj2SVKbqdyD7IM3QSco4tqjHUYbzBg7KSLhmzIiIdY8V6xylcu3S2ldpA=w1005-h754-no" style="width:100%"></a>
-      <div class="w3-container"><h5>Découpe et gravure laser sur machine auto-construite</h5></div>
+      <div class="w3-container"><h5>Découpe et gravure laser (machine auto-construite)</h5></div>
     </div></div> 
-  
+
   </div>
-  
-  <br/>
-  <h2 id="PObjets">Objets</h2>
+
+  <h2 id="PObjets"><br/>Objets</h2>
   <p>Je fais essentiellement des objets géométriques, purement décoratifs ou pouvant servir de contenant, avec parfois inclusion d'un contenant en verre/plastique permettant d'y mettre de l'eau.</p>
   <div class="w3-container">
     <h3 id="PObjVases">Vases / Bols</h3>
