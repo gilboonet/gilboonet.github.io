@@ -1,15 +1,85 @@
 <!DOCTYPE html>
 <html>
 <title>gilboo.net</title>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <head>
   <link rel="stylesheet" href="index.css">
+
+  <script>
+function init(){
+
+  donnees = [ // id , libelle, url
+  ["S1A", "petit <b>dodo</b> en tranches de carton, <b>2015</b>"]
+, ["S1B", "Script <b>jscad</b> de tranchage num&eacute;rique param&eacute;trique (ancienne version), vue 3d d'un mod&egrave;le d'<b>ours</b>"]
+, ["S1C", "Depuis le m&ecirc;me script, vue 2d du m&ecirc;me mod&egrave;le, pi&egrave;ces &agrave; d&eacute;couper et assembler pour l'obtenir en 20 cm de haut avec du carton de 3 mm"]
+
+, ["S2A", "<b>Lapin de Stanford</b> voxelis&eacute; en carton, <b>2016</b>"]
+, ["S2B", "Script <b>jscad</b> de voxelisation d'un mod&egrave;le 3d"]
+, ["S2C", "D&eacute;coupe des tranches &agrave; assembler pour obtenir la statue voxelis&eacute;e du <b>lapin de Stanford</b>"]
+
+, ["S3A", "petit <b>ourson</b> en tranches de carton  entrecrois&eacute;es, <b>2016</b>"]
+, ["S3B", "Script <b>jscad</b> g&eacute;n&eacute;rant des tranches entrecrois&eacute;es (ancienne version)"]
+, ["S3C", "M&ecirc;me script, vue &eacute;clat&eacute;e montrant le mod&egrave;le et les tranches, une autre vue en 2d calcule les pi&egrave;ces &agrave; d&eacute;couper et assembler"]
+
+, ["O1A", "Vases g&eacute;om&eacute;triques divers,<b>2017-2019</b>"]
+, ["O1B", "Grand vase en cours de d&eacute;co., hauteur 57 cm, <b>2018</b>"]
+, ["O1C", "Petit bol en carton &agrave; c&ocirc;t&eacute; de son mod&egrave;le 3d fait avec Wings3d, <b>2019</b>"]
+
+, ["O2A", "Petite bo&icirc;te hexagonale avec couvercle sur une m&ecirc;me boite de plus grande taille, <b>2019</b>"]
+, ["O2B", "Bo&icirc;te rectangulaire biseaut&eacute;e avec couvercle, avec &agrave; c&ocirc;t&eacute; son mod&egrave;le 3d Wings 3d, et son gabarit en pdf, <b>2019</b>"]
+, ["O2C", "Bo&icirc;te losange au couvercle biseaut&eacute;, <b>2019</b>"]
+
+, ["O3A", "Volumes ajour&eacute;s divers"]
+, ["O3B", "Petit volume ajour&eacute; en cours de fabrication manuelle, avec son gabarit papier, <b>2019</b>"]
+, ["O3C", "Petit bol carr&eacute; ajour&eacute;, d&eacute;coupe laser tr&egrave;s fine (&lt; 1 mm par endroits), <b>2015</b>"]
+
+, ["O4A", "Cadres miroirs issus du script de cr&eacute;ation de biseaux &quot;diamant&eacute;s&quot;, <b>2019</b>"]
+, ["O4B", "Cadre assembl&eacute; et &agrave; c&ocirc;t&eacute;, son mod&egrave;le 3d, <b>2016</b>"]
+, ["O4C", "Mod&eacute;lisation en cours d'un cadre biseaut&eacute;, <b>2016</b>"]
+
+];
+
+ for (i in donnees){
+    var racine = document.getElementById(donnees[i][0]);
+
+    var parent = document.createElement("div");
+
+    parent.setAttribute("class", "w3-card w3-green");
+
+    racine.appendChild(parent);
+
+    var cible = document.createElement("a");
+    var img = "img/s/" + donnees[i][0]+".jpg";
+
+    cible.setAttribute("href", img);
+    cible.setAttribute("target", "_blank");
+
+    parent.appendChild(cible);
+
+    var elem = document.createElement("img");
+    elem.setAttribute("src", img);
+    elem.setAttribute("style", "width:100%");
+
+    cible.appendChild(elem);
+
+    cible = document.createElement("div");
+    cible.setAttribute("class", "w3-container");
+    cible.innerHTML = donnees[i][1];
+
+    parent.appendChild(cible);
+  }
+}
+
+  </script>
+
+
 </head>
 
-<body>
+<body onload="init()">
 <div id="divmenu" class="w3-container w3-orange">
   <div id="menuP" class="w3-bar">
     <a href="#" class="w3-bar-item w3-button w3-khaki w3-hover-lightGray"><i class="fa fa-home"></i></a>
@@ -29,7 +99,7 @@
     <div class="w3-dropdown-content w3-bar-block w3-card-4 menu">
       <a href="#PObjets" class="w3-bar-item w3-button">Objets</a>
       <a href="#PObjVases" class="w3-bar-item w3-button">&nbsp;Vases/Bols</a>
-      <a href="#PObjBoites" class="w3-bar-item w3-button">&nbsp;Boites</a>
+      <a href="#PObjBoites" class="w3-bar-item w3-button">&nbsp;Bo&icirc;tes</a>
       <a href="#PObjAjours" class="w3-bar-item w3-button">&nbsp;Volumes ajour&eacute;s</a>
       <a href="#PObjCadres" class="w3-bar-item w3-button">&nbsp;Cadres</a>
     </div>
@@ -50,71 +120,34 @@
   <p>Ma philosophie est d'utiliser au maximum des ressources existantes et faciles &agrave; travailler : dans le r&eacute;el, le carton et dans le virtuel, <a href="https://openjscad.org"  target="_blank"><abbr title="Logiciel libre permettant de cr&eacute;er des mod&egrave;les 3d param&eacute;triques par codage javascript en utilisant la g&eacute;om&eacute;trie de construction de solides.">jscad</abbr></a>, <a href="http://www.wings3d.com/"  target="_blank"><abbr title="Logiciel libre de mod&eacute;lisation polygonale en trois dimensions par surface de subdivision.">wings 3d</abbr></a> et <a href="http://www.meshlab.net/"  target="_blank"><abbr title="logiciel libre de traitement de maillages 3D importants.">meshlab</abbr></a>.</p>
 
   <div class="w3-container">
-  <p class="w3-card-4 w3-blue w3-padding-large">Apprendre ici le <b>cartonnage num&eacute;rique</b> ne vous demandera pas de programmer ou faire des calculs scientifiques, mais d'<b>utiliser des logiciels</b> sur pc &agrave; la souris, voire de <b>taper des commandes</b> au clavier dans une console. De m&ecirc;me, si la plupart des volumes sont faisables &agrave; la main, un petit nombre n&eacute;cessitent la d&eacute;coupe num&eacute;rique. N'h&eacute;sitez pas &agrave; vous rapprocher du <abbr title="Atelier mettant &agrave; la disposition du public des outils de fabrication d'objets assist&eacute;e par ordinateur."><a href="https://www.fablabs.io/labs?country=fr">FabLab</a></abbr> le plus proche de chez vous, vous y trouverez de l'aide pour &ecirc;tre &agrave; l'aise avec les usages du num&eacute;rique.</p>
+    <p class="w3-card-4 w3-blue w3-padding-large">Apprendre ici le <b>cartonnage num&eacute;rique</b> ne vous demandera pas de programmer ou faire des calculs scientifiques, mais d'<b>utiliser des logiciels</b> sur pc &agrave; la souris, voire de <b>taper des commandes</b> au clavier dans une console. De m&ecirc;me, si la plupart des volumes sont faisables &agrave; la main, un petit nombre n&eacute;cessitent la d&eacute;coupe num&eacute;rique. N'h&eacute;sitez pas &agrave; vous rapprocher du <abbr title="Atelier mettant &agrave; la disposition du public des outils de fabrication d'objets assist&eacute;e par ordinateur."><a href="https://www.fablabs.io/labs?country=fr">FabLab</a></abbr> le plus proche de chez vous, vous y trouverez de l'aide pour &ecirc;tre &agrave; l'aise avec les usages du num&eacute;rique.</p>
   </div>
-  <!--br-->
+
   <h2 id="PStatues"><br/>Statues</h2>
   <p>J'utilise quatre techniques permettant de fabriquer une <abbr title="Ouvrage de sculpture repr&eacute;sentant en entier un &ecirc;tre vivant">statue</abbr> en carton depuis un <abbr title="repr&eacute;sentation num&eacute;rique de la g&eacute;om&eacute;trie d'un objet en trois dimensions.">mod&egrave;le 3d</abbr>.</p>
+
   <div class="w3-container">
-  <h3 id="PStatTranch1"><br/>Statues en tranches sur un axe</h3>
-  <p>Technique basique et n&eacute;cessitant le plus de carton, donne un bon rendu, peut servir pour faire un moule.</p>
-	<div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/kqEl-MlbHvML0yjLbHSgFab8EoTsnajaoRi1YARYWQVhj95qoKLCeM7tmsniL2bsPc0EJU1yq79EmYatO0CdShk8ON8duHEitc_ET760RiD4nrmM803AWTFbCUaf2P2QSC6zDsOJkw=w1007-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/kqEl-MlbHvML0yjLbHSgFab8EoTsnajaoRi1YARYWQVhj95qoKLCeM7tmsniL2bsPc0EJU1yq79EmYatO0CdShk8ON8duHEitc_ET760RiD4nrmM803AWTFbCUaf2P2QSC6zDsOJkw=w1007-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>petit <b>dodo</b> en tranches de carton, <b>2015</b></h5></div>
-    </div></div>
-
-   <div class="w3-third"><div class="w3-card w3-green">
-     <a href="https://lh3.googleusercontent.com/aAML7xyuI1mBsp3lLPxknJKngTVGSpZE1DaVWLyjrz3d5UBLStB-qVGvud1MMQTudxJa4tsavV8s3f0eUUyB7a8wevawP_UOJdBtQkRkIZqwVcX2UU58hIRBPILaLPuc6yQba4le0A=w1340-h754-no" target="_blank"><img src="https://lh3.googleusercontent.com/aAML7xyuI1mBsp3lLPxknJKngTVGSpZE1DaVWLyjrz3d5UBLStB-qVGvud1MMQTudxJa4tsavV8s3f0eUUyB7a8wevawP_UOJdBtQkRkIZqwVcX2UU58hIRBPILaLPuc6yQba4le0A=w1340-h754-no" style="width:100%;"></a>
-     <div class="w3-container"><h5>Script <b>jscad</b> de tranchage num&eacute;rique param&eacute;trique (ancienne version), vue 3d d'un mod&egrave;le d'<b>ours</b></h5></div>
-   </div></div>
-
-   <div class="w3-third"><div class="w3-card w3-green">
-     <a href="https://lh3.googleusercontent.com/pAfRzn5DCzludCumAdpUrGXcBC-EusA4iKtUsnchgH4GEeum3z2CS0U0_eHH5kXbZUHOLJiBXmzWYmyisA04Ppv8cYM0JPIXsO885wX07xdwfyomfjAuQoQ8KRDZZ-KdZe1Mj8_oLA=w1340-h754-no" target="_blank"><img src="https://lh3.googleusercontent.com/pAfRzn5DCzludCumAdpUrGXcBC-EusA4iKtUsnchgH4GEeum3z2CS0U0_eHH5kXbZUHOLJiBXmzWYmyisA04Ppv8cYM0JPIXsO885wX07xdwfyomfjAuQoQ8KRDZZ-KdZe1Mj8_oLA=w1340-h754-no" style="width:100%;"></a>
-     <div class="w3-container"><h5>Depuis le m&ecirc;me script, vue 2d du m&ecirc;me mod&egrave;le, pi&egrave;ces &agrave; d&eacute;couper et assembler pour l'obtenir en 20 cm de haut avec du carton de 3 mm</h5></div>
-   </div></div>
-
+    <h3 id="PStatTranch1"><br/>Statues en tranches sur un axe</h3>
+    <p>Technique basique et n&eacute;cessitant le plus de carton, donne un bon rendu, peut servir pour faire un moule.</p>
+	  <div id="S1A" class="w3-third"></div>
+    <div id="S1B" class="w3-third"></div>
+    <div id="S1C" class="w3-third"></div>
    </div>
-
-  <br/>
 
   <div class="w3-container">
     <h3 id="PStatTranch1Vox"><br/>Statues voxelis&eacute;es en tranches sur un axe</h3>
     <p>rendu "pixellis&eacute;", n&eacute;cessite de voxeliser (discr&eacute;tiser) le mod&egrave;le 3d, mais apr&egrave;s les calculs sont grandement simplifi&eacute;s</p>
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/sLdXCttAPL1Ukq8lhmPD1ZX4-ykVHkR9hs4riE7BOcDWR6LacigGisbmjI-v-pm2lymiqDIoWp_6nVWlMP1Xr499Ilt1HpBsy6-zeVq-pvKa3JNcXRy_RzOzWeSVq67CAWWDr5UBmw=w1416-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/sLdXCttAPL1Ukq8lhmPD1ZX4-ykVHkR9hs4riE7BOcDWR6LacigGisbmjI-v-pm2lymiqDIoWp_6nVWlMP1Xr499Ilt1HpBsy6-zeVq-pvKa3JNcXRy_RzOzWeSVq67CAWWDr5UBmw=w1416-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5><b>Lapin de Stanford</b> voxelis&eacute; en carton, <b>2016</b></h5></div>
-    </div></div>
-
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/YqAJ8QwJYzvnXEZ3KwqIEA6T-PJRlo3tsCfC_X96erYbDJfjNeEtopHOjtDpRNS34HmxCU7fxegOu3hE4P1zxItbuqPxMN1b7fNYoeaeDS8To0546rekdB43NY-f3hY7uiZQ-_8SCg=w1360-h768-no" target="_blank"><img src="https://lh3.googleusercontent.com/YqAJ8QwJYzvnXEZ3KwqIEA6T-PJRlo3tsCfC_X96erYbDJfjNeEtopHOjtDpRNS34HmxCU7fxegOu3hE4P1zxItbuqPxMN1b7fNYoeaeDS8To0546rekdB43NY-f3hY7uiZQ-_8SCg=w1360-h768-no" style="width:100%"></a>
-      <div class="w3-container"><h5>Script <b>jscad</b> de voxelisation d'un mod&egrave;le 3d</h5></div>
-    </div></div>
-
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/FPe4B47-ivpwsfB8Mv1ysTDUW3UdNX58RtdIbVlpxxquyfjM1LZH5gkwre0NQKGEK-F-aO-I1EytaYlnHIlpiylXCey3wqutpa12hVxFfulDIBSX9vT0qjbn0CpESvGSAK_jt3mREw=w1416-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/FPe4B47-ivpwsfB8Mv1ysTDUW3UdNX58RtdIbVlpxxquyfjM1LZH5gkwre0NQKGEK-F-aO-I1EytaYlnHIlpiylXCey3wqutpa12hVxFfulDIBSX9vT0qjbn0CpESvGSAK_jt3mREw=w1416-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>D&eacute;coupe des tranches &agrave; assembler pour obtenir la statue voxelis&eacute;e du <b>lapin de Stanford</b></h5></div>
-    </div></div>
-
+    <div id="S2A" class="w3-third"></div>
+    <div id="S2B" class="w3-third"></div>
+    <div id="S2C" class="w3-third"></div>
   </div>
 
   <div class="w3-container">
     <h3 id="PStatTranch2"><br/>Statues en tranches sur deux axes</h3>
     <p>le tranchage sur deux axes : &eacute;conome en carton mais le rendu est peu d&eacute;taill&eacute;, parfait pour un squelette de meuble</p>
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/72Da9dDcbwVde-x7JvqvQeFec5A7pJwf-lZPCC2XIcyUroHJ5BhDAp2vHJDmnhGqtzENDGiwCZGDpkkERrMwiJBYUVRmB3KVrlsl1H3Q-C0_Thu7oJC7tndjCLSyFssi35TNfX-YUg=w1416-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/72Da9dDcbwVde-x7JvqvQeFec5A7pJwf-lZPCC2XIcyUroHJ5BhDAp2vHJDmnhGqtzENDGiwCZGDpkkERrMwiJBYUVRmB3KVrlsl1H3Q-C0_Thu7oJC7tndjCLSyFssi35TNfX-YUg=w1416-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>petit <b>ourson</b> en tranches de carton  entrecrois&eacute;es, <b>2016</b></h5></div>
-    </div></div>
-
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/X7v1pp5TjXZrdJdHPUc5gdACtF8sESGLb9taV_eBJ_XkuT9a5IKnzMErwP5vJnWN4mk8eF4nJRsYbxS8phTHn9aSEzLLJu1kJGGGcca1mxDRWs8wq96SSj9Tt_QXQxZG-q22qtDZww=w1508-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/X7v1pp5TjXZrdJdHPUc5gdACtF8sESGLb9taV_eBJ_XkuT9a5IKnzMErwP5vJnWN4mk8eF4nJRsYbxS8phTHn9aSEzLLJu1kJGGGcca1mxDRWs8wq96SSj9Tt_QXQxZG-q22qtDZww=w1508-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>Script <b>jscad</b> g&eacute;n&eacute;rant des tranches entrecrois&eacute;es (ancienne version)</h5></div>
-    </div></div>
-
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/UM8w_UVzDbcMndP0UoaJhRFcbQ6RuNQnco50_pgNyscBjRLZ1JHiuI3xExXLlTE88OQeaHz_HLfqMIlMpWpgrCuxho4qWGEnMdQ4UrfFguKJi_ybpyaJJOCJnLcqp9Onzx0S51oTkQ=w1508-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/UM8w_UVzDbcMndP0UoaJhRFcbQ6RuNQnco50_pgNyscBjRLZ1JHiuI3xExXLlTE88OQeaHz_HLfqMIlMpWpgrCuxho4qWGEnMdQ4UrfFguKJi_ybpyaJJOCJnLcqp9Onzx0S51oTkQ=w1508-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>M&ecirc;me script, vue &eacute;clat&eacute;e montrant le mod&egrave;le et les tranches, une autre vue en 2d calcule les pi&egrave;ces &agrave; d&eacute;couper et assembler</h5></div>
-    </div></div>
-
+    <div id="S3A" class="w3-third"></div>
+    <div id="S3B" class="w3-third"></div>
+    <div id="S3C" class="w3-third"></div>
   </div>
 
   <div class="w3-container">
@@ -123,105 +156,60 @@
 
     <div class="w3-row">
   	  <div class="w3-col s6 w3-green">
-        <a href="https://lh3.googleusercontent.com/7r9e4zsLQROSeKbJC5xx91iEl_3yCNM72CyFhML9-B3d_qxNNFVdVgKk7PM_YRF0MKmJXRDUmRFZ_WLCAfpO_XbrpXU8vKZpS_60ywZCNj45cyuZDfQDyjM4nROtw9AZv8n7XLQKSg=w1256-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/7r9e4zsLQROSeKbJC5xx91iEl_3yCNM72CyFhML9-B3d_qxNNFVdVgKk7PM_YRF0MKmJXRDUmRFZ_WLCAfpO_XbrpXU8vKZpS_60ywZCNj45cyuZDfQDyjM4nROtw9AZv8n7XLQKSg=w1256-h942-no" style="width:100%"></a>
+        <a href="img/S4A.jpg" target="_blank"><img src="img/S4A.jpg" style="width:100%"></a>
       	<div class="w3-container"><h5>Statues en facettes de carton, pr&eacute;paration d'une exposition, <b>2017</b></h5></div>
       </div>
   	  <div class="w3-col s6 w3-green">
-        <a href="https://lh3.googleusercontent.com/oqORqI3A1OeHNAzRSDQmJSse1B86b1tSBYaGFZU9hdaLlTWNjvHCH0-QOHDUpoRAOZLjLOP-e26iJ5rj0E6c8EtIKA2G0kt0_N5tLeXePcoX8y9lnbHLyN3EjVNPiM2rx5WYCdcq5Q=w1256-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/oqORqI3A1OeHNAzRSDQmJSse1B86b1tSBYaGFZU9hdaLlTWNjvHCH0-QOHDUpoRAOZLjLOP-e26iJ5rj0E6c8EtIKA2G0kt0_N5tLeXePcoX8y9lnbHLyN3EjVNPiM2rx5WYCdcq5Q=w1256-h942-no" style="width:100%"></a>
+        <a href="img/S4B.jpg" target="_blank"><img src="img/S4B.jpg" style="width:100%"></a>
       	<div class="w3-container"><h5>Petit et grand <b>&eacute;l&eacute;phant</b>, resp. 800 et 2000 facettes, <b>2018</b> et <b>2019</b></h5></div>
       </div>
-	</div>
+	  </div>
 
     <div class="w3-row">
   	  <div class="w3-col s6 w3-green">
-        <a href="https://lh3.googleusercontent.com/gm4PKOF17h6-vjpN2zYhmFMis-3-ni2Vu6-a4hP2zCdHfGXuIRkR2DN0Eb-jAd-9lSQ5uZ7e93EZXVPZzHj2SVKbqdyD7IM3QSco4tqjHUYbzBg7KSLhmzIiIdY8V6xylcu3S2ldpA=w1005-h754-no" target="_blank"><img src="https://lh3.googleusercontent.com/gm4PKOF17h6-vjpN2zYhmFMis-3-ni2Vu6-a4hP2zCdHfGXuIRkR2DN0Eb-jAd-9lSQ5uZ7e93EZXVPZzHj2SVKbqdyD7IM3QSco4tqjHUYbzBg7KSLhmzIiIdY8V6xylcu3S2ldpA=w1005-h754-no" style="width:100%"></a>
+        <a href="img/S4C.jpg" target="_blank"><img src="img/S4C.jpg" style="width:100%"></a>
       	<div class="w3-container"><h5>D&eacute;coupe et gravure laser (machine auto-construite), <b>2018</b></h5></div>
       </div>
   	  <div class="w3-col s6 w3-green">
-        <a href="https://lh3.googleusercontent.com/qDZI8FvU2S26j9-MYwuPcjopyMZl2jvNkdZ9ePlq0oKcHRae1RGmQfJ3YQv1S-ZjsiDlSa9Lwhqa14v1mn4YTPqj435ivA-1PMLScxFi8aRaZp3sltSnoLyoHLNQp5CqF3PLXurIrQ=w1338-h754-no" target="_blank"><img src="https://lh3.googleusercontent.com/qDZI8FvU2S26j9-MYwuPcjopyMZl2jvNkdZ9ePlq0oKcHRae1RGmQfJ3YQv1S-ZjsiDlSa9Lwhqa14v1mn4YTPqj435ivA-1PMLScxFi8aRaZp3sltSnoLyoHLNQp5CqF3PLXurIrQ=w1338-h754-no" style="width:100%"></a>
-      <div class="w3-container"><h5>Assemblage en cours d'un petit mod&egrave;le (buste de cheval sur 3 feuilles A4), <b>2019</b></h5></div>
+        <a href="img/S4D.jpg" target="_blank"><img src="img/S4D.jpg" style="width:100%"></a>
+        <div class="w3-container"><h5>Assemblage en cours d'un petit mod&egrave;le (buste de cheval sur 3 feuilles A4), <b>2019</b></h5></div>
       </div>
-	</div>
+	  </div>
 
   </div>
 
-  <h2 id="PObjets"><br/>Objets</h2>
-  <p>Je fais essentiellement des objets g&eacute;om&eacute;triques, purement d&eacute;coratifs ou pouvant servir de contenant, avec parfois inclusion d'un contenant en verre/plastique permettant d'y mettre de l'eau.</p>
   <div class="w3-container">
-    <h3 id="PObjVases"><br/>Vases / Bols</h3>
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/v28osaJjZkrPbnwariLyRmCedUO_f-fpel4n0G07SxTNqnAGVZGL2LXXUC-KRdM0hVanbO2T9a-CEEKr-vhol_kCVojR80rRJ8yotbbeMJ1xxOpSQgPfkR1GMfF3E-EOMD5lDW4tWQ=w1672-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/v28osaJjZkrPbnwariLyRmCedUO_f-fpel4n0G07SxTNqnAGVZGL2LXXUC-KRdM0hVanbO2T9a-CEEKr-vhol_kCVojR80rRJ8yotbbeMJ1xxOpSQgPfkR1GMfF3E-EOMD5lDW4tWQ=w1672-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>Vases g&eacute;om&eacute;triques divers,<b>2017-2019</b></h5></div>
-    </div></div>
-
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/LYOTWOZHn1CAKW8raAyrSGvDZZYIuWeJNYj0E-chAyTBGs7hAuLsW5G7j9RyW3isk9TWSBpJJkYIMbpoulLcrXXhuRFNkdZLDxMPdrlHFthvOg3KjVtMQmjfM8HISd53ps-5gAZ6mA=w707-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/LYOTWOZHn1CAKW8raAyrSGvDZZYIuWeJNYj0E-chAyTBGs7hAuLsW5G7j9RyW3isk9TWSBpJJkYIMbpoulLcrXXhuRFNkdZLDxMPdrlHFthvOg3KjVtMQmjfM8HISd53ps-5gAZ6mA=w707-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>Grand vase en cours de d&eacute;co., hauteur 57 cm, <b>2018</b></h5></div>
-    </div></div>
-
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/U3GgEugglvhp5-ad_MAj61ch1iEH3e8T8L7ZHxoJxgxIM8TWYrZx5xS9w3gZgDlB5RmwJm_ZbIQxR-N7ZG1o4lMLZR5jwAYDeKG7qektYVC-Z02whwzeQJopDLwEhdFkWMHm-zj0Bg=w1672-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/U3GgEugglvhp5-ad_MAj61ch1iEH3e8T8L7ZHxoJxgxIM8TWYrZx5xS9w3gZgDlB5RmwJm_ZbIQxR-N7ZG1o4lMLZR5jwAYDeKG7qektYVC-Z02whwzeQJopDLwEhdFkWMHm-zj0Bg=w1672-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>Petit bol en carton &agrave; c&ocirc;t&eacute; de son mod&egrave;le 3d fait avec Wings3d, <b>2019</b></h5></div>
-    </div></div>
+    <h2 id="PObjets"><br/>Objets</h2>
+    <p>Je fais essentiellement des objets g&eacute;om&eacute;triques, purement d&eacute;coratifs ou pouvant servir de contenant, avec parfois inclusion d'un contenant en verre/plastique permettant d'y mettre de l'eau.</p>
+    <div class="w3-container">
+      <h3 id="PObjVases"><br/>Vases / Bols</h3>
+      <div id="O1A" class="w3-third"></div>
+      <div id="O1B" class="w3-third"></div>
+      <div id="O1C" class="w3-third"></div>
     </div>
 
     <div class="w3-container">
-    <h3 id="PObjBoites"><br/>Boites</h3>
-
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/hftCTMzxS68eOYy0vL85m-VVgNAgyUuJZ8ccxtOn-KHCC5R7QLxH_i5dp91_TRpNufhWFPBQIb00JV77tcSboj0zTcH8FfCsMBROz2GHjzchNeHQsOapgodhASpifcUA10zzFAIsXA=w1678-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/hftCTMzxS68eOYy0vL85m-VVgNAgyUuJZ8ccxtOn-KHCC5R7QLxH_i5dp91_TRpNufhWFPBQIb00JV77tcSboj0zTcH8FfCsMBROz2GHjzchNeHQsOapgodhASpifcUA10zzFAIsXA=w1678-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>Petite boite hexagonale avec couvercle sur une m&ecirc;me boite de plus grande taille, <b>2019</b></h5></div>
-    </div></div>
-
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/QIPqXdmdtwlr8N8ltuMFl6iPSIAcAnEBp1c0u13xShWB7j6llFjkq_mXv79SjvH1dkgyNbBAYKQzPhdaRIEjWLtp5xfkzRbjOU304DgP98RIurFORUwuNJMn8yh3dPzfjaWoJ5ih9w=w1672-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/QIPqXdmdtwlr8N8ltuMFl6iPSIAcAnEBp1c0u13xShWB7j6llFjkq_mXv79SjvH1dkgyNbBAYKQzPhdaRIEjWLtp5xfkzRbjOU304DgP98RIurFORUwuNJMn8yh3dPzfjaWoJ5ih9w=w1672-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>Boîte rectangulaire biseaut&eacute;e avec couvercle, avec &agrave; c&ocirc;t&eacute; son mod&egrave;le 3d Wings 3d, et son gabarit en pdf, <b>2019</b></h5></div>
-    </div></div>
-
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/HGjUPOyljvksT0tYvr_JKxwWmcL-GYTqd31t-e8G8zecbX-lMT3O9kzlYVjjXgQVGjBQud5R46JRXUWftuKqS_VqeU_Pg0XcOWUAZt1F5UkY-shACM2zOnSlQXXzgf11U0FzOGIecA=w1256-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/HGjUPOyljvksT0tYvr_JKxwWmcL-GYTqd31t-e8G8zecbX-lMT3O9kzlYVjjXgQVGjBQud5R46JRXUWftuKqS_VqeU_Pg0XcOWUAZt1F5UkY-shACM2zOnSlQXXzgf11U0FzOGIecA=w1256-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>Boîte losange au couvercle biseaut&eacute;, <b>2019</b></h5></div>
-    </div></div>
+      <h3 id="PObjBoites"><br/>Bo&icirc;tes</h3>
+      <div id="O2A" class="w3-third"></div>
+      <div id="O2B" class="w3-third"></div>
+      <div id="O2C" class="w3-third"></div>
     </div>
 
-	<div class="w3-container">
-    <h3 id="PObjAjours"><br/>Volumes ajour&eacute;s</h3>
-
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/5VuPzndiaN3sFkzckFakgQAuKW6VPSKMEXaO_uSm-ZPPQy2P6qel5QH0Qg-T1HsQXCXMRYFX3LGL-zpHPzrrUXSt0C2vY-KBRO92Bn0cy-fCZ7f7x3Uvu_zZ4czMpvlE0jalm7D9FQ=w1672-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/5VuPzndiaN3sFkzckFakgQAuKW6VPSKMEXaO_uSm-ZPPQy2P6qel5QH0Qg-T1HsQXCXMRYFX3LGL-zpHPzrrUXSt0C2vY-KBRO92Bn0cy-fCZ7f7x3Uvu_zZ4czMpvlE0jalm7D9FQ=w1672-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>Volumes ajour&eacute;s divers</h5></div>
-    </div></div>
-
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/Z_M1_CZWSseMy6OpZrnWpIg3ufYbklWOfv98rGzNpmviq_Vds-AxUFf3Pto7FAucLY8Fbe_CU33iidgP51mWS9moSOuket1-Y2sWyjNKDR3vh3vSI2QQHQd-Jr_Gs7IQeY2c2c-lBg=w1672-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/Z_M1_CZWSseMy6OpZrnWpIg3ufYbklWOfv98rGzNpmviq_Vds-AxUFf3Pto7FAucLY8Fbe_CU33iidgP51mWS9moSOuket1-Y2sWyjNKDR3vh3vSI2QQHQd-Jr_Gs7IQeY2c2c-lBg=w1672-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>Petit volume ajour&eacute; en cours de fabrication manuelle, avec son gabarit papier, <b>2019</b></h5></div>
-    </div></div>
-
-	<div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/XaFAAa_Y8yHBGUTAgupRxJxwB3MuHwEfnYs2c9Y-ssFEwVoNrZ6RWwfdsXNl6P8HNLvZFt6LwGk9dy4GqOx75PJMT7fUs_GTv4KZgfYHDPJlV_51vWX0Y98LyyMan4JtzIuSs3YLYw=w1416-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/XaFAAa_Y8yHBGUTAgupRxJxwB3MuHwEfnYs2c9Y-ssFEwVoNrZ6RWwfdsXNl6P8HNLvZFt6LwGk9dy4GqOx75PJMT7fUs_GTv4KZgfYHDPJlV_51vWX0Y98LyyMan4JtzIuSs3YLYw=w1416-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>Petit bol carr&eacute; ajour&eacute;, d&eacute;coupe laser tr&egrave;s fine (&lt; 1 mm par endroits), <b>2015</b></h5></div>
-    </div></div>
-	</div>
+	  <div class="w3-container">
+      <h3 id="PObjAjours"><br/>Volumes ajour&eacute;s</h3>
+      <div id="O3A" class="w3-third"></div>
+      <div id="O3B" class="w3-third"></div>
+      <div id="O3C" class="w3-third"></div>
+    </div>
 
     <div class="w3-container">
-    <h3 id="PObjCadres"><br/>Cadres</h3>
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/Crd2sqcpZFEJxdInrpY74r2ETZYyALKj27NRy6O0zCZyxA8IzF5DqPxdFnLMG9Byi_6FyBtgnp6-oCiW8daNXhx50xjlZhrjNqou0dB6ck92HdW3bKwfHRq5D0xRjsEqAYxsqozeCg=w1672-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/Crd2sqcpZFEJxdInrpY74r2ETZYyALKj27NRy6O0zCZyxA8IzF5DqPxdFnLMG9Byi_6FyBtgnp6-oCiW8daNXhx50xjlZhrjNqou0dB6ck92HdW3bKwfHRq5D0xRjsEqAYxsqozeCg=w1672-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>Cadres miroirs issus du script de cr&eacute;ation de biseaux "diamant&eacute;s", <b>2019</b></h5></div>
-    </div></div>
-
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/rip9Dpas-YheRsBI1h6-rClSHg7yjceFHA-zaUZUPTYk9N6_QPviUfyNqzLAX4D2i7cMnZdH9ccQDMhx8yAywv3l1MNsos_eUf2qZsYauyv6LeAXA1Vjb50ye6w2P-F7whGwAffexw=w1416-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/rip9Dpas-YheRsBI1h6-rClSHg7yjceFHA-zaUZUPTYk9N6_QPviUfyNqzLAX4D2i7cMnZdH9ccQDMhx8yAywv3l1MNsos_eUf2qZsYauyv6LeAXA1Vjb50ye6w2P-F7whGwAffexw=w1416-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>Cadre assembl&eacute; et &agrave; c&ocirc;t&eacute;, son mod&egrave;le 3d, <b>2016</b></h5></div>
-    </div></div>
-
-    <div class="w3-third"><div class="w3-card w3-green">
-      <a href="https://lh3.googleusercontent.com/LX3PV0fAeuPbwZhcl-N829JT3C6kUcTS9Gizxjxez6exRrvyWwhgKxm35qx_RpIM29uVnqLo-aGhbGC12F5Epjk_176FE7shP3qkkCRF9yr_NuoVYPU1CMoO1DO03i4g-aSszZVWdA=w1563-h942-no" target="_blank"><img src="https://lh3.googleusercontent.com/LX3PV0fAeuPbwZhcl-N829JT3C6kUcTS9Gizxjxez6exRrvyWwhgKxm35qx_RpIM29uVnqLo-aGhbGC12F5Epjk_176FE7shP3qkkCRF9yr_NuoVYPU1CMoO1DO03i4g-aSszZVWdA=w1563-h942-no" style="width:100%"></a>
-      <div class="w3-container"><h5>Mod&eacute;lisation en cours d'un cadre biseaut&eacute;, <b>2016</b></h5></div>
-    </div></div>
-
+      <h3 id="PObjCadres"><br/>Cadres</h3>
+      <div id="O4A" class="w3-third"></div>
+      <div id="O4B" class="w3-third"></div>
+      <div id="O4C" class="w3-third"></div>
     </div>
 
+  </div>
 
   <br/>
   <h2 class="inactif">Meubles</h2>
@@ -237,7 +225,7 @@
     	<li>r&eacute;cup&eacute;ration de fichier sur internet
 <div class="w3-container">
 	<div class="w3-half">
-      <a href="https://lh3.googleusercontent.com/M6vjCq2c4YvgDFbBbX0ukNrgBz07xxm8n2ryWJZNU0sGoX_H80ffaC0TtF8FF1z4XJctFNJhWt36HGudu_zlotfH0KFeQ5vTDiy54Ic_ecaWi0FoygUrcpCcT_x4HlO5VNugIumJcw=w984-h939-no" target="_blank"><img src="https://lh3.googleusercontent.com/M6vjCq2c4YvgDFbBbX0ukNrgBz07xxm8n2ryWJZNU0sGoX_H80ffaC0TtF8FF1z4XJctFNJhWt36HGudu_zlotfH0KFeQ5vTDiy54Ic_ecaWi0FoygUrcpCcT_x4HlO5VNugIumJcw=w984-h939-no" style="width:100%"></a>
+      <a href="img/M1A.jpg" target="_blank"><img src="img/M1A.jpg" style="width:100%"></a>
 	</div>
 	<div class="w3-half"><div class="w3-card w3-green">
 		<div class="w3-container"><h4>Mod&egrave;le d'ours disponible sur <a target="_blank"  href="https://www.thingiverse.com/">Thingiverse</a> (d'autres sites <a href="https://all3dp.com/fr/1/modele-3d-gratuit-telecharger-meilleur-site-archive-3d/" target="_blank">ici</a>)</h4></div>
@@ -256,7 +244,7 @@
     </p>
   <div class="w3-container">
 	<div class="w3-half">
-      <a href="https://lh3.googleusercontent.com/H-Ed4LqFWbJrhZhvEzmoyaQnGz7oTjvbhGLrkwzWuT7Lpi0MDWoqrdU0xQWhBe0lVYQvTXGAxP1ge-d_RH9qb-AQpVtKdPWb3d1Lq6hdSktHoIPJc3gaWUMJnEknkWDLARQDiyhJwA=w1340-h754-no" target="_blank"><img src="https://lh3.googleusercontent.com/H-Ed4LqFWbJrhZhvEzmoyaQnGz7oTjvbhGLrkwzWuT7Lpi0MDWoqrdU0xQWhBe0lVYQvTXGAxP1ge-d_RH9qb-AQpVtKdPWb3d1Lq6hdSktHoIPJc3gaWUMJnEknkWDLARQDiyhJwA=w1340-h754-no" style="width:100%"></a>
+      <a href="img/M2A.jpg" target="_blank"><img src="img/M2A.jpg" style="width:100%"></a>
 	</div>
 	<div class="w3-half"><div class="w3-card w3-green">
 	  <div class="w3-container">
@@ -280,7 +268,7 @@
 
   <div class="w3-row">
 	<div class="w3-col s3 w3-green">
-      <a href="https://lh3.googleusercontent.com/9vhhsrBIotJeNsMGU3colLAdkj4CmFwAnQjbLgXOrDHony9t1HqKtfoWvbgnEDXPhax0iQm4AZmYLorIHTYOc2Pvuw08fGTEmiSi5Q0eP8sf6zwbosGxyk2a4VVQ4FNNZ9lEZeFnNw=w383-h542-no" target="_blank"><img src="https://lh3.googleusercontent.com/9vhhsrBIotJeNsMGU3colLAdkj4CmFwAnQjbLgXOrDHony9t1HqKtfoWvbgnEDXPhax0iQm4AZmYLorIHTYOc2Pvuw08fGTEmiSi5Q0eP8sf6zwbosGxyk2a4VVQ4FNNZ9lEZeFnNw=w383-h542-no" style="width:100%"></a>
+      <a href="img/M2B.jpg" target="_blank"><img src="img/M2B.jpg" style="width:100%"></a>
 	</div>
 	<div class="w3-col s9 w3-blue"><h4><ul>
       <li>Entrer le nombre voulu de facettes dans la premi&egrave;re zone de saisie</li>
@@ -314,7 +302,6 @@
 
   </div>
 
-</div>
 
 <div class="w3-container w3-cyan">
 <p>Fait &agrave; la main en <a href="https://www.w3schools.com/html/default.asp">HTML</a> et <a href="https://www.w3schools.com/w3css/default.asp">WEB.CSS</a>. Derni&egrave;re mise &agrave; jour le 14 janvier 2020. <a href="mailto:gilbertfd@gmail.com?subject=Depuis gilboonet.github.io">Me contacter</a></p>
