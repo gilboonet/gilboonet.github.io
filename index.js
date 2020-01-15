@@ -55,7 +55,8 @@ function creePanneau(nom, texte, classe){
   parent.appendChild(cible);
 
   var elem = document.createElement("img");
-  elem.setAttribute("src", "img/s/" + img);
+  elem.src = "img/s/" + img;
+  //elem.setAttribute("src", "img/s/" + img);
   elem.setAttribute("style", "width:100%");
 
   cible.appendChild(elem);
