@@ -43,36 +43,42 @@ function init(){
 
 ];
 
- for (i in donnees){
-    var racine = document.getElementById(donnees[i][0]);
-
-    var parent = document.createElement("div");
-
-    parent.setAttribute("class", "w3-card w3-green");
-
-    racine.appendChild(parent);
-
-    var cible = document.createElement("a");
-    var img = "img/s/" + donnees[i][0]+".jpg";
-
-    cible.setAttribute("href", img);
-    cible.setAttribute("target", "_blank");
-
-    parent.appendChild(cible);
-
-    var elem = document.createElement("img");
-    elem.setAttribute("src", img);
-    elem.setAttribute("style", "width:100%");
-
-    cible.appendChild(elem);
-
-    cible = document.createElement("div");
-    cible.setAttribute("class", "w3-container");
-    cible.innerHTML = donnees[i][1];
-
-    parent.appendChild(cible);
-  }
+ for (var i in donnees){
+   creePanneau(donnees[i][0], donnees[i][1], "w3-card w3-green");
+ }
 }
+
+function creePanneau(nom, texte, classe){
+
+  var racine = document.getElementById(nom);
+
+  var parent = document.createElement("div");
+
+  parent.setAttribute("class", classe);
+
+  racine.appendChild(parent);
+
+  var cible = document.createElement("a");
+  var img = "img/s/" + nom +".jpg";
+
+  cible.setAttribute("href", img);
+  cible.setAttribute("target", "_blank");
+
+  parent.appendChild(cible);
+
+  var elem = document.createElement("img");
+  elem.setAttribute("src", img);
+  elem.setAttribute("style", "width:100%");
+
+  cible.appendChild(elem);
+
+  cible = document.createElement("div");
+  cible.setAttribute("class", "w3-container");
+  cible.innerHTML = texte;
+
+  parent.appendChild(cible);
+}
+
 
   </script>
 
@@ -161,6 +167,7 @@ function init(){
       </div>
   	  <div class="w3-col s6 w3-green">
         <a href="img/S4B.jpg" target="_blank"><img src="img/S4B.jpg" style="width:100%"></a>
+        <!--a href="img/S4B.jpg" target="_blank"><img src="img/S4B.jpg" style="width:100%"></a-->
       	<div class="w3-container"><h5>Petit et grand <b>&eacute;l&eacute;phant</b>, resp. 800 et 2000 facettes, <b>2018</b> et <b>2019</b></h5></div>
       </div>
 	  </div>
