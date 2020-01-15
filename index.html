@@ -21,15 +21,32 @@ color:#05f;
 cursor:zoom-in;
 }
 
-div.menu { top:33px;
+div.menu { top:33px; }
+
+#divmenu {
+  position:fixed;
+  top:0;
+  width:100%;
+}
+
+#divmain {
+  margin-top:30px;
+}
+
+#menuP {
+  font-weight:bold; 
+  color:white;
+}
+
+h3.titre {
+  text-align:center;
 }
 
 .inactif {color:lightgray;}
 </style>
 
-<div class="w3-container w3-orange" style="position:fixed; top:0;width:100%">
-
-  <div class="w3-bar" style="font-weight:bold; color:white">
+<div id="divmenu" class="w3-container w3-orange">
+  <div id="menuP" class="w3-bar">
     <a href="#" class="w3-bar-item w3-button w3-khaki w3-hover-lightGray"><i class="fa fa-home"></i></a>
     <div class="w3-dropdown-hover">
     <button class="w3-bar-item w3-button">Statues&raquo;</button>
@@ -53,7 +70,6 @@ div.menu { top:33px;
     </div>
     </div>
     
-    
     <a class="w3-bar-item inactif">Meubles</a>
     <a href="#PMethodes" class="w3-bar-item w3-button w3-hover-lightGray">Méthodes</a>
     <a href="#" class="w3-bar-item w3-button w3-hover-lightGray">Articles</a>
@@ -61,9 +77,9 @@ div.menu { top:33px;
   </div> 
 </div>
 
-<div class="w3-container w3-khaki" style="margin-top:30px">
-  <h3 style="text-align:center">Bienvenue sur <a href="https://gilboonet.github.io/">gilboonet.github.io</a><h3>
-  <h3 style="text-align:center">Site dédié au <abbr title="Artisanat utilisant l'outil numérique dans au moins une des étapes de fabrication de volumes en carton">cartonnage numérique.</abbr></h3>
+<div id="divmain" class="w3-container w3-khaki">
+  <h3 class="titre">Bienvenue sur <a href="https://gilboonet.github.io/">gilboonet.github.io</a><h3>
+  <h3 class="titre">Site dédié au <abbr title="Artisanat utilisant l'outil numérique dans au moins une des étapes de fabrication de volumes en carton">cartonnage numérique.</abbr></h3>
   
   <p>Ce site présente mes créations en cartonnage numérique : <b>statues</b>, <b>objets</b>, et <b>meubles</b>. En outre, j'y documente les techniques que j'utilise à travers <b>méthodes</b>, <b>articles</b> et <b>autres</b> ressources qui, je l'espère, seront utiles à celles et ceux qui veulent se lancer dans ce savoir-faire de notre époque.</p>
   <p>Ma philosophie est d'utiliser au maximum des ressources existantes et faciles à travailler : dans le réel, le carton et dans le virtuel, <a href="https://openjscad.org"  target="_blank"><abbr title="Logiciel libre permettant de créer des modèles 3d paramétriques par codage javascript en utilisant la géométrie de construction de solides.">jscad</abbr></a>, <a href="http://www.wings3d.com/"  target="_blank"><abbr title="Logiciel libre de modélisation polygonale en trois dimensions par surface de subdivision.">wings 3d</abbr></a> et <a href="http://www.meshlab.net/"  target="_blank"><abbr title="logiciel libre de traitement de maillages 3D importants.">meshlab</abbr></a>.</p>
