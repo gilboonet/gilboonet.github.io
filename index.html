@@ -59,15 +59,15 @@ function creePanneau(nom, texte, classe){
   racine.appendChild(parent);
 
   var cible = document.createElement("a");
-  var img = "img/s/" + nom +".jpg";
+  var img = nom +".jpg";
 
-  cible.setAttribute("href", img);
+  cible.setAttribute("href", "img/" + img);
   cible.setAttribute("target", "_blank");
 
   parent.appendChild(cible);
 
   var elem = document.createElement("img");
-  elem.setAttribute("src", img);
+  elem.setAttribute("src", "img/s/" + img);
   elem.setAttribute("style", "width:100%");
 
   cible.appendChild(elem);
