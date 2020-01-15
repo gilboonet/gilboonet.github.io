@@ -30,10 +30,10 @@ function init(){
 , ["O4C", "Mod&eacute;lisation en cours d'un cadre biseaut&eacute;, <b>2016</b>"]
 
 ];
-
+/*
  for (var i in donnees){
    creePanneau(donnees[i][0], donnees[i][1], "w3-card w3-green");
- }
+ }*/
 }
 
 function creePanneau(nom, texte, classe){
