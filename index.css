@@ -1,0 +1,41 @@
+p.titre {
+  color: yellow;
+  text-width: bold;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 2.5em;
+  margin:0.125em;
+}
+
+abbr {
+  border:none;
+  color:#05f;
+  cursor:zoom-in;
+}
+
+div.menu {
+  top:33px;
+}
+
+#divmenu {
+  position:fixed;
+  top:0;
+  width:100%;
+}
+
+#divmain {
+  margin-top:30px;
+}
+
+#menuP {
+  font-weight:bold; 
+  color:white;
+}
+
+h3.titre {
+  text-align:center;
+}
+
+.inactif {
+  color:lightgray;
+}
