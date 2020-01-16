@@ -30,18 +30,28 @@
     </div>
 
     <div class="w3-dropdown-hover">
-    <a href="#PObjets" class="w3-bar-item w3-button">Objets&raquo;</a>
-    <div class="w3-dropdown-content w3-bar-block w3-card-4 menu">
-      <a href="#PObjets" class="w3-bar-item w3-button">Objets</a>
-      <a href="#O1" class="w3-bar-item w3-button">&nbsp;Vases/Bols</a>
-      <a href="#O2" class="w3-bar-item w3-button">&nbsp;Bo&icirc;tes</a>
-      <a href="#O3" class="w3-bar-item w3-button">&nbsp;Volumes ajour&eacute;s</a>
-      <a href="#O4" class="w3-bar-item w3-button">&nbsp;Cadres</a>
-    </div>
+      <a href="#PObjets" class="w3-bar-item w3-button">Objets&raquo;</a>
+      <div class="w3-dropdown-content w3-bar-block w3-card-4 menu">
+        <a href="#PObjets" class="w3-bar-item w3-button">Objets</a>
+        <a href="#O1" class="w3-bar-item w3-button">&nbsp;Vases/Bols</a>
+        <a href="#O2" class="w3-bar-item w3-button">&nbsp;Bo&icirc;tes</a>
+        <a href="#O3" class="w3-bar-item w3-button">&nbsp;Volumes ajour&eacute;s</a>
+        <a href="#O4" class="w3-bar-item w3-button">&nbsp;Cadres</a>
+      </div>
     </div>
 
     <a class="w3-bar-item inactif">Meubles</a>
-    <a href="#PMethodes" class="w3-bar-item w3-button w3-hover-lightGray">M&eacute;thodes</a>
+
+    <div class="w3-dropdown-hover">
+      <a href="#PMethodes" class="w3-bar-item w3-button">M&eacute;thodes</a>
+      <div class="w3-dropdown-content w3-bar-block w3-card-4 menu">
+        <a href="#PMethodes" class="w3-bar-item w3-button">M&eacute;thodes</a>
+        <a href="#M1" class="w3-bar-item w3-button">&nbsp;Obtention du mod&egrave;le 3d</a>
+        <a href="#M2" class="w3-bar-item w3-button">&nbsp;Adaptation du mod&egrave;le 3d au cartonnage</a>
+        <a href="#M3" class="w3-bar-item w3-button">&nbsp;Dimensions du mod&egrave;le 3d</a>
+      </div>
+    </div>
+
     <a href="#" class="w3-bar-item w3-button w3-hover-lightGray">Articles</a>
     <a href="#" class="w3-bar-item w3-button w3-hover-lightGray">Autres</a>
   </div>
@@ -102,7 +112,7 @@
   <h2 id="PMethodes"><br/>M&eacute;thodes</h2>
   <p>Le cartonnage num&eacute;rique s'appuie sur la 3d et ses traitements num&eacute;riques. Je d&eacute;buterai donc par les m&eacute;thodes permettant d'obtenir le mod&egrave;le 3d, puis d&eacute;crirai les traitements permettant de l'adapter &agrave; nos usages de cartonnistes.</p>
 
-  <div class="w3-container">
+  <div id="M1" class="w3-container">
   	<h3><br/>Obtention du mod&egrave;le 3d</h3>
     <p>Il y a plusieurs fa&ccedil;ons permettant d'obtenir un mod&egrave;le 3d, (internet &eacute;tant la principale) :
     <ul>
@@ -123,7 +133,7 @@
     </ul>
     </p>
 
-  	<h3><br/>Adaptation du mod&egrave;le 3d au cartonnage (<a href="http://www.meshlab.net/" target="_blank">Meshlab</a>)</h3>
+  	<h3 id="M2"><br/>Adaptation du mod&egrave;le 3d au cartonnage (<a href="http://www.meshlab.net/" target="_blank">Meshlab</a>)</h3>
     <p>Les mod&egrave;les 3d sont souvent tr&egrave;s d&eacute;taill&eacute;s, or s'il est possible de faire des volumes en carton, ceux-ci seront limit&eacute;s en d&eacute;tail, d'une part par la complexit&eacute; des calculs que cela impliquera, et d'autre part par la plus petite taille qu'il sera possible d'obtenir en carton. Le mod&egrave;le 3d est donc ramen&eacute; &agrave; un niveau de d&eacute;tail compatible avec ces implications.
     </p>
   <div class="w3-container">
@@ -164,7 +174,7 @@
     </h4></div>
   </div>
 
-  <h3><br/>Dimensions du mod&egrave;le 3d (<a href="http://www.meshlab.net/" target="_blank">Meshlab</a>)</h3>
+  <h3 id="M3"><br/>Dimensions du mod&egrave;le 3d (<a href="http://www.meshlab.net/" target="_blank">Meshlab</a>)</h3>
   <div class="w3-container">
 	<div class="w3-half">
       <a href="img/M3A.jpg" target="_blank"><img src="img/M3A.jpg" style="width:100%"></a>
