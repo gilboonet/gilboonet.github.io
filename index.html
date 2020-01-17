@@ -1,19 +1,17 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <title>gilboo.net</title>
-  <meta charset="UTF-8">
-  <meta HTTP-EQUIV='Content-Security-Policy' CONTENT="default-src 'self' ; script-src 'self' 'unsafe-inline' ; style-src 'self' 'unsafe-inline' https: ; img-src 'self' * ; font-src https:">
+	<title>gilboo.net</title>
+	<meta charset="UTF-8">
+	<meta HTTP-EQUIV='Content-Security-Policy' CONTENT="default-src 'self' ; script-src 'self' 'unsafe-inline' ; style-src 'self' 'unsafe-inline' https: ; img-src 'self' * ; font-src https:">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://gilboonet.github.io/index.css">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <script type="text/javascript" src="index.js"></script>
 </head>
-
 <body onload="init()">
 <div id="divmenu" class="w3-container w3-orange">
   <div id="menuP" class="w3-bar">
@@ -161,20 +159,24 @@
   </ul></div>
 
   <div class="w3-row">
-	<div class="w3-col s3 w3-green">
+		<div class="w3-col s3 w3-green">
       <a href="img/M2B.jpg" target="_blank"><img src="img/M2B.jpg" style="width:100%"></a>
+		</div>
+		<div class="w3-col s9 w3-blue">
+			<h4>
+				<ul>
+					<li>Entrer le nombre voulu de facettes dans la premi&egrave;re zone de saisie</li>
+					<li>Cocher les options &agrave; l'identique de la capture de gauche</li>
+					<li>Valider en cliquant sur le bouton "Apply"</li>
+					<li>Sauver (File/Export Mesh as) le mod&egrave;le r&eacute;duit</li>
+				</ul>
+				<p>Il est possible de r&eacute;duire seulement une partie du mod&egrave;le, par exemple afin d'avoir une t&ecirc;te plus d&eacute;taill&eacute;e que le reste du corps. Il faut alors avoir s&eacute;lectionn&eacute; la partie voulue et cocher la derni&egrave;re option, "Simplify only selected faces".</p>
+			</h4>
+		</div>
 	</div>
-	<div class="w3-col s9 w3-blue"><h4><ul>
-      <li>Entrer le nombre voulu de facettes dans la premi&egrave;re zone de saisie</li>
-      <li>Cocher les options &agrave; l'identique de la capture de gauche</li>
-      <li>Valider en cliquant sur le bouton "Apply"</li>
-      <li>Sauver (File/Export Mesh as) le mod&egrave;le r&eacute;duit</li>
-    </ul>
-    <p>Il est possible de r&eacute;duire seulement une partie du mod&egrave;le, par exemple afin d'avoir une t&ecirc;te plus d&eacute;taill&eacute;e que le reste du corps. Il faut alors avoir s&eacute;lectionn&eacute; la partie voulue et cocher la derni&egrave;re option, "Simplify only selected faces".</p>
-    </h4></div>
-  </div>
 
-  <h3 id="M3"><br/>Dimensions du mod&egrave;le 3d (<a href="http://www.meshlab.net/" target="_blank">Meshlab</a>)</h3>
+  <h3 id="M3"><br/>Dimensions du mod&egrave;le 3d</h3>
+  <h4>Avec <a href="http://www.meshlab.net/" target="_blank">Meshlab</a></h4>
   <div class="w3-container">
 	<div class="w3-half">
       <a href="img/M3A.jpg" target="_blank"><img src="img/M3A.jpg" style="width:100%"></a>
@@ -186,7 +188,25 @@
         <li>Les scripts qui utiliseront le mod&egrave;le comportent un param&egrave;tre "&eacute;chelle" qui permet de ramener le mod&egrave;le aux dimensions que l'on d&eacute;sire.</li>
       </ul></h4>
 	</div>
-  </div>  
+  </div>
+  <div class="w3-container">
+		<h4>Avec <b>jscad</b> : script <a href="https://openjscad.org/#https://gilboonet.github.io/scripts/dimensions.jscad" target="_blank">dimensions.jscad</a></h4>
+		<div class="w3-half">
+      <a href="img/M3B.jpg" target="_blank"><img src="img/M3B.jpg" style="width:100%"></a>
+		</div>
+		<div class="w3-half w3-blue">
+      <h4>Ce script affiche le mod&egrave;le et ses dimensions.
+        <ul>
+				  <li>Pour changer l'&eacute;chelle (scale), &eacute;diter la zone en bleu dans la capture, et calculer le rendu(
+ <span class="w3-tag w3-round w3-white w3-center">MAJ + ENTREE</span>)</li>
+				  <li>Pour changer le modèle, il faut préalablement l'avoir importé dans <b>jscad</b> (glisser-déplacer dans la zone en bas à gauche) et exporté en .jscad (choisir JSCAD et cliquer sur Generate JSCAD),</li>
+				  <li>Puis ouvrir le script "dimensions", supprimer ce qu'il y a sous "// volume", le remplacer par le contenu du fichier .jscad,</li>
+				  <li>Remplacer dans ce qui a été collé, "main" par le nom de votre choix,</li>
+				  <li>Adapter la ligne 5 du script en y mettant le nouveau nom,</li>
+				  <li>Et enfin calculer le rendu.</li>
+      </ul></h4>
+	</div>		
+  </div> 
 
   <h3><br/>Calcul de statue en tranches sur un axe</h3>
   <p></p>
@@ -214,7 +234,7 @@
 
 
 <div class="w3-container w3-cyan">
-<p>Fait &agrave; la main en <a href="https://www.w3schools.com/html/html5_intro.asp">HTML5</a>, <a href="https://www.w3schools.com/js/default.asp" target="_blank">Javascript</a> et <a href="https://www.w3schools.com/w3css/default.asp">WEB.CSS</a>. Derni&egrave;re mise &agrave; jour le 16 janvier 2020. <a href="mailto:gilbertfd@gmail.com?subject=Depuis gilboonet.github.io">Me contacter</a></p>
+<p>Fait &agrave; la main en <a href="https://www.w3schools.com/html/html5_intro.asp">HTML5</a>, <a href="https://www.w3schools.com/js/default.asp" target="_blank">Javascript</a> et <a href="https://www.w3schools.com/w3css/default.asp">WEB.CSS</a>. Derni&egrave;re mise &agrave; jour le 17 janvier 2020. <a href="mailto:gilbertfd@gmail.com?subject=Depuis gilboonet.github.io">Me contacter</a></p>
 </div>
 </body>
 </html>
