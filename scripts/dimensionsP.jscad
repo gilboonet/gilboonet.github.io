@@ -3,7 +3,7 @@
 // parametres
 function getParameterDefinitions() {
     return [
-        { name: 'echelle', type: 'int', initial: 1, caption: 'Echelle?' }
+        { name: 'echelle', type: 'float', initial: 1, caption: 'Echelle?' }
     ];
 }
 
