@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>gilboo.net (gabarit de statue en tranches sur 1 axe)</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
+	<script>
+function init(){
+
+	var reader = new FileReader();
+
+	reader.onload = onReaderLoad;
+	reader.readAsText(event.target.files[0]);
+}
+
+function onReaderLoad(event){
+  var doc = new jsPDF();
+
+  doc.setDrawColor(0, 0, 255);
+	doc.setLineWidth(0.1);
+
+	var obj = JSON.parse(event.target.result);
+	var n = 0;
+	
+	for(i=0; i< obj.length; i++){
+		o = obj[i];
+		
+		switch(o.t){
+			case 1: // cadre
+				doc.line(o.x1, o.y1, o.x1, o.y2);
+				doc.line(o.x1, o.y2, o.x2, o.y2);
+				doc.line(o.x2, o.y2, o.x2, o.y1);
+				doc.line(o.x2, o.y1, o.x1, o.y1);
+
+				// n° au milieu
+				n++;
+				x = (o.x1 + o.x2)/2;
+				y = (o.y1 + o.y2)/2;
+				doc.text(n.toString(), x, y, 'center');				
+				
+				break;
+			case 2: // ligne
+				doc.line(o.x1, o.y1, o.x2, o.y2);
+				break;
+			case 3: // texte
+
+				break;
+			case 4: // page
+				doc.addPage();
+		}
+	}
+	doc.save('a4.pdf');
+}
+
+	</script>
+
+</head>
+<body>
+<h1>S&eacute;lectionner le fichier contenant les donn&eacute;es</h1>
+<input id="fichier" type="file" onChange="init()"/>
+</body>
+</html>
+
+
