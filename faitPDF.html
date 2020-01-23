@@ -8,21 +8,32 @@
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
 	<script>
+
 function init(){
 
+	zoneCopie.value = "";
 	var reader = new FileReader();
 
 	reader.onload = onReaderLoad;
 	reader.readAsText(event.target.files[0]);
 }
 
-function onReaderLoad(event){
-  var doc = new jsPDF();
+function boutonFaitPDF(){
+	texte = zoneCopie.value;
+	faitPDF(texte);
+}
 
+function onReaderLoad(event){
+	var texte = event.target.result;
+	faitPDF(texte);
+}
+
+function faitPDF(texte){
+	var obj = JSON.parse(texte);
+  var doc = new jsPDF();
   doc.setDrawColor(0, 0, 255);
 	doc.setLineWidth(0.1);
 
-	var obj = JSON.parse(event.target.result);
 	var n = 0;
 	
 	for(i=0; i< obj.length; i++){
@@ -59,8 +70,12 @@ function onReaderLoad(event){
 
 </head>
 <body>
-<h1>S&eacute;lectionner le fichier contenant les donn&eacute;es</h1>
+<h3>S&eacute;lectionner le fichier contenant les donn&eacute;es</h3>
 <input id="fichier" type="file" onChange="init()"/>
+<br/>
+<h3>Ou<br/> coller ici les donn&eacute;es puis cliquer sur le bouton</h3>
+<textarea id="zoneCopie"></textarea>
+<button onclick="boutonFaitPDF()">Fait PDF</button>
 </body>
 </html>
 
