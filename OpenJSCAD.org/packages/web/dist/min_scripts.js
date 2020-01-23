@@ -47491,7 +47491,8 @@ function chargeVolumeURL(event){
 
       if (design.match(/\.jscad$/i) || design.match(/\.js$/i)) {
         gProcessor.setStatus('Processing ' + design + " <img id=busy src='imgs/busy.gif'>");
-        gProcessor.setJsCad(source, design);
+        //gProcessor.setJsCad(source, design);
+        lanceScript(source);
       }
     };
     xhr.send();
