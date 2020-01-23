@@ -162,9 +162,13 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
 						data.push({t:4});
 					}					
 				}
-        t2d = union(faitTranche(V, b1, z));
-        b2 = t2d.getBounds();
-        t2d = translate(b2[0].times(-1), t2d);
+
+        tmp = faitTranche(V, b1, z);
+        if (tmp.length >0){
+          t2d = union(tmp);
+          b2 = t2d.getBounds();
+          t2d = translate(b2[0].times(-1), t2d);
+        }
 
         r.push(translate([dx, dy], t2d));
         r.push(translate([dx-2, dy-2], cadreT));
