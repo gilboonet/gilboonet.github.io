@@ -47452,13 +47452,8 @@ function chargeFichier(){
 }
 
 function calcDim(event) {
-	var source = volume;
-	source = source.replace(/main/, 'volume')
-					+ '\n' + zone_code.value;
-	console.log(source);
-	document.body.style.cursor = 'wait';
+	var source = volume.replace(/main/, 'volume') + '\n' + zone_code.value;
 	gProcessor.setJsCad(source, 'differenceP.jscad');					
-	document.body.style.cursor = 'default';
 }
 
 function permetCalculs(){
@@ -47471,18 +47466,53 @@ function chargeVolume(event) {
 
 	lecteur.addEventListener("load", function () {
 	  volume = this.result;
-		gProcessor.setJsCad(volume, fichier.name);
-		permetCalculs()
+	  lanceScript(volume);
    }, false);
 
    lecteur.readAsText(fichier);
-}	
+}
+
+function lanceScript(source){
+  gProcessor.setJsCad(source, 'script');
+  permetCalculs();
+}
+
+function chargeVolumeURL(event){
+  var design = 'https://gilboonet.github.io/modeles/' + event.target.innerHTML + '.jscad';
+
+  if (design) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', design, true);
+    gProcessor.setStatus('Loading ' + design + " <img id=busy src='imgs/busy.gif'>");
+
+    xhr.onload = function () {
+      var source = this.responseText;
+      // console.log(source);
+
+      if (design.match(/\.jscad$/i) || design.match(/\.js$/i)) {
+        gProcessor.setStatus('Processing ' + design + " <img id=busy src='imgs/busy.gif'>");
+        gProcessor.setJsCad(source, design);
+      }
+    };
+    xhr.send();
+  }  
+}
+
+function leftFillNum(num, targetLength) {
+    return num.toString().padStart(targetLength, 0);
+}
 
 function init() {
   var versionText = 'OpenJSCAD.org Version ' + version;
   console.log(versionText);
 
 	fichier.addEventListener("change", chargeVolume, false);
+
+  
+  for(var i = 1; i <= 16; i++){
+		document.getElementById('v'+ leftFillNum(i, 2)).addEventListener("click", chargeVolumeURL, false);
+	}
+	
 	calc_dimensions.addEventListener("click", calcDim, false);
 	calc_dimensions.disabled = true;
 
