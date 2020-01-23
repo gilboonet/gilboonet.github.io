@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<!--
+
+== OpenJSCAD.org, Copyright (c) 2016-2017, Licensed under MIT License ==
+   in conjunction with other libraries by various authors (see the individual files)
+
+Purpose:
+  This application provides an example of how to show JSCAD designs with minimal HTML and CSS.
+-->
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+  <title>OpenJSCAD.org Logo</title>
+  <link rel="stylesheet" href="min.css" type="text/css">
+  <script src="dist/min_dimensions.js"></script>
+
+</head>
+
+<body>
+
+<!-- setup display of the errors as required by OpenJSCAD.js -->
+  <div class="jscad-container">
+    <div id="header">
+      <div id="errordiv">hello</div>
+    </div>
+
+<!-- setup display of the viewer, i.e. canvas -->
+    <!--div oncontextmenu="return false;" id="viewerContext" design-url="carton.num/tranches01.jscad"></div-->
+    <div oncontextmenu="return false;" id="viewerContext" ></div>
+
+<!-- setup display of the status, as required by OpenJSCAD.js -->
+<!-- set display: block to display this -->
+    <div id="tail" style="display: none;">
+      <div id="statusdiv"></div>
+    </div>
+  </div>
+  <div>
+<h1>S&eacute;lectionner le volume</h1>
+<input id="fichier" type="file" accept=".jscad" />
+  </div>
+
+<textarea id="zone_code" style="display:none;">
+// Affiche un volume et ses dimensions (avec parametre echelle)
+
+// parametres
+function getParameterDefinitions() {
+    return [
+        { name: 'echelle', type: 'float', initial: 1, caption: 'Echelle?' }
+    ];
+}
+
+function main(params) {
+// Récupère le volume
+var V = volume().scale(params.echelle);
+
+// Calcule ses dimensions :
+var b = V.getBounds(); // pts extrêmes du volume (plus petit et plus grand)
+var d = b[1].minus(b[0]); // dimensions = différence entre ces deux points
+var de = [d.x, d.y, d.z].map(Math.round);
+
+// Affiche les dimensions
+var r = []; 
+
+r.push(color("red", V)); // volume en rouge
+
+// boite inscrite en cyan transparent (r:0, v:1, b:1, t:0.2)
+r.push(color([0,1,1,0.2], cube([d.x, d.y, d.z]).translate(b[0])));
+
+// dimensions
+r.push(texte("larg. :"+ de[0].toString()+" mm").scale(0.5).translate([b[1].x,20,0]));
+r.push(texte("long. :"+ de[1].toString()+" mm").scale(0.5).translate([b[1].x,0,0]));
+r.push(texte("haut. :"+ de[2].toString()+" mm").scale(0.5).translate([b[1].x,-20,0]));
+
+return r;
+}
+
+// Affiche une chaine de caractères
+function texte(ch){
+  let text = vectorText(ch);
+  return csgFromSegments(text);
+}
+
+// transforme des segments en volume
+function csgFromSegments (segments) {
+  let output = [];
+  segments.forEach(segment => output.push(
+    rectangular_extrude(segment, { w:2, h:1 })
+  ));
+  return union(output);
+}
+
+</textarea>
+</body>
+
+</html>
