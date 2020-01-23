@@ -47486,7 +47486,7 @@ function chargeVolumeURL(event){
     gProcessor.setStatus('Loading ' + design + " <img id=busy src='imgs/busy.gif'>");
 
     xhr.onload = function () {
-      var volume = this.responseText;
+      volume = this.responseText;
       // console.log(source);
 
       if (design.match(/\.jscad$/i) || design.match(/\.js$/i)) {
