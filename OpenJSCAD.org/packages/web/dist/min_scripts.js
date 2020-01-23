@@ -47451,13 +47451,24 @@ var volume = "";
 function chargeFichier(){
 }
 
+function faitScript(script, nom){
+	script = script.replace(/\<\!\-\-/, "");
+	script = script.replace(/\!\-\-\>/, "");
+	var source = volume.replace(/function main/, 'function volume') + '\n' + script;
+	gProcessor.setJsCad(source, nom);
+}
+
+function calcTr1(event) {
+	faitScript(zc_tranches01.value, "tranches01.jscad");
+}
+
 function calcDim(event) {
-	var source = volume.replace(/main/, 'volume') + '\n' + zone_code.value;
-	gProcessor.setJsCad(source, 'differenceP.jscad');					
+	faitScript(zc_dimensions.value, "differenceP.jscad");
 }
 
 function permetCalculs(){
-   calc_dimensions.disabled = false;	
+	calc_dimensions.disabled = false;	
+	calc_tranches01.disabled = false;
 }
 
 function chargeVolume(event) {
@@ -47516,6 +47527,9 @@ function init() {
 	
 	calc_dimensions.addEventListener("click", calcDim, false);
 	calc_dimensions.disabled = true;
+
+	calc_tranches01.addEventListener("click", calcTr1, false);
+	calc_tranches01.disabled = true;
 
   var viewer = document.getElementById('viewerContext');
   gProcessor = new Processor(viewer); 
