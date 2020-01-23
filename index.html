@@ -1,284 +1,180 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<title>gilboo.net</title>
-	<meta charset="UTF-8">
-	<meta HTTP-EQUIV='Content-Security-Policy' CONTENT="default-src 'self' ; script-src 'self' 'unsafe-inline' ; style-src 'self' 'unsafe-inline' https: ; img-src 'self' * ; font-src https:">
+<html  xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+<!--
+== OpenJSCAD.org, Copyright (c) 2013-2017 by Rene K. Mueller <spiritdude@gmail.com>, Licensed under MIT License ==
+   with some code from OpenJsCad processfile.html by Joost Nieuwenhuijse
+   in conjunction with csg.js, openjscad.js, lightgl.js by various authors (see them listed in the individual files)
 
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="https://gilboonet.github.io/index.css">
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <script type="text/javascript" src="index.js"></script>
-</head>
-<body onload="init()">
-<div id="divmenu" class="w3-container w3-orange">
-  <div id="menuP" class="w3-bar">
-    <a href="#" class="w3-bar-item w3-button w3-khaki w3-hover-lightGray"><i class="fa fa-home"></i></a>
-    <div class="w3-dropdown-hover">
-    <button class="w3-bar-item w3-button">Statues&raquo;</button>
-    <div class="w3-dropdown-content w3-bar-block w3-card-4 menu" >
-      <a href="#PStatues" class="w3-bar-item w3-button">Statues</a>
-      <a href="#S1" class="w3-bar-item w3-button">- en tranches / 1 axe</a>
-      <a href="#S2" class="w3-bar-item w3-button">- voxelis&eacute;es en tranches / 1 axe</a>
-      <a href="#S3" class="w3-bar-item w3-button">- en tranches / 2 axes</a>
-      <a href="#S4" class="w3-bar-item w3-button">- en facettes</a>
-    </div>
+Purpose:
+   More modern interface for OpenJsCad as published at http://joostn.github.com/OpenJsCad/
+-->
+    <meta http-equiv=Pragma content=no-cache>
+    <meta http-equiv=Expires content=-1>
+    <meta http-equiv=CACHE-CONTROL content=NO-CACHE>
+
+    <title>OpenJSCAD.org</title>
+    <link rel="shortcut icon" href="imgs/favicon.png" type="image/x-png">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <link rel="stylesheet" href="openjscad.css" type="text/css">
+  </head>
+  <body>
+    <script src="dist/index.js"></script>
+<!-- top left header (logo and error message) -->
+    <div id="header">
+      <img src="imgs/title.png">
+      <div id="errordiv"></div>
     </div>
 
-    <div class="w3-dropdown-hover">
-      <a href="#PObjets" class="w3-bar-item w3-button">Objets&raquo;</a>
-      <div class="w3-dropdown-content w3-bar-block w3-card-4 menu">
-        <a href="#PObjets" class="w3-bar-item w3-button">Objets</a>
-        <a href="#O1" class="w3-bar-item w3-button">&nbsp;Vases/Bols</a>
-        <a href="#O2" class="w3-bar-item w3-button">&nbsp;Bo&icirc;tes</a>
-        <a href="#O3" class="w3-bar-item w3-button">&nbsp;Volumes ajour&eacute;s</a>
-        <a href="#O4" class="w3-bar-item w3-button">&nbsp;Cadres</a>
+<!-- sliding tab (help, links, examples, options, etc) -->
+    <div id="menu">
+      <img id="menuHandle" src="imgs/menuHandleVLIn.png">
+      <nav>
+        <div id="menuVersion"></div>
+        <p/>
+        <table class="info">
+          <tr><td class="infoView" colspan=2>Editor</td></tr>
+          <tr><td align="right" class="infoOperation">Render Code</td><td class="infoKey">F5 or SHIFT + Return</td></tr>
+          <tr><td align="right" class="infoOperation">Save To Cache</td><td class="infoKey">CTRL + S</td></tr>
+          <tr><td align="right" class="infoOperation">Load From Cache</td><td class="infoKey">CTRL + L</td></tr>
+          <tr><td align="right" class="infoOperation">Clear Cache</td><td class="infoKey">CTRL + SHIFT + \</td></tr>
+          <tr><td align="right" class="infoOperation">Download Code</td><td class="infoKey">CTRL + SHIFT + S</td></tr>
+          <tr><td align="right" class="infoOperation">Reset View</td><td class="infoKey">CRTL + Return</td></tr>
+          <tr><td class="infoView" colspan=2>3D View</td></tr>
+          <tr><td align="right" class="infoOperation">Rotate XZ</td><td class="infoKey">Left Mouse</td></tr>
+          <tr><td align="right" class="infoOperation">Pan</td><td class="infoKey">Middle Mouse or SHIFT + Left Mouse</td></tr>
+          <tr><td align="right" class="infoOperation">Rotate XY</td><td class="infoKey">Right Mouse or ALT + Left Mouse</td></tr>
+          <tr><td align="right" class="infoOperation">Zoom In/Out</td><td class="infoKey">Wheel Mouse or CTRL + Left Mouse</td></tr>
+        </table>
+        <p>
+          <a class="navlink" href="https://openjscad.org/dokuwiki/doku.php" target="_blank" rel="noopener">User Guide / Documentation <img src="imgs/externalLink.png" style="externalLink"></a>
+          <br/><span class="menuSubInfo">How to program with OpenJSCAD: online, offline &amp; CLI</span>
+        </p>
+        <p>
+          <a class="navlink" href="https://plus.google.com/communities/114958480887231067224" rel="publisher" target="_blank" rel="noopener">Recent Updates <img src="imgs/externalLink.png" style="externalLink"></a>
+          <br/><span class="menuSubInfo">Announcements of recent developments</span>
+        </p>
+        <p>
+          <a class="navlink" href="https://plus.google.com/communities/114958480887231067224" target="_blank" rel="noopener">Google+ Community <img src="imgs/externalLink.png" style="externalLink"></a>
+          <br/><span class="menuSubInfo">Discuss with other users &amp; developers</span>
+        </p>
+        <div id="examplesTitle" class="navlink"><a href='#' onclick='return false'>Examples</a></div>
+        <div id="examples"></div>
+        <span class="menuSubInfo">Dozens of examples to learn from</span>
+        <p/>
+<!--
+        <div id="optionsTitle" class="navlink"><a href='#' onclick='return false'>Options</a></div>
+        <div id="options"></div>
+        <span class="menuSubInfo">Your personal settings</span></p>
+ -->
+        <p/>
+        <b>Supported Formats</b>
+        <table class="info">
+          <tr><td align="right"><b>jscad</b></td><td><a target="_blank" rel="noopener" href="https://openjscad.org/dokuwiki/doku.php">OpenJSCAD</a> (native, import/export)</td></tr>
+          <tr><td align="right"><b>scad</b></td><td><a target="_blank" rel="noopener" href="http://openscad.org">OpenSCAD</a> (<a target=_blank href="https://openjscad.org/dokuwiki/doku.php">experimental</a>, import)</td></tr>
+          <tr><td align="right"><b>stl</b></td><td><a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/STL_(file_format)">STL format</a> (experimental, import/export)</td></tr>
+          <tr><td align="right"><b>amf</b></td><td><a target="_blank" rel="noopener" href="http://en.wikipedia.org/wiki/Additive_Manufacturing_File_Format">AMF format</a> (experimental, import/export)</td></tr>
+          <tr><td align="right"><b>dxf</b></td><td><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/AutoCAD_DXF">DXF format</a> (experimental, import/export)</td></tr>
+          <tr><td align="right"><b>x3d</b></td><td><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/X3D">X3D format</a> (experimental, export)</td></tr>
+          <tr><td align="right"><b>svg</b></td><td><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Scalable_Vector_Graphics">SVG format</a> (experimental, import/export)</td></tr>
+        </table>
+        <p><a class="navlink about" href="#">About</a></p>
+      </nav>
+    </div> <!-- /menu -->
+
+<!-- about dialog -->
+    <div id="about">
+      <img src="imgs/title.png">
+      <div id="aboutVersion" ></div>
+
+      <p>
+<h4>OpenJsCad by</h4>
+- Joost Nieuwenhuijse (core),</br>
+- Ren&eacute; K. M&uuml;ller (core, CLI & GUI),</br>
+- Stefan Baumann (core),</br>
+- Z3 Dev (core, CLI & GUI),</br>
+- Mark Moissette (core, CLI & GUI),</br>
+- Eduard Bespalov (core),</br>
+- Gary Hogdson (OpenSCAD translator)
+
+<h4>csg.js core &amp; improvements by</h4>
+- Evan Wallace</br>
+- Eduard Bespalov</br>
+- Joost Nieuwenhuijse</br>
+- Alexandre Girard
+
+<h4>Additional libraries & tools</h4>
+- xmldom</br>
+- sax</br>
+- browserify</br>
+- babel</br>
+</p>
+
+<p>
+License: MIT License<br>
+Get your copy/clone/fork from <a href="https://github.com/jscad/OpenJSCAD.org" target="_blank" rel="noopener">GitHub: OpenJSCAD</a>
+      </p>
+      <p>
+        <br/><a class="okButton" href='#'> OK </a>
+      </p>
+    </div> <!-- about -->
+
+<!-- editor -->
+    <div id="editFrame">
+      <div>
+        <img id="editHandle" src="imgs/editHandleIn.png"></img>
       </div>
-    </div>
+      <div id="editor">
+// -- OpenJSCAD.org logo
 
-    <a class="w3-bar-item inactif">Meubles</a>
-
-    <div class="w3-dropdown-hover">
-      <a href="#PMethodes" class="w3-bar-item w3-button">M&eacute;thodes&raquo;</a>
-      <div class="w3-dropdown-content w3-bar-block w3-card-4 menu">
-        <a href="#PMethodes" class="w3-bar-item w3-button">M&eacute;thodes</a>
-        <a href="#M1" class="w3-bar-item w3-button">&nbsp;Obtention du mod&egrave;le 3d</a>
-        <a href="#M2" class="w3-bar-item w3-button">&nbsp;Adaptation du mod&egrave;le 3d au cartonnage</a>
-        <a href="#M3" class="w3-bar-item w3-button">&nbsp;Dimensions du mod&egrave;le 3d</a>
-        <a href="#M4" class="w3-bar-item w3-button">&nbsp;Calcul de statue en tranches sur un axe</a>
+function main() {
+   return union(
+      difference(
+         cube({size: 3, center: true}),
+         sphere({r:2, center: true})
+      ),
+      intersection(
+          sphere({r: 1.3, center: true}),
+          cube({size: 2.1, center: true})
+      )
+   ).translate([0,0,1.5]).scale(10);
+}
       </div>
-    </div>
+    </div> <!-- editor -->
 
-    <a href="#" class="w3-bar-item w3-button w3-hover-lightGray">Articles</a>
-    <a href="#" class="w3-bar-item w3-button w3-hover-lightGray">Autres</a>
-  </div>
-</div>
+<!-- design viewer -->
+    <div oncontextmenu="return false;" id="viewerContext"></div> <!-- avoiding popup when right mouse is clicked -->
 
-<div id="divmain" class="w3-container w3-khaki">
-  <h3 class="titre">Bienvenue sur <a href="https://gilboonet.github.io/">gilboonet.github.io</a></h3>
-  <h3 class="titre">Site d&eacute;di&eacute; au <abbr title="Artisanat utilisant l'outil num&eacute;rique dans au moins une des &eacute;tapes de fabrication de volumes en carton">cartonnage num&eacute;rique.</abbr></h3>
+<!-- design parameters -->
+    <div id="parametersdiv"></div>
+    <div id="selectdiv"></div>
 
-  <p>Ce site pr&eacute;sente mes cr&eacute;ations en cartonnage num&eacute;rique : <b>statues</b>, <b>objets</b>, et <b>meubles</b>. En outre, j'y documente les techniques que j'utilise &agrave; travers <b>m&eacute;thodes</b>, <b>articles</b> et <b>autres</b> ressources qui, je l'esp&egrave;re, seront utiles &agrave; celles et ceux qui veulent se lancer dans ce savoir-faire de notre &eacute;poque.</p>
-  <p>Ma philosophie est d'utiliser au maximum des ressources existantes et faciles &agrave; travailler : dans le r&eacute;el, le carton et dans le virtuel, <a href="https://openjscad.org"  target="_blank"><abbr title="Logiciel libre permettant de cr&eacute;er des mod&egrave;les 3d param&eacute;triques par codage javascript en utilisant la g&eacute;om&eacute;trie de construction de solides.">jscad</abbr></a>, <a href="http://www.wings3d.com/"  target="_blank"><abbr title="Logiciel libre de mod&eacute;lisation polygonale en trois dimensions par surface de subdivision.">wings 3d</abbr></a> et <a href="http://www.meshlab.net/"  target="_blank"><abbr title="logiciel libre de traitement de maillages 3D importants.">meshlab</abbr></a>.</p>
-
-  <div class="w3-container">
-    <p class="w3-card-4 w3-blue w3-padding-large">Apprendre ici le <b>cartonnage num&eacute;rique</b> ne vous demandera pas de programmer ou faire des calculs scientifiques, mais d'<b>utiliser des logiciels</b> sur pc &agrave; la souris, voire de <b>taper des commandes</b> au clavier dans une console. De m&ecirc;me, si la plupart des volumes sont faisables &agrave; la main, un petit nombre n&eacute;cessitent la d&eacute;coupe num&eacute;rique. N'h&eacute;sitez pas &agrave; vous rapprocher du <abbr title="Atelier mettant &agrave; la disposition du public des outils de fabrication d'objets assist&eacute;e par ordinateur."><a href="https://www.fablabs.io/labs?country=fr">FabLab</a></abbr> le plus proche de chez vous, vous y trouverez de l'aide pour &ecirc;tre &agrave; l'aise avec les usages du num&eacute;rique.</p>
-  </div>
-
-  <h2 id="PStatues"><br/>Statues</h2>
-  <p>J'utilise quatre techniques permettant de fabriquer une <abbr title="Ouvrage de sculpture repr&eacute;sentant en entier un &ecirc;tre vivant">statue</abbr> en carton depuis un <abbr title="repr&eacute;sentation num&eacute;rique de la g&eacute;om&eacute;trie d'un objet en trois dimensions.">mod&egrave;le 3d</abbr>.</p>
-
-  <div id="S1"></div>
-  <div id="S2"></div>
-  <div id="S3"></div>
-  <div id="S4" class="w3-container">
-    <h3 id="PStatFacet"><br/>Statues en facettes</h3>
-    <p>le d&eacute;pliage des facettes : complexe &agrave; calculer et fabriquer, parfait pour un habillage de meuble</p>
-
-	  <div class="w3-half">
-      <a href="img/S4A.jpg" target="_blank"><img src="img/S4A.jpg" style="width:100%"></a>
-    	<div class="w3-container w3-green"><h5>Statues en facettes de carton, pr&eacute;paration d'une exposition, <b>2017</b></h5></div>
-    </div>
-	  <div class="w3-half">
-      <a href="img/S4B.jpg" target="_blank"><img src="img/S4B.jpg" style="width:100%"></a>
-    	<div class="w3-container w3-green"><h5>Petit et grand <b>&eacute;l&eacute;phant</b>, resp. 800 et 2000 facettes, <b>2018</b> et <b>2019</b></h5></div>
-    </div>
-
-	  <div class="w3-half">
-      <a href="img/S4C.jpg" target="_blank"><img src="img/S4C.jpg" style="width:100%"></a>
-    	<div class="w3-container w3-green"><h5>D&eacute;coupe et gravure laser (machine auto-construite), <b>2018</b></h5></div>
-    </div>
-	  <div class="w3-half">
-      <a href="img/S4D.jpg" target="_blank"><img src="img/S4D.jpg" style="width:100%"></a>
-      <div class="w3-container w3-green"><h5>Assemblage en cours d'un petit mod&egrave;le (buste de cheval sur 3 feuilles A4), <b>2019</b></h5></div>
-    </div>
-  </div>
-
-  <div class="w3-container">
-    <h2 id="PObjets"><br/>Objets</h2>
-    <p>Je fais essentiellement des objets g&eacute;om&eacute;triques, purement d&eacute;coratifs ou pouvant servir de contenant, avec parfois inclusion d'un contenant en verre/plastique permettant d'y mettre de l'eau.</p>
-    <div id="O1"></div>
-    <div id="O2"></div>
-	  <div id="O3"></div>
-    <div id="O4"></div>
-  </div>
-
-  <h2 class="inactif"><br/>Meubles</h2>
-  <p></p>
-
-  <h2 id="PMethodes"><br/>M&eacute;thodes</h2>
-  <p>Le cartonnage num&eacute;rique s'appuie sur la 3d et ses traitements num&eacute;riques. Je d&eacute;buterai donc par les m&eacute;thodes permettant d'obtenir le mod&egrave;le 3d, puis d&eacute;crirai les traitements permettant de l'adapter &agrave; nos usages de cartonnistes.</p>
-
-  <div id="M1" class="w3-container">
-  	<h3><br/>Obtention du mod&egrave;le 3d</h3>
-    <p>Il y a plusieurs fa&ccedil;ons permettant d'obtenir un mod&egrave;le 3d, (internet &eacute;tant la principale) :
-    <ul>
-    	<li>r&eacute;cup&eacute;ration de fichier sur internet
-<div class="w3-container">
-	<div class="w3-half">
-      <a href="img/M1A.jpg" target="_blank"><img src="img/M1A.jpg" style="width:100%"></a>
-	</div>
-	<div class="w3-half"><div class="w3-card w3-green">
-		<div class="w3-container"><h4>Mod&egrave;le d'ours disponible sur <a target="_blank"  href="https://www.thingiverse.com/">Thingiverse</a> (d'autres sites <a href="https://all3dp.com/fr/1/modele-3d-gratuit-telecharger-meilleur-site-archive-3d/" target="_blank">ici</a>)</h4></div>
-	</div></div>
-</div>
-      </li>
-    	<li>num&eacute;risation par scan 3d</li>
-    	<li>num&eacute;risation par photogramm&eacute;trie</li>
-        <li>mod&eacute;lisation avec un logiciel "modeleur"</li>
-    	<li>mod&eacute;lisation par codage </li>
-    </ul>
-    </p>
-
-  	<h3 id="M2"><br/>Adaptation du mod&egrave;le 3d au cartonnage (<a href="http://www.meshlab.net/" target="_blank">Meshlab</a>)</h3>
-    <p>Les mod&egrave;les 3d sont souvent tr&egrave;s d&eacute;taill&eacute;s, or s'il est possible de faire des volumes en carton, ceux-ci seront limit&eacute;s en d&eacute;tail, d'une part par la complexit&eacute; des calculs que cela impliquera, et d'autre part par la plus petite taille qu'il sera possible d'obtenir en carton. Le mod&egrave;le 3d est donc ramen&eacute; &agrave; un niveau de d&eacute;tail compatible avec ces implications.
-    </p>
-  <div class="w3-container">
-	<div class="w3-half">
-      <a href="img/M2A.jpg" target="_blank"><img src="img/M2A.jpg" style="width:100%"></a>
-	</div>
-	<div class="w3-half"><div class="w3-card w3-green">
-	  <div class="w3-container">
-        <h4>Le logiciel Meshlab permet de r&eacute;duire le nombre de triangles composant un mod&egrave;le 3d</h4>
-        <h5><ul>
-          <li>Importer le mod&egrave;le 3d (File/Import Mesh)</li>
-          <li>Ouvrir le menu "Filters"</li>
-          <li>Ouvrir le s/menu "Remeshing..."</li>
-          <li>Ouvrir le filtre "Quadric Edge Collapse Decimation"</li>
-        </ul></h5>
+<!-- design information (status message, download buttons, drag and drop area, etc) -->
+    <div id="tail">
+      <div id="statusdiv"></div>
+      <div id="filedropzone">
+        <div id="filedropzone_empty">
+        </div>
+        <div id="filedropzone_input">
+          <p>
+            <label class="input-control">Add Supported Files: <input type="file" id="files-input" accept="*/*" multiple="1"></input></label>
+          </p>
+        </div>
+        <div id="filedropzone_filled">
+          <span id="currentfile">...</span>
+          <div id="filebuttons">
+            <button id="getstlbutton" style="display:none" onclick="getStl();">Get STL</button>
+            <button id="reloadAllFiles">Reload</button>
+           <!--button onclick="parseFile(gCurrentFile,true,false);">Debug (see below)</button-->
+            <label for="autoreload">Auto Reload</label><input type="checkbox" name="autoreload" value="" id="autoreload">
+          </div>
+        </div>
       </div>
-	</div></div>
-  </div>
-  <div class="w3-container"><ul>
-    <li>&Agrave; gauche le mod&egrave;le tel que t&eacute;l&eacute;charg&eacute; avec presque 100000 triangles, ce qui est beaucoup trop pour aussi bien nos calculs que la fabrication.</li>
-    <li>En haut au milieu, le mod&egrave;le d&eacute;cim&eacute; &agrave; 2000 triangles, peut convenir pour une statue en facettes de grande taille.</li>
-    <li>En haut &agrave; droite, le mod&egrave;le d&eacute;cim&eacute; &agrave; 1000 triangles.</li>
-    <li>En bas au milieu, le mod&egrave;le d&eacute;cim&eacute; &agrave; 500 triangles.</li>
-    <li>En bas &agrave; droite, le mod&egrave;le d&eacute;cim&eacute; &agrave; 350 triangles, moins de triangles d&eacute;forme trop le mod&egrave;le.</li>
-  </ul></div>
+    </div> <!-- tail -->
 
-  <div class="w3-row">
-		<div class="w3-col s3 w3-green">
-      <a href="img/M2B.jpg" target="_blank"><img src="img/M2B.jpg" style="width:100%"></a>
-		</div>
-		<div class="w3-col s9 w3-blue">
-			<h4>
-				<ul>
-					<li>Entrer le nombre voulu de facettes dans la premi&egrave;re zone de saisie</li>
-					<li>Cocher les options &agrave; l'identique de la capture de gauche</li>
-					<li>Valider en cliquant sur le bouton "Apply"</li>
-					<li>Sauver (File/Export Mesh as) le mod&egrave;le r&eacute;duit</li>
-				</ul>
-				<p>Il est possible de r&eacute;duire seulement une partie du mod&egrave;le, par exemple afin d'avoir une t&ecirc;te plus d&eacute;taill&eacute;e que le reste du corps. Il faut alors avoir s&eacute;lectionn&eacute; la partie voulue et cocher la derni&egrave;re option, "Simplify only selected faces".</p>
-			</h4>
-		</div>
-	</div>
-
-  <h3 id="M3"><br/>Dimensions du mod&egrave;le 3d</h3>
-  <h4>Avec <a href="http://www.meshlab.net/" target="_blank">Meshlab</a></h4>
-  <div class="w3-container">
-	<div class="w3-half">
-      <a href="img/M3A.jpg" target="_blank"><img src="img/M3A.jpg" style="width:100%"></a>
-	</div>
-	<div class="w3-half w3-blue">
-      <h4><ul>
-				<li>Importer le mod&egrave;le : <span class="w3-tag w3-round w3-white w3-center">(CTRL + I)</span> menu "File", "Import mesh"</li>
-	      <li>En choisissant dans le menu "Render", l'option "Show Quoted Bow", l'on voit des informations permettant de calculer les dimensions du mod&egrave;le en mm, ici par exemple, la hauteur est d'un peu moins de 40 mm.</li>
-        <li>Il est possible de changer ces dimensions dans Meshlab, il faudra alors &agrave; nouveau sauver le mod&egrave;le.</li>
-      </ul></h4>
-	</div>
-  </div>
-
-	<h4>Avec <b>jscad</b> : script <a href="https://openjscad.org/#https://gilboonet.github.io/scripts/dimensions.jscad" target="_blank">dimensions.jscad</a> (affiche le mod&egrave;le et ses dimensions)</h4>
-  <div class="w3-container">
-		<div class="w3-half">
-      <a href="img/M3B.jpg" target="_blank"><img src="img/M3B.jpg" style="width:100%"></a>
-		</div>
-		<div class="w3-half w3-blue">
-      <h4><ul>
-			  <li>Pour changer l'&eacute;chelle (scale), &eacute;diter la zone en bleu dans la capture, et calculer le rendu (
- <span class="w3-tag w3-round w3-white w3-center">MAJ + ENTREE</span>)</li>
-				<li>Pour changer le mod&egrave;le, il faut pr&eacute;alablement l'avoir import&eacute; dans <b>jscad</b> (glisser-d&eacute;placer dans la zone en bas &agrave; gauche),</li>
-				<li>Copier le code qui est dans la zone de texte (<span class="w3-tag w3-round w3-white w3-center">CTRL + A</span>) puis (<span class="w3-tag w3-round w3-white w3-center">CTRL + C</span>)</li>
-				<li>Ouvrir le script <a href="https://openjscad.org/#https://gilboonet.github.io/scripts/dimensions.jscad" target="_blank">dimensions.jscad</a>, supprimer ce qu'il y a apr&egrave;s "// volume", coller (<span class="w3-tag w3-round w3-white w3-center">CTRL + V</span>),</li>
-				<li>Remplacer dans ce qui a &eacute;t&eacute; coll&eacute;, "main" par le nom de votre choix,</li>
-				<li>Adapter la ligne 5 du script en y mettant le nouveau nom &agrave; la place d' "ours_350",</li>
-				<li>Et enfin calculer le rendu (<span class="w3-tag w3-round w3-white w3-center">MAJ + ENTREE</span>).</li>
-      </ul></h4>
-	</div>		
-  </div> 
-
-	<h4>Avec <b>jscad</b> : script <a href="https://openjscad.org/#https://gilboonet.github.io/scripts/dimensionsP.jscad" target="_blank">dimensionsP.jscad</a> (idem pr&eacute;c&eacute;dent avec param&egrave;tre pour l'&eacute;chelle)</h4>
-  <div class="w3-container">
-		<div class="w3-half">
-      <a href="img/M3C.jpg" target="_blank"><img src="img/M3C.jpg" style="width:100%"></a>
-		</div>
-		<div class="w3-half w3-blue">
-      <h4><ul>
-			  <li>Pour changer l'&eacute;chelle il suffit d'&eacute;diter le param&egrave;tre et de cliquer sur <span class="w3-tag w3-round w3-white w3-center">UPDATE</span>.</li>
-      </ul></h4>
-	</div>		
-  </div> 
-
-  <h3  id="M4"><br/>Calcul de statue en tranches sur un axe</h3>
-	<h4>Avec <b>jscad</b> : script <a href="https://openjscad.org/#https://gilboonet.github.io/scripts/tranches01.jscad" target="_blank">tranches01.jscad</a> Charge un volume &agrave; une echelle, le tourne et g&eacute;nère les tranches</h4>
-  <div class="w3-container">
-		<div class="w3-half">
-      <a href="img/M4A.jpg" target="_blank"><img src="img/M4A.jpg" style="width:100%"></a>
-		</div>
-		<div class="w3-half w3-blue">
-      <h4><ul>
-			  <li>Pour modifier le volume, procéder comme pour la méthode "Dimensions..."</li>
-			  <li>Entrer une &eacute;chelle et des angles de rotation si besoin, choisir le mode "Mod&Agrave;le" puis cliquer sur <span class="w3-tag w3-round w3-white w3-center">UPDATE</span>.</li>
-			  <li>Entrer une &eacute;paisseur de carton si elle est diff&eacute;rente de 3mm</li>
-			  <li>Choisir le mode "Tranches 3d" puis cliquer sur <span class="w3-tag w3-round w3-white w3-center">UPDATE</span>.</li>
-			  <li>Si les tranches vous conviennent, choisir le mode "Tranches 2d" puis cliquer sur <span class="w3-tag w3-round w3-white w3-center">UPDATE</span>.</li>
-			  <li>Pour sauver le gabarit, choisir <span class="w3-tag w3-round w3-white w3-center">SVG</span> puis cliquer sur <span class="w3-tag w3-round w3-white w3-center">Generate SVG</span>.</li>
-      </ul></h4>
-	</div>		
-  </div> 
-
-  <div class="w3-container">
-		<div class="w3-half">
-      <a href="img/M4B.jpg" target="_blank"><img src="img/M4B.jpg" style="width:100%"></a>
-		</div>
-		<div class="w3-half w3-blue">
-      <h4>Le gabarit export&eacute; doit &ecirc;tre l&eacute;g&egrave;rement &eacute;dit&eacute; pour &ecirc;tre comme celui-ci
-      <ul>
-			  <li>il faut enlever le fond et choisir un contour,</li>
-			  <li>il faut ajouter les numéros</li>
-			  <li>enfin il faut préparer les fichiers de découpe ou répartir en pages pour imprimer</li>
-      </ul></h4>
-	</div>		
-  </div> 
-
-
-	<h3><br/>Calcul de statue voxelis&eacute;e</h3>
-    <p></p>
-
-	<h3><br/>Calcul de statue en tranches sur deux axes</h3>
-    <p></p>
-
-	<h3><br/>Calcul de statue en facettes</h3>
-    <p></p>
-
-  </div>
-
-  <br>
-  <h2>Articles</h2>
-  <p></p>
-
-  <br/>
-  <h2>Divers</h2>
-  <p></p>
-
-  </div>
-
-
-<div class="w3-container w3-cyan">
-<p>Fait &agrave; la main en <a href="https://www.w3schools.com/html/html5_intro.asp">HTML5</a>, <a href="https://www.w3schools.com/js/default.asp" target="_blank">Javascript</a> et <a href="https://www.w3schools.com/w3css/default.asp">WEB.CSS</a>. Derni&egrave;re mise &agrave; jour le 17 janvier 2020. <a href="mailto:gilbertfd@gmail.com?subject=Depuis gilboonet.github.io">Me contacter</a></p>
-</div>
-</body>
+<!-- footer (version, copyright) -->
+    <div id="footer">
+    </div>
+  </body>
 </html>
