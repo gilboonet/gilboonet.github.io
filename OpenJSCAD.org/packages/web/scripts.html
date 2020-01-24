@@ -6,14 +6,14 @@
    in conjunction with other libraries by various authors (see the individual files)
 
 Purpose:
-  This application provides an example of how to show JSCAD designs with minimal HTML and CSS.
+Choose a .jscad then uses as volume() into another .jscad
 -->
 <head>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
   <title>gilboo.net charge volume et script jscad</title>
   <link rel="stylesheet" href="min_scripts.css" type="text/css">
   <script src="dist/min_scripts.js"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -57,6 +57,8 @@ Purpose:
 <div style="padding:1em">
 	<button id="calc_dimensions">Calculer dimensions</button>
 	<button id="calc_tranches01">Calc. tranches / 1 axe</button>
+	<hr/>
+	<button id="calc_pdf">Cr&eacute;er PDF</button>
 </div>
 </div>
 
@@ -211,41 +213,12 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
         
 
 		}
-/*
-    do{
-      do{
-        t2d = union(faitTranche(V, b1, z));
-        b2 = t2d.getBounds();
-        t2d = translate(b2[0].times(-1), t2d);
 
-        tmp = translate([co.x +d.x/2, co.y +d.y/2], 
-          difference(square({size:[d.x+3, d.y+3], center:true}),
-            square({size:[d.x, d.y], center:true})));
-        r.push(tmp);
-        
-        btmp = tmp.getBounds();
-        dtmp = translate([1,1], translate(b2[0].times(-1).plus(btmp[0]),t2d));
-        r.push(dtmp);
-
-				tp = [];
-				tp.push({x1:btmp[0].x.toFixed(2), y1:btmp[0].y.toFixed(2), x2:btmp[1].x.toFixed(2), y2:btmp[1].y.toFixed(2)});
-				
-				for (var np in dtmp.sides){
-					sp = dtmp.sides[np];
-					tp.push({x1:sp.vertex0.pos.x.toFixed(2), y1:sp.vertex0.pos.y.toFixed(2), x2:sp.vertex1.pos.x.toFixed(2), y2:sp.vertex1.pos.y.toFixed(2)});
-				}
-				data.push(tp);
-
-        z += params.ec;
-        co.x += d.x+4;
-        n++;
-      } while((co.x + d.x < bCadre[1].x)&&(n <= nbT));
-      co.x =1.5;
-      co.y = co.y + d.y +4;
-    }while(n <= nbT);
-*/
 		dexport=JSON.stringify(data);
-    console.log(dexport);
+		try{
+		  localStorage.setItem("tr1_data", dexport);
+		}catch(err){};
+    //console.log(dexport);
 }
 
 if(params.mode != 3){ // affiche les dimensions sauf en mode "tranches 2d"
