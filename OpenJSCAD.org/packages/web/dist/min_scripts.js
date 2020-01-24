@@ -47451,6 +47451,52 @@ var volume = "";
 function chargeFichier(){
 }
 
+function creePDF(event){
+	var donnees = localStorage.getItem('tr1_data');
+	if(donnees != ""){
+		faitPDF(donnees);
+	}
+}
+
+function faitPDF(texte){
+	var obj = JSON.parse(texte);
+  var doc = new jsPDF();
+  doc.setDrawColor(0, 0, 255);
+	doc.setLineWidth(0.1);
+
+	var n = 0;
+	
+	for(var i=0; i< obj.length; i++){
+		var o = obj[i];
+		
+		switch(o.t){
+			case 1: // cadre
+				doc.line(o.x1, o.y1, o.x1, o.y2);
+				doc.line(o.x1, o.y2, o.x2, o.y2);
+				doc.line(o.x2, o.y2, o.x2, o.y1);
+				doc.line(o.x2, o.y1, o.x1, o.y1);
+
+				// n° au milieu
+				n++;
+				var x = (o.x1 + o.x2)/2;
+				var y = (o.y1 + o.y2)/2;
+				doc.text(n.toString(), x, y, 'center');				
+				
+				break;
+			case 2: // ligne
+				doc.line(o.x1, o.y1, o.x2, o.y2);
+				break;
+			case 3: // texte
+
+				break;
+			case 4: // page
+				doc.addPage();
+		}
+	}
+	doc.save('tranches1axe.pdf');
+}
+
+
 function faitScript(script, nom){
 	script = script.replace(/\<\!\-\-/, "");
 	script = script.replace(/\!\-\-\>/, "");
@@ -47530,6 +47576,8 @@ function init() {
 
 	calc_tranches01.addEventListener("click", calcTr1, false);
 	calc_tranches01.disabled = true;
+
+	calc_pdf.addEventListener("click", creePDF, false);
 
   var viewer = document.getElementById('viewerContext');
   gProcessor = new Processor(viewer); 
