@@ -47494,6 +47494,7 @@ function faitPDF(texte){
 		}
 	}
 	doc.save('tranches1axe.pdf');
+	localStorage.removeItem('tr1_data');
 }
 
 
