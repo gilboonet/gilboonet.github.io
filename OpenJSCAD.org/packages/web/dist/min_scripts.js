@@ -47453,6 +47453,7 @@ function chargeFichier(){
 
 function creePDF(event){
 	var donnees = localStorage.getItem('tr1_data');
+console.log("creation pdf en cours...");
 	if(donnees != ""){
 		faitPDF(donnees);
 	}
