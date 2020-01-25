@@ -3,28 +3,31 @@
  */
 
 .jscad-container {
-  margin: 5px 15px 5px 5px; /* not inherited */
-  padding: 20px; /* not inherited */
+  margin: 0px 0px 0px 0px; /* not inherited */
+  padding: 0px; /* not inherited */
   color: Black;
   font-weight: bold;
   font-family: Helvetica, Arial, Sans;
-  border: thin solid black;
+  border: 0px none;
   min-width: 410px;
   min-height:310px;
 }
 
 #header {
+	display:float;
+	position:absolute;
+	top:0px;
   margin: 5px; /* not inherited */
 }
 
 #viewerContext {
-  margin: 5px; /* not inherited */
+  margin: 0px; /* not inherited */
   border: thin solid gray; /* not inherited */
   padding: 0px; /* not inherited */
 
   background: white;
   width: 100%;
-  height: 60vh;
+  height: 90vh;
  
   top: 0px;
   bottom: 0px;
@@ -42,6 +45,8 @@ canvas {
 }
 
 #parametersdiv {
+  position:absolute;
+  bottom:10vh;
   margin: 5px; /* not inherited */
   border: thin solid rgb(200,200,200);
   border-radius: 1em;     
@@ -102,7 +107,16 @@ canvas {
   margin: 5px; /* not inherited */
 }
 
+#titreVolume {
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
 #busy {
   vertical-align: middle;
+}
+
+#gdscripts {
+display:inline-block;
 }
 
