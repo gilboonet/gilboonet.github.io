@@ -47446,6 +47446,7 @@ var Processor = require('../jscad/processor');
 
 var gProcessor = null;
 
+//--- GD: DEBUT ajouts pour scripts.html --//
 var volume = "";
 
 function chargeFichier(){
@@ -47548,11 +47549,9 @@ function chargeVolumeURL(event){
 
     xhr.onload = function () {
       volume = this.responseText;
-      // console.log(source);
 
       if (design.match(/\.jscad$/i) || design.match(/\.js$/i)) {
         gProcessor.setStatus('Processing ' + design + " <img id=busy src='imgs/busy.gif'>");
-        //gProcessor.setJsCad(source, design);
         lanceScript(volume);
       }
     };
@@ -47561,7 +47560,7 @@ function chargeVolumeURL(event){
 }
 
 function leftFillNum(num, targetLength) {
-    return num.toString().padStart(targetLength, 0);
+  return num.toString().padStart(targetLength, 0);
 }
 
 function init() {
@@ -47570,9 +47569,16 @@ function init() {
 
 	fichier.addEventListener("change", chargeVolume, false);
 
-  
-  for(var i = 1; i <= 16; i++){
-		document.getElementById('v'+ leftFillNum(i, 2)).addEventListener("click", chargeVolumeURL, false);
+  const listeVolumes = ["bunny146", "chat234", "chat320", "chien358", "cubocta20",
+	"dodeca60",	"ecureuil300", "girafe464", "hippocampe400", "moai156", "moai156b",
+	"moai312", "panthere500", "tdy236", "teteLion358", "torseFemme400"
+];
+ 
+  for(var i = 0 ; i < listeVolumes.length; i++){
+		var o = document.createElement("option");
+		o.text = listeVolumes[i];
+		o.addEventListener("click", chargeVolumeURL, false);
+		selectVolume.add(o);
 	}
 	selectVolume.selectedIndex = 0;
 	selectScript.selectedIndex = 0;
@@ -47589,6 +47595,8 @@ function init() {
   var viewer = document.getElementById('viewerContext');
   gProcessor = new Processor(viewer); 
 }
+
+//--- GD: FIN ajouts pour scripts.html --//
 
 document.addEventListener('DOMContentLoaded', function (event) {
   init();
