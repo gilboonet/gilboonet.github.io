@@ -47569,9 +47569,34 @@ function init() {
 
 	fichier.addEventListener("change", chargeVolume, false);
 
-  const listeVolumes = ["bunny146", "chat234", "chat320", "chien358", "cubocta20",
-	"dodeca60",	"ecureuil300", "girafe464", "hippocampe400", "moai156", "moai156b",
-	"moai312", "panthere500", "tdy236", "teteLion358", "torseFemme400"
+  const listeVolumes = [
+  "bunny146",
+  "busteCheval120",
+  "busteEleph500",
+  "canardPlastiq274",
+  "chat234",
+  "chat320",
+  "chien358",
+  "cubocta20",
+	"dodeca60",
+	"dodecadef360",
+	"ecureuil300",
+	"fauconM300",
+	"fusee400",
+	"girafe464",
+	"gorille500",
+	"hexahedron104",
+	"hippocampe400",
+	"moai156",
+	"moai156b",
+	"moai312",
+	"oeuf220",
+	"panthere500",
+	"snoopy370",
+	"tdy236",
+	"teteLion358",
+	"torseFemme400",
+	"venus1000"
 ];
  
   for(var i = 0 ; i < listeVolumes.length; i++){
