@@ -15,6 +15,8 @@ Choose a .jscad then uses as volume() into another .jscad
   <script src="dist/min_scripts.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
 </head>
+<style>
+</style>
 
 <body>
 
@@ -35,31 +37,36 @@ Choose a .jscad then uses as volume() into another .jscad
     </div>
   </div>
   <div>
-<h3>S&eacute;lectionner le volume</h1>
-<input id="fichier" type="file" accept=".jscad" />
-<button id="v01">bunny146</button>
-<button id="v02">chat234</button>
-<button id="v03">chat320</button>
-<button id="v04">chien358</button>
-<button id="v05">cubocta20</button>
-<button id="v06">dodeca60</button>
-<button id="v07">ecureuil300</button>
-<button id="v08">girafe464</button>
-<button id="v09">hippocampe400</button>
-<button id="v10">moai156</button>
-<button id="v11">moai156b</button>
-<button id="v12">moai312</button>
-<button id="v13">panthere500</button>
-<button id="v14">tdy236</button>
-<button id="v15">teteLion358</button>
-<button id="v16">torseFemme400</button>
-<br/>
-<div style="padding:1em">
-	<button id="calc_dimensions">Calculer dimensions</button>
-	<button id="calc_tranches01">Calc. tranches / 1 axe</button>
-	<hr/>
+<!--h3>S&eacute;lectionner le volume</h3-->
+	<input id="fichier" type="file" accept=".jscad" />
+	<select id="selectVolume">
+		<option selected disabled>(choisir volume)</option>
+		<option id="v01">bunny146</option>
+		<option id="v02">chat234</option>
+		<option id="v03">chat320</option>
+		<option id="v04">chien358</option>
+		<option id="v05">cubocta20</option>
+		<option id="v06">dodeca60</option>
+		<option id="v07">ecureuil300</option>
+		<option id="v08">girafe464</option>
+		<option id="v09">hippocampe400</option>
+		<option id="v10">moai156</option>
+		<option id="v11">moai156b</option>
+		<option id="v12">moai312</option>
+		<option id="v13">panthere500</option>
+		<option id="v14">tdy236</option>
+		<option id="v15">teteLion358</option>
+		<option id="v16">torseFemme400</option>
+	</select>
+	<!--div style="padding:1em"-->
+	<select id="selectScript">
+		<option selected disabled>(choisir script)</option>
+		<option id="calc_dimensions">Calculer dimensions</option>
+		<option id="calc_tranches01">Calc. tranches / 1 axe</option>
+	</select>
+	<!--hr/-->
 	<button id="calc_pdf">Cr&eacute;er PDF</button>
-</div>
+	<!--/div-->
 </div>
 
 <textarea id="zc_tranches01" style="display:none;">
