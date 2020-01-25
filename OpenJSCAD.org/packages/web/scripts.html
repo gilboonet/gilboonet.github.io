@@ -23,7 +23,7 @@ Choose a .jscad then uses as volume() into another .jscad
 <!-- setup display of the errors as required by OpenJSCAD.js -->
   <div class="jscad-container">
     <div id="header">
-      <div id="errordiv">hello</div>
+      <div id="errordiv"></div>
     </div>
 
 <!-- setup display of the viewer, i.e. canvas -->
@@ -36,40 +36,22 @@ Choose a .jscad then uses as volume() into another .jscad
       <div id="statusdiv"></div>
     </div>
   </div>
-  <div>
-<!--h3>S&eacute;lectionner le volume</h3-->
-	<input id="fichier" type="file" accept=".jscad" />
-	<select id="selectVolume">
-		<option selected disabled>(choisir volume)</option>
-		<option id="v01">bunny146</option>
-		<option id="v02">chat234</option>
-		<option id="v03">chat320</option>
-		<option id="v04">chien358</option>
-		<option id="v05">cubocta20</option>
-		<option id="v06">dodeca60</option>
-		<option id="v07">ecureuil300</option>
-		<option id="v08">girafe464</option>
-		<option id="v09">hippocampe400</option>
-		<option id="v10">moai156</option>
-		<option id="v11">moai156b</option>
-		<option id="v12">moai312</option>
-		<option id="v13">panthere500</option>
-		<option id="v14">tdy236</option>
-		<option id="v15">teteLion358</option>
-		<option id="v16">torseFemme400</option>
-	</select>
-	<!--div style="padding:1em"-->
-	<select id="selectScript">
-		<option selected disabled>(choisir script)</option>
-		<option id="calc_dimensions">Calculer dimensions</option>
-		<option id="calc_tranches01">Calc. tranches / 1 axe</option>
-	</select>
-	<!--hr/-->
-	<button id="calc_pdf">Cr&eacute;er PDF</button>
-	<!--/div-->
-</div>
+  
+  <div id="gdscripts"><!-- GD: interface pour scripts.html -->
+    <span id="titreVolume">Volume:</span>
+	  <input id="fichier" type="file" accept=".jscad" />
+	  <select id="selectVolume">
+  		<option selected disabled>(choisir volume)</option>
+  	</select>
+  	<select id="selectScript">
+		  <option selected disabled>(choisir script)</option>
+		  <option id="calc_dimensions">Calculer dimensions</option>
+		  <option id="calc_tranches01">Calc. tranches / 1 axe</option>
+	  </select>
+	  <button id="calc_pdf">Cr&eacute;er PDF</button>
+  </div>
 
-<textarea id="zc_tranches01" style="display:none;">
+  <textarea id="zc_tranches01" style="display:none;">
 <!--
 // Affiche un volume en tranches selon les parametres choisis
 
@@ -287,9 +269,9 @@ function csgFromSegments (segments) {
   return union(output);
 }
 !-->
-</textarea>
+  </textarea>
 
-<textarea id="zc_dimensions" style="display:none;">
+  <textarea id="zc_dimensions" style="display:none;">
 <!--
 // Affiche un volume et ses dimensions (avec parametre echelle)
 
@@ -340,7 +322,7 @@ function csgFromSegments (segments) {
   return union(output);
 }
 !-->
-</textarea>
+  </textarea>
 </body>
 
 </html>
