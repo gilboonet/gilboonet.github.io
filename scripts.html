@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<!--
+
+== OpenJSCAD.org, Copyright (c) 2016-2017, Licensed under MIT License ==
+   in conjunction with other libraries by various authors (see the individual files)
+
+Purpose:
+Choose a .jscad then uses as volume() into another .jscad
+-->
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+  <title>gilboo.net charge volume et script jscad</title>
+  <link rel="stylesheet" href="min_scripts.css" type="text/css">
+  <script src="dist/min_scripts.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
+</head>
+<style>
+</style>
+
+<body>
+
+<!-- setup display of the errors as required by OpenJSCAD.js -->
+  <div class="jscad-container">
+    <div id="header">
+      <div id="errordiv"></div>
+    </div>
+
+<!-- setup display of the viewer, i.e. canvas -->
+    <!--div oncontextmenu="return false;" id="viewerContext" design-url="carton.num/tranches01.jscad"></div-->
+    <div oncontextmenu="return false;" id="viewerContext" ></div>
+
+<!-- setup display of the status, as required by OpenJSCAD.js -->
+<!-- set display: block to display this -->
+    <div id="tail" style="display: block;">
+      <div id="statusdiv"></div>
+    </div>
+  </div>
+  
+  <div id="gdscripts"><!-- GD: interface pour scripts.html -->
+    <span id="titreVolume">Volume:</span>
+	  <input id="fichier" type="file" accept=".jscad" />
+	  <select id="selectVolume">
+  		<option selected disabled>(choisir volume)</option>
+  	</select>
+  	<select id="selectScript">
+		  <option selected disabled>(choisir script)</option>
+		  <option id="calc_dimensions">Calculer dimensions</option>
+		  <option id="calc_tranches01">Calc. tranches / 1 axe</option>
+	  </select>
+	  <button id="calc_pdf">Cr&eacute;er PDF</button>
+  </div>
+
+  <textarea id="zc_tranches01" style="display:none;">
+<!--
+// Affiche un volume en tranches selon les parametres choisis
+
+// parametres
+function getParameterDefinitions() {
+    return [
+        { name: 'g1', type: 'group', caption: 'Modele'},
+        { name: 'echelle', type: 'float', initial: 1, caption: 'Echelle?' },
+        { name: 'rX',      type: 'int',   initial: 0, caption: 'Rotation X:' },
+        { name: 'rY',      type: 'int',   initial: 0, caption: 'Rotation Y:' },
+        { name: 'rZ',      type: 'int',   initial: 0, caption: 'Rotation Z:' },
+
+        { name: 'g2', 		 type: 'group', caption: 'Tranches'},
+        { name: 'ec',      type: 'int',   initial: 3, caption: 'Ep. carton (mm)?' },
+        { name: 'dk',      type: 'float', initial: 1.5, caption: 'Decalage  (mm)?' },
+        { name: 'lpage',   type: 'float', initial: 210, caption: 'Larg. page (mm)?' },
+        { name: 'hpage',   type: 'float', initial: 297, caption: 'Haut. page (mm)?' },
+
+        { name: 'mode',    type: 'choice',initial: 1, caption: 'Mode:', values:[1,2,3], captions:['Modele','Tranches 3d','Tranches 2d']}
+        //{ name: 'mode',    type: 'choice',initial: 3, caption: 'Mode:', values:[3], captions:['Tranches 2d']}
+    ];
+}
+
+function main(params) {
+const cols = ["orange", "tan"];// couleurs des tranches
+var V, r, b, d, de, b1, z, cn, nbT, t2d, t2dd, b2;
+
+// Recupere le volume
+V = scale(params.echelle, rotate([params.rX, params.rY, params.rZ], volume()));
+r = []; // pour stocker le rendu voulu
+
+// Calcule ses dimensions :
+b = V.getBounds(); // pts extremes du volume (plus petit et plus grand)
+V = translate([0, 0, -b[0].z], V); // realigne au dessus de Z=0
+b = V.getBounds();
+
+d = b[1].minus(b[0]); // dimensions = difference entre ces deux points
+de = [d.x, d.y, d.z].map(Math.round); // arrondi pour l'affichage
+
+if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies) 
+  r.push(color("crimson", V));
+
+}else if (params.mode == 2){ // Affiche les tranches en 3d
+  b1 = translate(b[0], cube({size:[d.x, d.y, params.ec], center:false}));
+  z = b[0].z + params.ec / 2;
+  cn =0;
+  nbT = 0;
+  do{
+    t2d = union(faitTranche(V, b1, z));
+    t3dd = t2d.extrude({offset:[0, 0,params.ec]});
+    r.push(color(cols[cn], translate([0, 0, z], t3dd)));
+    z += params.ec;
+    cn = 1 - cn;
+    nbT++;
+  }while(z < d.z);
+  r.push(texte("nb tranches:"+ nbT, 0.5).translate([b[1].x,-40,0]));
+} else { // affiche les tranches en 2d (raf)
+    // affichage cadre page
+    cadre = difference(
+      square({size:[params.lpage + 8, params.hpage + 8], center:false}),
+      translate([1,1], square({size:[params.lpage + 6, params.hpage + 6], center:false}))
+    );
+    bCadre = cadre.getBounds();
+
+		cadreT = difference(square({size:[d.x+4, d.y+4], center:false}),
+			translate([1,1], square({size:[d.x+2, d.y+2], center:false})));
+		//r.push(cadre);
+
+    b1 = translate(b[0], cube({size:[d.x, d.y, params.ec], center:false}));
+    z = b[0].z + params.dk;
+    co = {x:1.5, y:1.5};
+    
+    nbT = Math.ceil(d.z / params.ec); 
+
+	  var data = [], tp;
+
+	  maxTL = Math.floor(params.lpage / (d.x+5));
+	  console.log("max tranches/ligne : ", maxTL);
+    maxLP = Math.floor(params.hpage / (d.y+5));
+    console.log("max lignes/page : ", maxLP);
+		console.log("Nb Pages : ", Math.ceil(nbT/ (maxTL * maxLP)));
+    n =1 ;
+
+    // data : .t = cadre:1 | ligne:2 | texte:3 | page:4
+    
+    nPage = 0;
+    nLigneDsPage = 0;
+    nTrancheDsLigne = 0;
+    nTranche = 0;
+		afficherPage = true;
+		dkPage = 0;
+		while (nTranche < nbT){
+				if (afficherPage){
+					r.push(translate([dkPage, 0], cadre));
+					afficherPage = false;
+					dx = dkPage + 4;
+					dy = 4;
+					if (nPage > 0){
+						data.push({t:4});
+					}					
+				}
+
+        tmp = faitTranche(V, b1, z);
+        if (tmp.length >0){
+          t2d = union(tmp);
+          b2 = t2d.getBounds();
+          t2d = translate(b2[0].times(-1), t2d);
+        }
+
+        r.push(translate([dx, dy], t2d));
+        r.push(translate([dx-2, dy-2], cadreT));
+
+				x1 = 4 + (d.x + 4) * nTrancheDsLigne;
+				y1 = 4 + (d.y + 4) * nLigneDsPage; 
+        data.push({t:1,
+					x1:x1, y1:y1,
+					x2:x1 + d.x + 4, y2:y1 + d.y + 4
+				});
+
+ 				for (var np in t2d.sides){
+					sp = t2d.sides[np];
+					data.push({t:2,
+						x1:x1 +1 + sp.vertex0.pos.x, y1:y1 +1 + sp.vertex0.pos.y,
+						x2:x1 +1 + sp.vertex1.pos.x, y2:y1 +1 + sp.vertex1.pos.y
+					});
+				}
+                
+        z += params.ec;
+        nTranche++;
+        
+        if (nTrancheDsLigne < maxTL-1){
+					nTrancheDsLigne++;
+					dx += d.x + 4;
+				}else{
+					nTrancheDsLigne = 0;
+					if (nLigneDsPage < maxLP-1){
+					  nLigneDsPage++;
+					  dy += d.y + 4;
+					  dx = dkPage + 4;
+					 }else{
+						 nLigneDsPage = 0;
+						 nTrancheDsLigne = 0;
+						 nPage++;
+						 dkPage += params.lpage + 18;
+						 afficherPage = true;
+					 }
+				}
+        
+
+		}
+
+		dexport=JSON.stringify(data);
+//		try{
+		  localStorage.setItem("tr1_data", dexport);
+//		}catch(err){};
+    //console.log(dexport);
+}
+
+if(params.mode != 3){ // affiche les dimensions sauf en mode "tranches 2d"
+  r.push(translate([b[1].x,20,0], texte("larg.:"+ de[0].toString()+" mm", 0.5)));
+  r.push(translate([b[1].x,0,0], texte("long.:"+ de[1].toString()+" mm", 0.5)));
+  r.push(translate([b[1].x,-20,0], texte("haut.:"+ de[2].toString()+" mm", 0.5)));
+}
+
+return r;
+}
+
+function faitTranche(volume, tranche, h){
+  return vol2surf(translate([0, 0, -h],
+    volume.intersect(tranche.translate([0, 0, h]))));
+}
+
+// retourne la surface formee par le volume avec l'axe z (à 0)
+function vol2surf(vol, orig = 0){
+var n, pts, ok, P, i, pt;
+let S = [];
+
+for(n = 0; n < vol.polygons.length; n++){
+  pts = [];
+  P = vol.polygons[n];
+  ok = true;
+  for(i=0; (i < P.vertices.length) && ok; i++){
+    pt = P.vertices[i].pos;
+    if(Math.abs(pt.z - orig)< 0.05){
+      pts.push([pt.x, pt.y]);
+    } else {
+      ok = false;
+    }
+  }
+  if (ok){
+    S.push(polygon(pts));
+  }
+}
+
+return S;
+}
+
+// Affiche une chaine de caracteres
+function texte(ch, echelle=1){
+  let text = vectorText(ch);
+  var r = csgFromSegments(text);
+  if (echelle != 1){
+    r = scale(echelle, r);
+  }
+  
+  return r;
+}
+
+// transforme des segments en volume
+function csgFromSegments (segments) {
+  let output = [];
+  segments.forEach(segment => output.push(
+    rectangular_extrude(segment, { w:2, h:1 })
+  ));
+  return union(output);
+}
+!-->
+  </textarea>
+
+  <textarea id="zc_dimensions" style="display:none;">
+<!--
+// Affiche un volume et ses dimensions (avec parametre echelle)
+
+// parametres
+function getParameterDefinitions() {
+    return [
+        { name: 'echelle', type: 'float', initial: 1, caption: 'Echelle?' }
+    ];
+}
+
+function main(params) {
+// Récupère le volume
+var V = volume().scale(params.echelle);
+
+// Calcule ses dimensions :
+var b = V.getBounds(); // pts extrêmes du volume (plus petit et plus grand)
+var d = b[1].minus(b[0]); // dimensions = différence entre ces deux points
+var de = [d.x, d.y, d.z].map(Math.round);
+
+// Affiche les dimensions
+var r = []; 
+
+r.push(color("red", V)); // volume en rouge
+
+// boite inscrite en cyan transparent (r:0, v:1, b:1, t:0.2)
+r.push(color([0,1,1,0.2], cube([d.x, d.y, d.z]).translate(b[0])));
+
+// dimensions
+r.push(texte("larg. :"+ de[0].toString()+" mm").scale(0.5).translate([b[1].x,20,0]));
+r.push(texte("long. :"+ de[1].toString()+" mm").scale(0.5).translate([b[1].x,0,0]));
+r.push(texte("haut. :"+ de[2].toString()+" mm").scale(0.5).translate([b[1].x,-20,0]));
+
+return r;
+}
+
+// Affiche une chaine de caractères
+function texte(ch){
+  let text = vectorText(ch);
+  return csgFromSegments(text);
+}
+
+// transforme des segments en volume
+function csgFromSegments (segments) {
+  let output = [];
+  segments.forEach(segment => output.push(
+    rectangular_extrude(segment, { w:2, h:1 })
+  ));
+  return union(output);
+}
+!-->
+  </textarea>
+</body>
+
+</html>
