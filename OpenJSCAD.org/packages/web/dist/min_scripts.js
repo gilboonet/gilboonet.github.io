@@ -47618,7 +47618,9 @@ function init() {
 	calc_pdf.disabled = true;
 
   var viewer = document.getElementById('viewerContext');
-  gProcessor = new Processor(viewer); 
+  gProcessor = new Processor(viewer);
+//console.log(gProcessor);
+  gProcessor.viewer.options.plate.draw = false;
 }
 
 //--- GD: FIN ajouts pour scripts.html --//
