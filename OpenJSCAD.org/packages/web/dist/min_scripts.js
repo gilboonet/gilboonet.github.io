@@ -47456,6 +47456,7 @@ function creePDF(event){
 	if(donnees != ""){
 		faitPDF(donnees);
 	}
+	event.target.disabled = true;
 }
 
 function faitPDF(texte){
@@ -47507,10 +47508,12 @@ function faitScript(script, nom){
 
 function calcTr1(event) {
 	faitScript(zc_tranches01.value, "tranches01.jscad");
+	calc_pdf.disabled = false;
 }
 
 function calcDim(event) {
 	faitScript(zc_dimensions.value, "differenceP.jscad");
+	selectScript.selectedIndex = 0;
 }
 
 function permetCalculs(){
@@ -47571,6 +47574,8 @@ function init() {
   for(var i = 1; i <= 16; i++){
 		document.getElementById('v'+ leftFillNum(i, 2)).addEventListener("click", chargeVolumeURL, false);
 	}
+	selectVolume.selectedIndex = 0;
+	selectScript.selectedIndex = 0;
 	
 	calc_dimensions.addEventListener("click", calcDim, false);
 	calc_dimensions.disabled = true;
@@ -47579,6 +47584,7 @@ function init() {
 	calc_tranches01.disabled = true;
 
 	calc_pdf.addEventListener("click", creePDF, false);
+	calc_pdf.disabled = true;
 
   var viewer = document.getElementById('viewerContext');
   gProcessor = new Processor(viewer); 
