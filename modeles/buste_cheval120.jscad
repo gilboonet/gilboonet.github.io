@@ -1,6 +1,6 @@
 //
   // producer: OpenJSCAD.org Compatibility1.9.0 STL Binary Importer
-  // date: Sun Jan 26 2020 10:36:21 GMT+0100 (heure normale d’Europe centrale)
+  // date: Sun Jan 26 2020 10:36:21 GMT+0100 (heure normale d'Europe centrale)
   // source: tmp.stl
   //
   function main() { return union(
