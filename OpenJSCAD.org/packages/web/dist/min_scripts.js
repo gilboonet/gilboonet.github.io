@@ -47571,8 +47571,8 @@ function init() {
 
   const listeVolumes = [
   "bunny146",
-  "busteCheval120",
-  "busteEleph500",
+  "buste_cheval120",
+  "buste_eleph500",
   "canardPlastiq274",
   "chat234",
   "chat320",
@@ -47588,7 +47588,6 @@ function init() {
 	"hexahedron104",
 	"hippocampe400",
 	"moai156",
-	"moai156b",
 	"moai312",
 	"oeuf220",
 	"panthere500",
