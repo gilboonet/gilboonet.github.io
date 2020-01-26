@@ -47454,15 +47454,21 @@ function chargeFichier(){
 
 function creePDF(event){
 	var donnees = localStorage.getItem('tr1_data');
+	var d_x = localStorage.getItem('tr1_dx');
+	var d_y = localStorage.getItem('tr1_dy');
+
 	if(donnees != ""){
-		faitPDF(donnees);
+		faitPDF(donnees, d_x, d_y);
 	}
-	event.target.disabled = true;
+	//event.target.disabled = true;
 }
 
-function faitPDF(texte){
+function faitPDF(texte, px, py){
 	var obj = JSON.parse(texte);
-  var doc = new jsPDF();
+	var ori = (px < py) ? 'p' : 'l';
+  var doc = new jsPDF(ori, 'mm', px +',' + py );
+	//alert(x+ ' ' + y);
+
   doc.setDrawColor(0, 0, 255);
 	doc.setLineWidth(0.1);
 
@@ -47497,6 +47503,8 @@ function faitPDF(texte){
 	}
 	doc.save('tranches1axe.pdf');
 	localStorage.removeItem('tr1_data');
+	localStorage.removeItem('tr1_dx');
+	localStorage.removeItem('tr1_dy');
 }
 
 
@@ -47524,14 +47532,22 @@ function permetCalculs(){
 
 function chargeVolume(event) {
 	var fichier = event.target.files[0];
+	var ext = fichier.name.split('.')[1].toUpperCase();
+	if (ext == 'JSCAD'){
+    var fnChargement = function () { volume = this.result; lanceScript(volume); };
+  } else {
+		var fnChargement = function () {
+			  //alert( "Format STL non gere!");
+			volume = parseAsciiSTL(this.result, fichier);
+//			console.log(volume);
+			lanceScript(volume);
+		}
+	}
+
 	const lecteur = new FileReader();
+ 	lecteur.addEventListener("load", fnChargement, false);
 
-	lecteur.addEventListener("load", function () {
-	  volume = this.result;
-	  lanceScript(volume);
-   }, false);
-
-   lecteur.readAsText(fichier);
+  lecteur.readAsText(fichier);
 }
 
 function lanceScript(source){
@@ -47558,6 +47574,307 @@ function chargeVolumeURL(event){
     xhr.send();
   }  
 }
+
+////****
+// src/vector.js
+	// Provides a simple 3D vector class. Vector operations can be done using member
+	// functions, which return new vectors, or static functions, which reuse
+	// existing vectors to avoid generating garbage.
+
+
+	function Vector(x, y, z) {
+		this.x = x || 0;
+		this.y = y || 0;
+		this.z = z || 0;
+	}
+
+	// ### Instance Methods
+	// The methods `add()`, `subtract()`, `multiply()`, and `divide()` can all
+	// take either a vector or a number as an argument.
+	Vector.prototype = {
+		negative: function() {
+			return new Vector(-this.x, -this.y, -this.z);
+		},
+		add: function(v) {
+			if(v instanceof Vector) return new Vector(this.x + v.x, this.y + v.y, this.z + v.z);
+			else return new Vector(this.x + v, this.y + v, this.z + v);
+		},
+		subtract: function(v) {
+			if(v instanceof Vector) return new Vector(this.x - v.x, this.y - v.y, this.z - v.z);
+			else return new Vector(this.x - v, this.y - v, this.z - v);
+		},
+		multiply: function(v) {
+			if(v instanceof Vector) return new Vector(this.x * v.x, this.y * v.y, this.z * v.z);
+			else return new Vector(this.x * v, this.y * v, this.z * v);
+		},
+		divide: function(v) {
+			if(v instanceof Vector) return new Vector(this.x / v.x, this.y / v.y, this.z / v.z);
+			else return new Vector(this.x / v, this.y / v, this.z / v);
+		},
+		equals: function(v) {
+			return this.x == v.x && this.y == v.y && this.z == v.z;
+		},
+		dot: function(v) {
+			return this.x * v.x + this.y * v.y + this.z * v.z;
+		},
+		cross: function(v) {
+			return new Vector(
+			this.y * v.z - this.z * v.y, this.z * v.x - this.x * v.z, this.x * v.y - this.y * v.x);
+		},
+		length: function() {
+			return Math.sqrt(this.dot(this));
+		},
+		unit: function() {
+			return this.divide(this.length());
+		},
+		min: function() {
+			return Math.min(Math.min(this.x, this.y), this.z);
+		},
+		max: function() {
+			return Math.max(Math.max(this.x, this.y), this.z);
+		},
+		toAngles: function() {
+			return {
+				theta: Math.atan2(this.z, this.x),
+				phi: Math.asin(this.y / this.length())
+			};
+		},
+		toArray: function(n) {
+			return [this.x, this.y, this.z].slice(0, n || 3);
+		},
+		clone: function() {
+			return new Vector(this.x, this.y, this.z);
+		},
+		init: function(x, y, z) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			return this;
+		}
+	};
+
+	// ### Static Methods
+	// `Vector.randomDirection()` returns a vector with a length of 1 and a
+	// statistically uniform direction. `Vector.lerp()` performs linear
+	// interpolation between two vectors.
+	Vector.negative = function(a, b) {
+		b.x = -a.x;
+		b.y = -a.y;
+		b.z = -a.z;
+		return b;
+	};
+	Vector.add = function(a, b, c) {
+		if(b instanceof Vector) {
+			c.x = a.x + b.x;
+			c.y = a.y + b.y;
+			c.z = a.z + b.z;
+		} else {
+			c.x = a.x + b;
+			c.y = a.y + b;
+			c.z = a.z + b;
+		}
+		return c;
+	};
+	Vector.subtract = function(a, b, c) {
+		if(b instanceof Vector) {
+			c.x = a.x - b.x;
+			c.y = a.y - b.y;
+			c.z = a.z - b.z;
+		} else {
+			c.x = a.x - b;
+			c.y = a.y - b;
+			c.z = a.z - b;
+		}
+		return c;
+	};
+	Vector.multiply = function(a, b, c) {
+		if(b instanceof Vector) {
+			c.x = a.x * b.x;
+			c.y = a.y * b.y;
+			c.z = a.z * b.z;
+		} else {
+			c.x = a.x * b;
+			c.y = a.y * b;
+			c.z = a.z * b;
+		}
+		return c;
+	};
+	Vector.divide = function(a, b, c) {
+		if(b instanceof Vector) {
+			c.x = a.x / b.x;
+			c.y = a.y / b.y;
+			c.z = a.z / b.z;
+		} else {
+			c.x = a.x / b;
+			c.y = a.y / b;
+			c.z = a.z / b;
+		}
+		return c;
+	};
+	Vector.cross = function(a, b, c) {
+		c.x = a.y * b.z - a.z * b.y;
+		c.y = a.z * b.x - a.x * b.z;
+		c.z = a.x * b.y - a.y * b.x;
+		return c;
+	};
+	Vector.unit = function(a, b) {
+		var length = a.length();
+		b.x = a.x / length;
+		b.y = a.y / length;
+		b.z = a.z / length;
+		return b;
+	};
+	Vector.fromAngles = function(theta, phi) {
+		return new Vector(Math.cos(theta) * Math.cos(phi), Math.sin(phi), Math.sin(theta) * Math.cos(phi));
+	};
+	Vector.randomDirection = function() {
+		return Vector.fromAngles(Math.random() * Math.PI * 2, Math.asin(Math.random() * 2 - 1));
+	};
+	Vector.min = function(a, b) {
+		return new Vector(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z));
+	};
+	Vector.max = function(a, b) {
+		return new Vector(Math.max(a.x, b.x), Math.max(a.y, b.y), Math.max(a.z, b.z));
+	};
+	Vector.lerp = function(a, b, fraction) {
+		return b.subtract(a).multiply(fraction).add(a);
+	};
+	Vector.fromArray = function(a) {
+		return new Vector(a[0], a[1], a[2]);
+	};
+
+///////////
+
+function parseAsciiSTL(stl,fn,fnName) {
+   var src = "";
+   var n = 0;
+   var converted = 0;
+   var o, match;
+     
+   src += "// producer: OpenJSCAD Compatibility ("+version+") STL ASCII Importer\n";
+   src += "// date: "+(new Date())+"\n";
+   src += "// source: "+fn+"\n";
+   src += "\n";
+   src += "function "+(fnName === undefined ? "main":fnName)+"() { return union(\n" 
+   //src += "function main() { return union(\n"; 
+    // -- Find all models
+    var objects = stl.split('endsolid');
+    src += "// objects: "+(objects.length-1)+"\n";
+    
+    for (o = 1; o < objects.length; o++) {
+        // -- Translation: a non-greedy regex for facet {...} endloop pattern 
+        var patt = /\bfacet[\s\S]*?endloop/mgi;
+        var vertices = [];
+        var triangles = [];
+        var normals = [];
+        var vertexIndex = 0;
+        var err = 0;
+
+        
+        match = stl.match(patt);
+        if (match == null) continue;
+        for (var i = 0; i < match.length; i++) {
+            //if(converted%100==0) status('stl to jscad: converted '+converted+' out of '+match.length+ ' facets');
+            // -- 1 normal with 3 numbers, 3 different vertex objects each with 3 numbers:
+            //var vpatt = /\bfacet\s+normal\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s*outer\s+loop\s+vertex\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s*vertex\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s*vertex\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)\s+(-?\d+\.?\d*)/mgi;
+                                         // (-?\d+\.?\d*) -1.21223
+                                         // (-?\d+\.?\d*[Ee]?[-+]?\d*)
+            var vpatt = /\bfacet\s+normal\s+(\S+)\s+(\S+)\s+(\S+)\s+outer\s+loop\s+vertex\s+(\S+)\s+(\S+)\s+(\S+)\s+vertex\s+(\S+)\s+(\S+)\s+(\S+)\s+vertex\s+(\S+)\s+(\S+)\s+(\S+)\s*/mgi;
+            var v = vpatt.exec(match[i]);
+            if (v == null) continue;
+            if (v.length != 13) {
+                echo("Failed to parse " + match[i]);
+                break;
+            }
+            var skip = 0;
+            for(var k=0; k<v.length; k++) {
+               if(v[k]=='NaN') {
+                  echo("bad normal or triangle vertice #"+converted+" "+k+": '"+v[k]+"', skipped");
+                  skip++;
+               }
+            }
+            err += skip;
+            if(skip) {
+               continue;
+            }
+            if(0&&skip) {
+               var j = 1+3;
+               var v1 = []; v1.push(parseFloat(v[j++])); v1.push(parseFloat(v[j++])); v1.push(parseFloat(v[j++]));
+               var v2 = []; v2.push(parseFloat(v[j++])); v2.push(parseFloat(v[j++])); v2.push(parseFloat(v[j++]));
+               var v3 = []; v3.push(parseFloat(v[j++])); v3.push(parseFloat(v[j++])); v3.push(parseFloat(v[j++]));
+               echo("recalculate norm",v1,v2,v3);
+               var w1 = new Vector(v1);
+               var w2 = new Vector(v2);
+               var w3 = new Vector(v3);
+               var _u = w1.subtract(w3);
+               var _v = w1.subtract(w2);
+               var norm = _u.cross(_v).unit();
+               j = 1;
+               v[j++] = norm._x;
+               v[j++] = norm._y;
+               v[j++] = norm._z;
+               skip = false;
+            }
+            var j = 1;
+            var no = []; no.push(parseFloat(v[j++])); no.push(parseFloat(v[j++])); no.push(parseFloat(v[j++]));
+            var v1 = []; v1.push(parseFloat(v[j++])); v1.push(parseFloat(v[j++])); v1.push(parseFloat(v[j++]));
+            var v2 = []; v2.push(parseFloat(v[j++])); v2.push(parseFloat(v[j++])); v2.push(parseFloat(v[j++]));
+            var v3 = []; v3.push(parseFloat(v[j++])); v3.push(parseFloat(v[j++])); v3.push(parseFloat(v[j++]));
+            var triangle = []; triangle.push(vertexIndex++); triangle.push(vertexIndex++); triangle.push(vertexIndex++);
+
+            // -- Add 3 vertices for every triangle
+            //    TODO: OPTIMIZE: Check if the vertex is already in the array, if it is just reuse the index
+            if(skip==0) {  // checking cw vs ccw
+               // E1 = B - A
+               // E2 = C - A
+               // test = dot( Normal, cross( E1, E2 ) )
+               // test > 0: cw, test < 0: ccw
+               var w1 = new Vector(v1);
+               var w2 = new Vector(v2);
+               var w3 = new Vector(v3);
+               var e1 = w2.subtract(w1);
+               var e2 = w3.subtract(w1);
+               var t = new Vector(no).dot(e1.cross(e2));
+               if(t>0) {      // 1,2,3 -> 3,2,1
+                  var tmp = v3;
+                  v3 = v1;
+                  v1 = tmp;
+               }
+            }
+            vertices.push(v1);
+            vertices.push(v2);
+            vertices.push(v3);
+            normals.push(no);
+            triangles.push(triangle);
+            converted++;
+        }
+        if(n++) src += ",";
+        if(err) src += "// WARNING: import errors: "+err+" (some triangles might be misaligned or missing)\n";
+        src += "// object #"+(o)+": triangles: "+match.length+"\n";
+        src += vt2jscad(vertices,triangles,normals);
+    }
+    src += "); }\n";
+    return src;
+}
+
+function vt2jscad(v,t,n,c) {     // vertices, triangles, normals and colors
+   var src = '';
+   src += "polyhedron({ points: [\n\t";
+   for(var i=0,j=0; i<v.length; i++) {
+      if(j++) src += ",\n\t";
+      src += "["+v[i]+"]"; //.join(", ");
+   }
+   src += "],\n\tpolygons: [\n\t";
+   for(var i=0,j=0; i<t.length; i++) {
+      if(j++) src += ",\n\t";
+      src += "["+t[i]+"]"; //.join(', ');
+   }
+   src += "] })\n";
+   return src;
+   //return polyhedron({points:vertices, triangles: triangles});
+}
+
+////****
 
 function leftFillNum(num, targetLength) {
   return num.toString().padStart(targetLength, 0);
