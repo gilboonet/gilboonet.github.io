@@ -1,6 +1,6 @@
 //
   // producer: OpenJSCAD.org Compatibility1.9.0 STL Binary Importer
-  // date: Thu Jan 23 2020 09:38:32 GMT+0100 (heure normale d’Europe centrale)
+  // date: Thu Jan 23 2020 09:38:32 GMT+0100 (heure normale d'Europe centrale)
   // source: fit_female_torso.stl
   //
   function main() { return union(
