@@ -47600,6 +47600,52 @@ sortie.push('};');
 return sortie.join('\n');
 }
 
+function obj2jscad(data){
+let d = data.split(/\n/);
+// 1°) Lit les vertices ( v x y z)
+let lv = d.filter(l => l.startsWith('v '));
+let pts = lv.map(x => {
+  var tmp = x.split(/\s/);
+  tmp.shift();
+  var v = tmp.filter(d => d.trim()).map(Number);
+  return v;
+});
+// 2°) Lit les faces (g puis [f v1// v2// v3//]... )
+let lf = d.filter(l => l.startsWith('g ') || l.startsWith('f '));
+let faces = [], groupes = [], nfg = 0;
+for(let i = 0; i < lf.length; i++){
+  if(lf[i].startsWith('g ')){
+    nfg++;
+  } else {
+    var tmp = lf[i].split(/\s/);
+    tmp.shift();
+    let f = tmp.map(x => {
+			var n = x.split(/\//);
+			return Number(n[0])-1;
+		});
+		var nd = f[f.length -1];
+		if ((nd == -1) || !(Number.isInteger(nd))){
+			f.pop();
+		}
+    faces.push(f);
+    groupes.push(nfg);
+  }
+}
+
+let sortie = [];
+sortie.push('function main(){ return obj().csg;}');
+sortie.push('obj = function () {');
+sortie.push('let faces =' + JSON.stringify(faces) +',');
+sortie.push('vertices = ' + JSON.stringify(pts) + ',');
+sortie.push('groups = ' + JSON.stringify(groupes) + ',');
+sortie.push('faceCsg = faces.map(m => CSG.Polygon.createFromPoints(m.map(n => vertices[n]))),');
+sortie.push('csg = CSG.fromPolygons(faceCsg);');
+sortie.push('return {faces:faces, vertices:vertices, groups:groups, faceCsg:faceCsg, csg:csg};');
+sortie.push('};');
+
+return sortie.join('\n');
+}
+
 function chargeVolume(event) {
 	var fichier = event.target.files[0];
 	var ext = fichier.name.split('.')[1].toUpperCase();
@@ -47615,6 +47661,11 @@ function chargeVolume(event) {
 	case 'STL':
 		var fnChargement = function () {
 			volume = stl2jscad(this.result);
+			lanceScript(volume);
+		};
+	case 'OBJ':
+		var fnChargement = function () {
+			volume = obj2jscad(this.result);
 			lanceScript(volume);
 		};
   }
