@@ -47518,7 +47518,7 @@ function calcTr1(event) {
 
 function calcDim(event) {
 	faitScript(zc_dimensions.value, "differenceP.jscad");
-	selectScript.selectedIndex = 0;
+	//selectScript.selectedIndex = 0;
 }
 
 function permetCalculs(){
