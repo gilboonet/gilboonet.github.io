@@ -36,7 +36,7 @@ Choose a .jscad then uses as volume() into another .jscad
       <div id="statusdiv"></div>
     </div>
   </div>
-  
+
   <div id="gdscripts"><!-- GD: interface pour scripts.html -->
     <span id="titreVolume">Volume:</span>
 	  <input id="fichier" type="file" accept=".jscad, .stl, .obj" />
@@ -70,8 +70,7 @@ function getParameterDefinitions() {
         { name: 'lpage',   type: 'float', initial: 210, caption: 'Larg. page (mm)?' },
         { name: 'hpage',   type: 'float', initial: 297, caption: 'Haut. page (mm)?' },
 
-        { name: 'mode',    type: 'choice',initial: 1, caption: 'Mode:', values:[1,2,3], captions:['Modele','Tranches 3d','Tranches 2d']}
-        //{ name: 'mode',    type: 'choice',initial: 3, caption: 'Mode:', values:[3], captions:['Tranches 2d']}
+        { name: 'mode',    type: 'choice',initial: 3, caption: 'Mode:', values:[3,2], captions:['Tranches 3d','Tranches 2d']}
     ];
 }
 
@@ -91,10 +90,10 @@ b = V.getBounds();
 d = b[1].minus(b[0]); // dimensions = difference entre ces deux points
 de = [d.x, d.y, d.z].map(Math.round); // arrondi pour l'affichage
 
-if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies) 
+if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
   r.push(color("crimson", V));
 
-}else if (params.mode == 2){ // Affiche les tranches en 3d
+}else if (params.mode == 3){ // Affiche les tranches en 3d
   b1 = translate(b[0], cube({size:[d.x, d.y, params.ec], center:false}));
   z = b[0].z + params.ec / 2;
   cn =0;
@@ -108,7 +107,7 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
     nbT++;
   }while(z < d.z);
   r.push(texte("nb tranches:"+ nbT, 0.5).translate([b[1].x,-40,0]));
-} else { // affiche les tranches en 2d (raf)
+} else if (params.mode == 2){ // affiche les tranches en 2d
     // affichage cadre page
     cadre = difference(
       square({size:[params.lpage + 8, params.hpage + 8], center:false}),
@@ -123,8 +122,8 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
     b1 = translate(b[0], cube({size:[d.x, d.y, params.ec], center:false}));
     z = b[0].z + params.dk;
     co = {x:1.5, y:1.5};
-    
-    nbT = Math.ceil(d.z / params.ec); 
+
+    nbT = Math.ceil(d.z / params.ec);
 
 	  var data = [], tp;
 
@@ -136,7 +135,7 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
     n =1 ;
 
     // data : .t = cadre:1 | ligne:2 | texte:3 | page:4
-    
+
     nPage = 0;
     nLigneDsPage = 0;
     nTrancheDsLigne = 0;
@@ -151,7 +150,7 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
 					dy = 4;
 					if (nPage > 0){
 						data.push({t:4});
-					}					
+					}
 				}
 
         tmp = faitTranche(V, b1, z);
@@ -165,7 +164,7 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
         r.push(translate([dx-2, dy-2], cadreT));
 
 				x1 = 4 + (d.x + 4) * nTrancheDsLigne;
-				y1 = 4 + (d.y + 4) * nLigneDsPage; 
+				y1 = 4 + (d.y + 4) * nLigneDsPage;
         data.push({t:1,
 					x1:x1, y1:y1,
 					x2:x1 + d.x + 4, y2:y1 + d.y + 4
@@ -178,10 +177,10 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
 						x2:x1 +1 + sp.vertex1.pos.x, y2:y1 +1 + sp.vertex1.pos.y
 					});
 				}
-                
+
         z += params.ec;
         nTranche++;
-        
+
         if (nTrancheDsLigne < maxTL-1){
 					nTrancheDsLigne++;
 					dx += d.x + 4;
@@ -199,7 +198,7 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
 						 afficherPage = true;
 					 }
 				}
-        
+
 
 		}
 
@@ -212,7 +211,7 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
     //console.log(dexport);
 }
 
-if(params.mode != 3){ // affiche les dimensions sauf en mode "tranches 2d"
+if(params.mode == 3){ // affiche les dimensions (mode "tranches 3d")
   r.push(translate([b[1].x,20,0], texte("larg.:"+ de[0].toString()+" mm", 0.5)));
   r.push(translate([b[1].x,0,0], texte("long.:"+ de[1].toString()+" mm", 0.5)));
   r.push(translate([b[1].x,-20,0], texte("haut.:"+ de[2].toString()+" mm", 0.5)));
@@ -258,7 +257,7 @@ function texte(ch, echelle=1){
   if (echelle != 1){
     r = scale(echelle, r);
   }
-  
+
   return r;
 }
 
@@ -294,7 +293,7 @@ var d = b[1].minus(b[0]); // dimensions = différence entre ces deux points
 var de = [d.x, d.y, d.z].map(Math.round);
 
 // Affiche les dimensions
-var r = []; 
+var r = [];
 
 r.push(color("red", V)); // volume en rouge
 
