@@ -115,8 +115,8 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
     );
     bCadre = cadre.getBounds();
 
-		cadreT = difference(square({size:[d.x+4, d.y+4], center:false}),
-			translate([1,1], square({size:[d.x+2, d.y+2], center:false})));
+		cadreT = difference(square({size:[d.x+8, d.y+8], center:false}),
+			translate([1,1], square({size:[d.x+6, d.y+6], center:false})));
 		//r.push(cadre);
 
     b1 = translate(b[0], cube({size:[d.x, d.y, params.ec], center:false}));
@@ -163,18 +163,18 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
         r.push(translate([dx, dy], t2d));
         r.push(translate([dx-2, dy-2], cadreT));
 
-				x1 = 4 + (d.x + 4) * nTrancheDsLigne;
-				y1 = 4 + (d.y + 4) * nLigneDsPage;
+				x1 = 6 + (d.x + 8) * nTrancheDsLigne;
+				y1 = 6 + (d.y + 8) * nLigneDsPage;
         data.push({t:1,
 					x1:x1, y1:y1,
-					x2:x1 + d.x + 4, y2:y1 + d.y + 4
+					x2:x1 + d.x + 8, y2:y1 + d.y + 8
 				});
 
  				for (var np in t2d.sides){
 					sp = t2d.sides[np];
 					data.push({t:2,
-						x1:x1 +1 + sp.vertex0.pos.x, y1:y1 +1 + sp.vertex0.pos.y,
-						x2:x1 +1 + sp.vertex1.pos.x, y2:y1 +1 + sp.vertex1.pos.y
+						x1:x1 +4 + sp.vertex0.pos.x, y1:y1 +4 + sp.vertex0.pos.y,
+						x2:x1 +4 + sp.vertex1.pos.x, y2:y1 +4 + sp.vertex1.pos.y
 					});
 				}
 
