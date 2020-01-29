@@ -146,7 +146,7 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
 				if (afficherPage){
 					r.push(translate([dkPage, 0], cadre));
 					afficherPage = false;
-					dx = dkPage + 4;
+					dx = dkPage + 8;
 					dy = 4;
 					if (nPage > 0){
 						data.push({t:4});
@@ -183,13 +183,13 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
 
         if (nTrancheDsLigne < maxTL-1){
 					nTrancheDsLigne++;
-					dx += d.x + 4;
+					dx += d.x + 8;
 				}else{
 					nTrancheDsLigne = 0;
 					if (nLigneDsPage < maxLP-1){
 					  nLigneDsPage++;
-					  dy += d.y + 4;
-					  dx = dkPage + 4;
+					  dy += d.y + 8;
+					  dx = dkPage + 8;
 					 }else{
 						 nLigneDsPage = 0;
 						 nTrancheDsLigne = 0;
