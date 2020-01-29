@@ -47469,29 +47469,63 @@ function faitPDF(texte, px, py){
   doc.setDrawColor(0, 0, 255);
 	doc.setLineWidth(0.1);
 
-	var n = 0;
+	var n = 0,i;
 
-	for(var i=0; i< obj.length; i++){
+	for(i=0; i< obj.length; i++){
 		var o = obj[i];
+		if(o.y1){o.y1 = py-o.y1;}
+	  if(o.y2){o.y2 = py-o.y2;}
 
 		switch(o.t){
-			case 1: // cadre
-				doc.setDrawColor(255, 0, 0);
-				doc.line(o.x1, o.y1, o.x1, o.y2);
-				doc.line(o.x1, o.y2, o.x2, o.y2);
-				doc.line(o.x2, o.y2, o.x2, o.y1);
-				doc.line(o.x2, o.y1, o.x1, o.y1);
+			case 10: // cadre vide
+			case 11: // cadre prem ligne apres 1ere tranche
+			case 12: // cadre premier nouvelle ligne apres 1ere 
+			case 13: // cadre
+			
+  			doc.setDrawColor(255, 0, 0);
+				if(o.t == 10){
+					doc.line(o.x1, o.y1, o.x1, o.y2);
+					doc.line(o.x1, o.y2, o.x2, o.y2);
+					doc.line(o.x2, o.y2, o.x2, o.y1);
+					doc.line(o.x2, o.y1, o.x1, o.y1);
+				}else if(o.t == 11){ // cadre prem ligne apres 1ere tranche
+				  doc.line(o.x1, o.y2, o.x2, o.y2);
+				  doc.line(o.x2, o.y2, o.x2, o.y1);
+				  doc.line(o.x2, o.y1, o.x1, o.y1);
+				}else if(o.t == 12){ // cadre premier nouvelle ligne apres 1ere 
+				  doc.line(o.x1, o.y1, o.x1, o.y2);
+				  doc.line(o.x1, o.y2, o.x2, o.y2);
+				  doc.line(o.x2, o.y2, o.x2, o.y1);
+				}else if(o.t == 13){ // cadre
+				  doc.setDrawColor(255, 0, 0);
+				  doc.line(o.x1, o.y2, o.x2, o.y2);
+				  doc.line(o.x2, o.y2, o.x2, o.y1);
+				}
 
 				// n° au milieu
+
 				n++;
 				var x = (o.x1 + o.x2)/2;
 				var y = (o.y1 + o.y2)/2;
-				doc.setTextColor(0, 0, 255);
-				doc.text(n.toString(), x, y, 'center');
+				doc.setDrawColor(0, 0, 255);
+				var x1, y1, g_echelle=0.25;
+				var ch = n.toString();
+				for(var tmpi = 0; tmpi < ch.length; tmpi++){
+					var tmpL = numero(ch.charCodeAt(tmpi) - 48);
+					var x0 = x + (tmpL[0][0] + (16 * tmpi) - (ch.length * 8)) * g_echelle;
+					var y0 = y - (tmpL[0][1] - 4) * g_echelle;
+					for(var tmpn = 1; tmpn < tmpL.length; tmpn++){
+						x1 = x + (tmpL[tmpn][0] + (16 * tmpi) - ch.length * 8) * g_echelle;
+						y1 = y - ((tmpL[tmpn][1] - 4) * g_echelle);
+						doc.line(x0, y0, x1, y1);
+						x0 = x1;
+						y0 = y1;
+					}
+				}
 
+				// reperes centres
 				var xrd = (x - o.x1) / 4;
 				var yrd = (y - o.y1) / 4;
-
 				doc.setDrawColor(0, 0, 255);
 				for(var xi = -3; xi <= 3; xi +=2){
 					for(var yi = -3; yi <= 3; yi +=2){
@@ -47505,7 +47539,8 @@ function faitPDF(texte, px, py){
 					doc.line(o.x1, o.y1, o.x2, o.y2);
 				break;
 			case 3: // texte
-
+				//doc.setTextColor(0, 0, 255);
+				//doc.text(n.toString(), x, y, 'center');
 				break;
 			case 4: // page
 				doc.addPage();
@@ -47515,6 +47550,24 @@ function faitPDF(texte, px, py){
 	localStorage.removeItem('tr1_data');
 	localStorage.removeItem('tr1_dx');
 	localStorage.removeItem('tr1_dy');
+}
+
+
+function numero(num){
+var np = [
+[[0,0],[0,16],[8,16],[8,0],[0,0]],
+[[0,8],[8,16],[8,0]],
+[[0,12],[0,16],[8,16],[8,8],[0,8],[0,0],[8,0]],
+[[0,13],[0,16],[8,16],[8,11],[4,8],[8,5],[8,0],[0,0],[0,3]],
+[[8,8],[0,8],[6,16],[6,0]],
+[[8,16],[0,16],[0,8],[8,8],[8,0],[0,0]],
+[[8,16],[0,8],[0,0],[8,0],[8,8],[0,8]],
+[[0,16],[8,16],[0,0]],
+[[4,9],[1,12],[1,16],[7,16],[7,12],[4,9],[8,7],[8,0],[0,0],[0,7],[4,9]],
+[[8,8],[0,8],[0,16],[8,16],[8,0],[0,0]]
+];
+
+return np[num];
 }
 
 function faitScript(script, nom){
