@@ -47476,6 +47476,7 @@ function faitPDF(texte, px, py){
 
 		switch(o.t){
 			case 1: // cadre
+				doc.setDrawColor(255, 0, 0);
 				doc.line(o.x1, o.y1, o.x1, o.y2);
 				doc.line(o.x1, o.y2, o.x2, o.y2);
 				doc.line(o.x2, o.y2, o.x2, o.y1);
@@ -47485,11 +47486,23 @@ function faitPDF(texte, px, py){
 				n++;
 				var x = (o.x1 + o.x2)/2;
 				var y = (o.y1 + o.y2)/2;
+				doc.setTextColor(0, 0, 255);
 				doc.text(n.toString(), x, y, 'center');
+
+				var xrd = (x - o.x1) / 4;
+				var yrd = (y - o.y1) / 4;
+
+				doc.setDrawColor(0, 0, 255);
+				for(var xi = -3; xi <= 3; xi +=2){
+					for(var yi = -3; yi <= 3; yi +=2){
+						doc.rect(x + (xrd * xi), y + (yrd * yi), 0.2, 0.2);
+					}
+				}
 
 				break;
 			case 2: // ligne
-				doc.line(o.x1, o.y1, o.x2, o.y2);
+				  doc.setDrawColor(255, 0, 0);
+					doc.line(o.x1, o.y1, o.x2, o.y2);
 				break;
 			case 3: // texte
 
