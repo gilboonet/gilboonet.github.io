@@ -13,10 +13,11 @@ Choose a .jscad then uses as volume() into another .jscad
   <title>gilboo.net charge volume et script jscad</title>
   <link rel="stylesheet" href="min_scripts.css" type="text/css">
   <script src="dist/min_scripts.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
-</head>
+	<script src="pdfkit.standalone.js"></script>
+	<script src="blob-stream.js"></script>
 <style>
 </style>
+</head>
 
 <body>
 
@@ -55,28 +56,29 @@ Choose a .jscad then uses as volume() into another .jscad
 <!--
 // Affiche un volume en tranches selon les parametres choisis
 
-// parametres
-function getParameterDefinitions() {
-    return [
-        { name: 'g1', type: 'group', caption: 'Modele'},
-        { name: 'echelle', type: 'float', initial: 1, caption: 'Echelle?' },
-        { name: 'rX',      type: 'int',   initial: 0, caption: 'Rotation X:' },
-        { name: 'rY',      type: 'int',   initial: 0, caption: 'Rotation Y:' },
-        { name: 'rZ',      type: 'int',   initial: 0, caption: 'Rotation Z:' },
+function getParameterDefinitions() { // parametres
+  return [
+    { name: 'g1', type: 'group', caption: 'Modele'},
+    { name: 'echelle', type: 'float', initial: 1, caption: 'Echelle?' },
+    { name: 'rX',      type: 'int',   initial: 0, caption: 'Rotation X:' },
+    { name: 'rY',      type: 'int',   initial: 0, caption: 'Rotation Y:' },
+    { name: 'rZ',      type: 'int',   initial: 0, caption: 'Rotation Z:' },
 
-        { name: 'g2', 		 type: 'group', caption: 'Tranches'},
-        { name: 'ec',      type: 'int',   initial: 3, caption: 'Ep. carton (mm)?' },
-        { name: 'dk',      type: 'float', initial: 1.5, caption: 'Decalage  (mm)?' },
-        { name: 'lpage',   type: 'float', initial: 210, caption: 'Larg. page (mm)?' },
-        { name: 'hpage',   type: 'float', initial: 297, caption: 'Haut. page (mm)?' },
+    { name: 'g2', 		 type: 'group', caption: 'Tranches'},
+    { name: 'ec',      type: 'int',   initial: 3, caption: 'Ep. carton (mm)?' },
+    { name: 'dk',      type: 'float', initial: 1.5, caption: 'Decalage  (mm)?' },
 
-        { name: 'mode',    type: 'choice',initial: 3, caption: 'Mode:', values:[3,2], captions:['Tranches 3d','Tranches 2d']}
-    ];
+    { name: 'lpage',   type: 'float', initial: 210, caption: 'Larg. page (mm)?' },
+    { name: 'hpage',   type: 'float', initial: 297, caption: 'Haut. page (mm)?' },
+
+    { name: 'mode',    type: 'choice',initial: 3, caption: 'Mode:', values:[3,2], captions:['Tranches 3d','Tranches 2d']}
+  ];
 }
 
 function main(params) {
 const cols = ["orange", "tan"];// couleurs des tranches
 var V, r, b, d, de, b1, z, cn, nbT, t2d, t2dd, b2;
+
 
 // Recupere le volume
 V = scale(params.echelle, rotate([params.rX, params.rY, params.rZ], volume()));
@@ -165,7 +167,21 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
 
 				x1 = 6 + (d.x + 8) * nTrancheDsLigne;
 				y1 = 6 + (d.y + 8) * nLigneDsPage;
-        data.push({t:1,
+				var typeT;
+				if(nLigneDsPage ==0){
+					if(nTrancheDsLigne == 0){
+					  typeT = 10;
+					} else {
+					  typeT = 11;
+					}
+				}else{
+					if(nTrancheDsLigne == 0){
+					  typeT = 12;
+					} else {
+					  typeT = 13;
+					}
+				}
+        data.push({t:typeT,
 					x1:x1, y1:y1,
 					x2:x1 + d.x + 8, y2:y1 + d.y + 8
 				});
