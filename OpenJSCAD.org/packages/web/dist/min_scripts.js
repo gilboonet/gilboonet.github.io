@@ -47460,21 +47460,32 @@ function creePDF(event){
 	//event.target.disabled = true;
 }
 
+  function mm2pt (mm) {
+		var pointRatio = 2.8346456692913384;
+		return parseFloat(mm) * pointRatio
+	}
+
 function faitPDF(texte, px, py){
 	var obj = JSON.parse(texte);
-	var ori = (px < py) ? 'p' : 'l';
-  var doc = new jsPDF(ori, 'mm', px +',' + py );
-	//alert(x+ ' ' + y);
+	var ori = (px < py ? 'portrait' : 'landscape');
 
-  doc.setDrawColor(0, 0, 255);
-	doc.setLineWidth(0.1);
+	var n = 0, i;
+	px = mm2pt(px);
+	py = mm2pt(py);
 
-	var n = 0,i;
-
-	for(i=0; i< obj.length; i++){
+	const doc = new PDFDocument({size:[px, py], layout:ori, margin:10});
+	const stream = doc.pipe(blobStream());
+	
+	for(i = 0; i < obj.length; i++){
 		var o = obj[i];
-		if(o.y1){o.y1 = py-o.y1;}
-	  if(o.y2){o.y2 = py-o.y2;}
+		if (o.y1){
+			o.x1 = mm2pt(o.x1);
+			o.y1 = py - mm2pt(o.y1);
+		}
+	  if (o.y2){
+			o.x2 = mm2pt(o.x2);
+			o.y2 = py - mm2pt(o.y2);
+		}
 
 		switch(o.t){
 			case 10: // cadre vide
@@ -47482,61 +47493,69 @@ function faitPDF(texte, px, py){
 			case 12: // cadre premier nouvelle ligne apres 1ere 
 			case 13: // cadre
 			
-  			doc.setDrawColor(255, 0, 0);
 				if(o.t == 10){
-					doc.line(o.x1, o.y1, o.x1, o.y2);
-					doc.line(o.x1, o.y2, o.x2, o.y2);
-					doc.line(o.x2, o.y2, o.x2, o.y1);
-					doc.line(o.x2, o.y1, o.x1, o.y1);
+					doc.save()
+					  .moveTo(o.x1, o.y1)
+						.lineTo(o.x1, o.y2)
+						.lineTo(o.x2, o.y2)
+						.lineTo(o.x2, o.y1)
+						.lineTo(o.x1, o.y1).stroke();
 				}else if(o.t == 11){ // cadre prem ligne apres 1ere tranche
-				  doc.line(o.x1, o.y2, o.x2, o.y2);
-				  doc.line(o.x2, o.y2, o.x2, o.y1);
-				  doc.line(o.x2, o.y1, o.x1, o.y1);
+					doc.save()
+						.moveTo(o.x1, o.y2)
+						.lineTo(o.x2, o.y2)
+						.lineTo(o.x2, o.y1)
+						.lineTo(o.x1, o.y1).stroke();
 				}else if(o.t == 12){ // cadre premier nouvelle ligne apres 1ere 
-				  doc.line(o.x1, o.y1, o.x1, o.y2);
-				  doc.line(o.x1, o.y2, o.x2, o.y2);
-				  doc.line(o.x2, o.y2, o.x2, o.y1);
+					doc.save()
+					  .moveTo(o.x1, o.y1)
+						.lineTo(o.x1, o.y2)
+						.lineTo(o.x2, o.y2)
+						.lineTo(o.x2, o.y1).stroke();
 				}else if(o.t == 13){ // cadre
-				  doc.setDrawColor(255, 0, 0);
-				  doc.line(o.x1, o.y2, o.x2, o.y2);
-				  doc.line(o.x2, o.y2, o.x2, o.y1);
+					doc.save()
+					  .moveTo(o.x1, o.y2)
+						.lineTo(o.x2, o.y2)
+						.lineTo(o.x2, o.y1).stroke();
 				}
 
 				// n° au milieu
 
 				n++;
-				var x = (o.x1 + o.x2)/2;
-				var y = (o.y1 + o.y2)/2;
-				doc.setDrawColor(0, 0, 255);
-				var x1, y1, g_echelle=0.25;
+				var x = (o.x1 + o.x2) / 2;
+				var y = (o.y1 + o.y2) / 2;
+				//doc.setDrawColor(0, 0, 255);
+				var x1, y1, g_echelle = 0.25;
 				var ch = n.toString();
+
+				doc.save();
 				for(var tmpi = 0; tmpi < ch.length; tmpi++){
 					var tmpL = numero(ch.charCodeAt(tmpi) - 48);
 					var x0 = x + (tmpL[0][0] + (16 * tmpi) - (ch.length * 8)) * g_echelle;
 					var y0 = y - (tmpL[0][1] - 4) * g_echelle;
+					doc.moveTo(x0, y0);
 					for(var tmpn = 1; tmpn < tmpL.length; tmpn++){
 						x1 = x + (tmpL[tmpn][0] + (16 * tmpi) - ch.length * 8) * g_echelle;
 						y1 = y - ((tmpL[tmpn][1] - 4) * g_echelle);
-						doc.line(x0, y0, x1, y1);
-						x0 = x1;
-						y0 = y1;
+						doc.lineTo(x1, y1);
+						//x0 = x1;
+						//y0 = y1;
 					}
+					doc.stroke();
 				}
 
 				// reperes centres
 				var xrd = (x - o.x1) / 4;
 				var yrd = (y - o.y1) / 4;
-				doc.setDrawColor(0, 0, 255);
+				//doc.setDrawColor(0, 0, 255);
 				for(var xi = -3; xi <= 3; xi +=2){
 					for(var yi = -3; yi <= 3; yi +=2){
-						doc.rect(x + (xrd * xi), y + (yrd * yi), 0.2, 0.2);
+						doc.rect(x + (xrd * xi), y + (yrd * yi), 0.2, 0.2).stroke();
 					}
 				}
-
 				break;
 			case 2: // ligne
-				  doc.setDrawColor(255, 0, 0);
-					doc.line(o.x1, o.y1, o.x2, o.y2);
+				doc.save().moveTo(o.x1, o.y1).lineTo(o.x2, o.y2).stroke();
 				break;
 			case 3: // texte
 				//doc.setTextColor(0, 0, 255);
@@ -47546,10 +47565,18 @@ function faitPDF(texte, px, py){
 				doc.addPage();
 		}
 	}
-	doc.save('tranches1axe.pdf');
+
 	localStorage.removeItem('tr1_data');
 	localStorage.removeItem('tr1_dx');
 	localStorage.removeItem('tr1_dy');
+
+	doc.end();
+
+	stream.on('finish', function() {
+    const blob = stream.toBlobURL('application/pdf');
+    window.open(blob);
+  });	
+
 }
 
 
@@ -49638,8 +49665,11 @@ var GL = function () {
 				this.attributes[attribute] = location;
 				gl.bindBuffer(gl.ARRAY_BUFFER, buffer.buffer);
 				gl.enableVertexAttribArray(location);
-				gl.vertexAttribPointer(location, buffer.buffer.spacing, gl.FLOAT, false, 0, 0);
-				length = buffer.buffer.length / buffer.buffer.spacing;
+
+				if(buffer.buffer.spacing > 0){
+					gl.vertexAttribPointer(location, buffer.buffer.spacing, gl.FLOAT, false, 0, 0);
+					length = buffer.buffer.length / buffer.buffer.spacing;
+				}
 			}
 
 			// Disable unused attribute pointers.
