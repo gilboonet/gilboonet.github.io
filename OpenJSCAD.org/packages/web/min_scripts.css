@@ -59,7 +59,7 @@ canvas {
   margin-bottom: 5px;
 
   text-align: left;
-  font-size: 0.8em;
+  font-size: 1em;
   font-weight: normal;
 }
 
@@ -87,7 +87,7 @@ canvas {
 }
 
 #parametersdiv input, #parametersdiv textarea, #parametersdiv select {
-  font-size: 0.9em;
+  font-size: 1.2em;
   background: #fea;
   border: none;
 }
