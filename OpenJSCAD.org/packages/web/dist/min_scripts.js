@@ -47609,6 +47609,11 @@ function calcTr1(event) {
 	calc_pdf.disabled = false;
 }
 
+function calcTr2(event) {
+	faitScript(zc_tranches02.value, "tranches02.jscad");
+	calc_pdf.disabled = false;
+}
+
 function calcDim(event) {
 	faitScript(zc_dimensions.value, "differenceP.jscad");
 	//selectScript.selectedIndex = 0;
@@ -47617,6 +47622,7 @@ function calcDim(event) {
 function permetCalculs(){
 	calc_dimensions.disabled = false;
 	calc_tranches01.disabled = false;
+	calc_tranches02.disabled = false;
 }
 
 function stl2jscad(data){
@@ -47847,6 +47853,9 @@ function init() {
 
 	calc_tranches01.addEventListener("click", calcTr1, false);
 	calc_tranches01.disabled = true;
+
+	calc_tranches02.addEventListener("click", calcTr2, false);
+	calc_tranches02.disabled = true;
 
 	calc_pdf.addEventListener("click", creePDF, false);
 	calc_pdf.disabled = true;
