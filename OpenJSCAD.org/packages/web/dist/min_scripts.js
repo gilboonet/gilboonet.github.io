@@ -47467,24 +47467,25 @@ function creePDF(event){
 
 function faitPDF(texte, px, py){
 	var obj = JSON.parse(texte);
-	var ori = (px < py ? 'portrait' : 'landscape');
-
+	//var ori = (px < py ? 'portrait' : 'landscape');
 	var n = 0, i;
 	px = mm2pt(px);
 	py = mm2pt(py);
 
-	const doc = new PDFDocument({size:[px, py], layout:ori, margin:10});
+	const doc = new PDFDocument({size:[px, py], margin:10});
 	const stream = doc.pipe(blobStream());
 	
 	for(i = 0; i < obj.length; i++){
 		var o = obj[i];
 		if (o.y1){
 			o.x1 = mm2pt(o.x1);
-			o.y1 = py - mm2pt(o.y1);
+			//o.y1 = py - mm2pt(o.y1);
+			o.y1 = mm2pt(o.y1);
 		}
 	  if (o.y2){
 			o.x2 = mm2pt(o.x2);
-			o.y2 = py - mm2pt(o.y2);
+			//o.y2 = py - mm2pt(o.y2);
+			o.y2 = mm2pt(o.y2);
 		}
 
 		switch(o.t){
