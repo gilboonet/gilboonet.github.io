@@ -307,9 +307,22 @@ function getParameterDefinitions() {
     { name: 'haut', type: 'number', initial: 297, caption: 'Hauteur (mm)' }
   ];
 }
+
+function ajoutePtsDePoly(poly){
+	var ret = [];
+	for (var np = 0; np < poly.sides.length; np++){
+		var sp = poly.sides[np];
+		ret.push({t:2,
+  		x1: 4 + sp.vertex0.pos.x, y1: 4 + sp.vertex0.pos.y,
+			x2: 4 + sp.vertex1.pos.x, y2: 4 + sp.vertex1.pos.y
+		});
+	}
+	return ret;
+}
+
 function main(){
 
-var r2d = [], v, tmp, i, b, tr, d, bz;
+var r2d = [], v, tmp, i, b, tr, d, bz, t2, t3, t4;
 var nLignes = [], nColonnes = [], rL = [], rC = [], urL, urC;
 
 // volume
@@ -321,7 +334,7 @@ for(i = 0.5; i< params.nbL; i++){ // lignes
   tr =rotate([90,0,0], faitLigne(i, v, params.nbL, params.eC));
   bz = tr.getBounds()[0].z;
   tr = union(vol2surf(tr, bz));
-  tr= translate([0,bz +3, 0], rotate([-90,0,0], tr.extrude({offset:[0,0,params.eC]})));
+  tr = translate([0,bz +3, 0], rotate([-90,0,0], tr.extrude({offset:[0,0,params.eC]})));
   rL = rL.concat(tr);
 }
 urL = union(rL);
@@ -344,6 +357,7 @@ for(i = 0; i < tmp.length; i++){
   miT.push(tt[0]);
 }
 var umiH = union(miH), umiB = union(miB);
+var data = [];
 
 if (params.mode == 2){ // rendu 2d
   var r = [], n, t2, t3, h;
@@ -354,7 +368,12 @@ if (params.mode == 2){ // rendu 2d
     r.push(translate([-params.larg * n, 0],
       square({size:[params.larg+4, params.haut+4], center:true})
       .subtract(square({size:[params.larg, params.haut], center:true}))));
-    r.push(translate([-params.larg * n, 2], tourneEt2d(t3, [90, 0, 0])));
+		t4 = tourneEt2d(t3, [90, 0, 0]);
+    r.push(translate([-params.larg * n, 2], t4));
+
+		t4 = translate(t4.getBounds()[0].times(-1), t4);
+		if(n > 0){ data.push({t:4}); }
+		data.push(...ajoutePtsDePoly(t4));
   }
 
   h = params.haut;
@@ -364,9 +383,22 @@ if (params.mode == 2){ // rendu 2d
     r.push(translate([-params.larg*n, h],
       square({size:[params.larg+4, params.haut+4], center:true})
       .subtract(square({size:[params.larg, params.haut], center:true}))));
-    r.push(translate([-params.larg*n, h+2], tourneEt2d(t3, [0, -90, 0])));
+		t4 = tourneEt2d(t3, [0, -90, 0]);
+    r.push(translate([-params.larg*n, h+2], t4));
+
+		t4 = translate(t4.getBounds()[0].times(-1), t4);
+		data.push({t:4});
+		data.push(...ajoutePtsDePoly(t4));
   } 
  
+	var dexport = JSON.stringify(data);
+//	try{
+	localStorage.setItem("tr1_data", dexport);
+	localStorage.setItem("tr1_dx", params.larg);
+	localStorage.setItem("tr1_dy", params.haut);
+//	}catch(err){};
+//  console.log(dexport);
+
   return r;
     
 } else { // rendu 3d
