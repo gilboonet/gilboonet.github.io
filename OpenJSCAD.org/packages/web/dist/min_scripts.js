@@ -47962,8 +47962,8 @@ while(l < lFin){
   l+=7;
 }
 let sortie = [];
-sortie.push('function main(){return stl().csg;}');
-sortie.push('function stl() {');
+sortie.push('function main(){return obj().csg;}');
+sortie.push('function obj() {');
 sortie.push('let faces =' + JSON.stringify(faces) +',');
 sortie.push('vertices = ' + JSON.stringify(pts) + ',');
 sortie.push('faceCsg = faces.map(m => CSG.Polygon.createFromPoints(m.map(n => vertices[n]))),');
@@ -48057,7 +48057,7 @@ function lanceScript(source){
 }
 
 function chargeVolumeURL(event){
-  var design = 'https://gilboonet.github.io/modeles/' + event.target.innerHTML + '.jscad';
+  var design = 'https://gilboonet.github.io/modeles/' + event.target.innerHTML + '.obj';
 
   if (design) {
     var xhr = new XMLHttpRequest();
@@ -48065,12 +48065,10 @@ function chargeVolumeURL(event){
     gProcessor.setStatus('Loading ' + design + " <img id=busy src='imgs/busy.gif'>");
 
     xhr.onload = function () {
-      volume = this.responseText;
+      volume = obj2jscad(this.responseText);
 
-      if (design.match(/\.jscad$/i) || design.match(/\.js$/i)) {
-        gProcessor.setStatus('Processing ' + design + " <img id=busy src='imgs/busy.gif'>");
-        lanceScript(volume);
-      }
+      gProcessor.setStatus('Processing ' + design + " <img id=busy src='imgs/busy.gif'>");
+      lanceScript(volume);
     };
     xhr.send();
   }
@@ -48089,12 +48087,13 @@ function init() {
   const listeVolumes = [
   "bunny146",
   "buste_cheval120",
-  "buste_eleph500",
+  "buste_elephant500",
   "canardPlastiq274",
   "chat234",
-  "chat320",
-  "chien358",
+  "chat310",
+  "chien354",
   "cubocta20",
+	"cygne500",
 	"dodeca60",
 	"dodecadef360",
 	"ecureuil300",
@@ -48107,6 +48106,7 @@ function init() {
 	"moai156",
 	"moai312",
 	"oeuf220",
+	"ours500",
 	"panthere500",
 	"snoopy370",
 	"tdy236",
