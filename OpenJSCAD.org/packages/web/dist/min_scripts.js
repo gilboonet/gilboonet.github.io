@@ -47738,7 +47738,7 @@ function faitPDF(texte, px, py){
 	px = mm2pt(px);
 	py = mm2pt(py);
 
-	const doc = new PDFDocument({size:[px, py], margin:10});
+	const doc = new PDFDocument({size:[px, py], margin:5});
 	const stream = doc.pipe(blobStream());
 	
 	for(i = 0; i < obj.length; i++){
@@ -48061,7 +48061,7 @@ function chargeVolumeURL(event){
 
   if (design) {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', design, true);
+    xhr.open('GET', design, false); //GDD:
     gProcessor.setStatus('Loading ' + design + " <img id=busy src='imgs/busy.gif'>");
 
     xhr.onload = function () {
