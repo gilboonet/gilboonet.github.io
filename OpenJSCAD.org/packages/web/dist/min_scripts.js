@@ -48057,7 +48057,7 @@ function lanceScript(source){
 }
 
 function chargeVolumeURL(event){
-  var design = 'https://gilboonet.github.io/modeles/' + event.target.innerHTML + '.obj';
+  var design = 'modeles/' + event.target.innerHTML + '.obj';
 
   if (design) {
     var xhr = new XMLHttpRequest();
