@@ -48057,7 +48057,8 @@ function lanceScript(source){
 }
 
 function chargeVolumeURL(event){
-  var design = 'modeles/' + event.target.innerHTML + '.obj';
+  //var design = 'modeles/' + event.target.innerHTML + '.obj';
+  var design = event.target.innerHTML + '.obj';
 
   if (design) {
     var xhr = new XMLHttpRequest();
