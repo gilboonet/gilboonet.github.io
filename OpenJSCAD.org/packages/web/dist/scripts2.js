@@ -48069,7 +48069,9 @@ function chargeVolumeURL(event){
     gProcessor.setStatus('Loading ' + design + " <img id=busy src='imgs/busy.gif'>");
 
     xhr.onload = function () {
-      volume = obj2jscad(this.responseText);
+			var s = this.responseText;
+			console.log(s);
+      volume = obj2jscad(s);
 
       gProcessor.setStatus('Processing ' + design + " <img id=busy src='imgs/busy.gif'>");
       lanceScript(volume);
