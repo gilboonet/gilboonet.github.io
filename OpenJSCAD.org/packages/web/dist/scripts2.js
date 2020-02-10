@@ -48070,7 +48070,7 @@ function chargeVolumeURL(event){
 
     xhr.onload = function () {
 			var s = this.responseText;
-			console.log(s);
+			alert(s.length);
       volume = obj2jscad(s);
 
       gProcessor.setStatus('Processing ' + design + " <img id=busy src='imgs/busy.gif'>");
