@@ -48134,6 +48134,9 @@ function init() {
 		o.addEventListener("click", chargeVolumeURL, true);
 		selectVolume.add(o);
 	}
+
+	document.getElementById("o1").onclick = chargeVolumeURL;
+	
 	selectVolume.selectedIndex = 0;
 	selectScript.selectedIndex = 0;
 
