@@ -48057,34 +48057,21 @@ function lanceScript(source){
 }
 
 function chargeVolumeURL(event){
-	alert(event.target.innerHTML);
-	var design = document.getElementById(event.target.innerHTML);
-	//alert(design.id);
-	//if (design){
-	//	lanceScript(obj2jscad(design.value));
-	//}
-/*
-  var design = 'modeles/' + event.target.innerHTML + '.obj';
-  //var design = event.target.innerHTML + '.obj';
-
+  var design = 'modeles/' + event.target.value + '.obj';
   if (design) {
     var xhr = new XMLHttpRequest();
 
-		xhr.onerror = function () { alert("erreur");};
     xhr.overrideMimeType("text/plain");
     xhr.open('GET', design, true);
     gProcessor.setStatus('Loading ' + design + " <img id=busy src='imgs/busy.gif'>");
 
     xhr.onload = function () {
-			var s = this.responseText;
-			alert(s.length);
-      volume = obj2jscad(s);
-
+      volume = obj2jscad(this.responseText);
       gProcessor.setStatus('Processing ' + design + " <img id=busy src='imgs/busy.gif'>");
       lanceScript(volume);
     };
     xhr.send();
-  }*/
+  }
 }
 
 function leftFillNum(num, targetLength) {
@@ -48132,11 +48119,11 @@ function init() {
 		var o = document.createElement("option");
 		o.text = listeVolumes[i];
 		//o.addEventListener("click", chargeVolumeURL, true);
-		o.addEventListener("click", chargeVolumeURL);
+		//o.addEventListener("click", chargeVolumeURL);
 		selectVolume.add(o);
 	}
-
-	document.getElementById("o1").onclick = chargeVolumeURL;
+  selectVolume.onchange = chargeVolumeURL;
+	//document.getElementById("o1").onclick = chargeVolumeURL;
 	
 	selectVolume.selectedIndex = 0;
 	selectScript.selectedIndex = 0;
