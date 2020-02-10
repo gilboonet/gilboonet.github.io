@@ -48057,15 +48057,20 @@ function lanceScript(source){
 }
 
 function chargeVolumeURL(event){
-  //var design = 'modeles/' + event.target.innerHTML + '.obj';
-  var design = event.target.innerHTML + '.obj';
+	var design = document.getElementById(event.target.innerHTML);
+	if (design){
+		lanceScript(obj2jscad(design.value));
+	}
+/*
+  var design = 'modeles/' + event.target.innerHTML + '.obj';
+  //var design = event.target.innerHTML + '.obj';
 
   if (design) {
     var xhr = new XMLHttpRequest();
 
 		xhr.onerror = function () { alert("erreur");};
     xhr.overrideMimeType("text/plain");
-    xhr.open('GET', design, true); //GDD:
+    xhr.open('GET', design, true);
     gProcessor.setStatus('Loading ' + design + " <img id=busy src='imgs/busy.gif'>");
 
     xhr.onload = function () {
@@ -48077,7 +48082,7 @@ function chargeVolumeURL(event){
       lanceScript(volume);
     };
     xhr.send();
-  }
+  }*/
 }
 
 function leftFillNum(num, targetLength) {
