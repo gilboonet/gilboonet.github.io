@@ -48058,6 +48058,7 @@ function lanceScript(source){
 
 function chargeVolumeURL(event){
 	var design = document.getElementById(event.target.innerHTML);
+	alert(design.id);
 	if (design){
 		lanceScript(obj2jscad(design.value));
 	}
