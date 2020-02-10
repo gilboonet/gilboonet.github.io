@@ -48057,11 +48057,12 @@ function lanceScript(source){
 }
 
 function chargeVolumeURL(event){
+	alert(event.target.innerHTML);
 	var design = document.getElementById(event.target.innerHTML);
-	alert(design.id);
-	if (design){
-		lanceScript(obj2jscad(design.value));
-	}
+	//alert(design.id);
+	//if (design){
+	//	lanceScript(obj2jscad(design.value));
+	//}
 /*
   var design = 'modeles/' + event.target.innerHTML + '.obj';
   //var design = event.target.innerHTML + '.obj';
