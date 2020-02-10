@@ -48130,7 +48130,7 @@ function init() {
   for(var i = 0 ; i < listeVolumes.length; i++){
 		var o = document.createElement("option");
 		o.text = listeVolumes[i];
-		o.addEventListener("click", chargeVolumeURL, false);
+		o.addEventListener("click", chargeVolumeURL, true);
 		selectVolume.add(o);
 	}
 	selectVolume.selectedIndex = 0;
