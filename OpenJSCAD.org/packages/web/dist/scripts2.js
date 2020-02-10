@@ -48131,7 +48131,8 @@ function init() {
   for(var i = 0 ; i < listeVolumes.length; i++){
 		var o = document.createElement("option");
 		o.text = listeVolumes[i];
-		o.addEventListener("click", chargeVolumeURL, true);
+		//o.addEventListener("click", chargeVolumeURL, true);
+		o.addEventListener("click", chargeVolumeURL);
 		selectVolume.add(o);
 	}
 
