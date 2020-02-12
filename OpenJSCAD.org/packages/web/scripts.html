@@ -987,7 +987,7 @@ var V, r, b, d, de, b1, z, cn, nbT, t2d, t2dd, b2;
 
 
 // Recupere le volume
-V = scale(params.echelle, rotate([params.rX, params.rY, params.rZ], volume()));
+V = scale(params.echelle, rotate([params.rX, params.rY, params.rZ], union(volume())));
 r = []; // pour stocker le rendu voulu
 
 // Calcule ses dimensions :
@@ -1552,7 +1552,7 @@ function getParameterDefinitions() {
 
 function main(params) {
 // Récupère le volume
-var V = volume().scale(params.echelle);
+var V = union(volume()).scale(params.echelle);
 
 // Calcule ses dimensions :
 var b = V.getBounds(); // pts extrêmes du volume (plus petit et plus grand)
