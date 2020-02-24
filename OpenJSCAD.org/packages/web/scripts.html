@@ -987,7 +987,7 @@ var V, r, b, d, de, b1, z, cn, nbT, t2d, t2dd, b2;
 
 
 // Recupere le volume
-V = scale(params.echelle, rotate([params.rX, params.rY, params.rZ], union(volume())));
+V = scale(params.echelle, rotate([params.rX, params.rY, params.rZ], volume()));
 r = []; // pour stocker le rendu voulu
 
 // Calcule ses dimensions :
@@ -1203,8 +1203,10 @@ function getParameterDefinitions() {
     { name: 'rX', type: 'int',   initial: 0, caption: 'Rotation X:' },
     { name: 'rY', type: 'int',   initial: 0, caption: 'Rotation Y:' },
     { name: 'rZ', type: 'int',   initial: 0, caption: 'Rotation Z:' },
-    { name: 'nbC',type: 'int', initial: 3, caption: 'Nb Colonnes (beige)' }, 
+    { name: 'nbC',type: 'int', initial: 3, caption: 'Nb Colonnes (beige)' },
+    { name: 'CM', type: 'text', initial: '', caption: 'Colonnes?'}, 
     { name: 'nbL',type: 'int', initial: 3, caption: 'Nb Lignes (orange)' },
+    { name: 'LM', type: 'text', initial: '', caption: 'Lignes?'}, 
     { name: 'eC', type: 'int', initial: 3, caption: 'Ep. Carton (mm)' },
     { name: 'mode',type: 'choice', initial: 1, caption:'Mode', captions:['Vue 3d','Vue 3d eclatee V', 'Vue 3d eclatee H', 'Vue 2d'], values:[30,31,32,2]},
     { name: 't1',  type: 'group', caption:'Gabarit'},
@@ -1227,7 +1229,7 @@ function ajoutePtsDePoly(poly){
 
 function main(){
 
-var r2d = [], v, tmp, i, b, tr, d, bz, t2, t3, t4;
+var r2d = [], v, tmp, i, b, tr, d, bz, t2, t3, t4, n, colsM, ligsM, CM, LM;
 var nLignes = [], nColonnes = [], rL = [], rC = [], urL, urC;
 
 // volume
@@ -1235,8 +1237,19 @@ v = center(true, scale(params.ech, rotate([params.rX, params.rY, params.rZ], vol
 b = v.getBounds();
 d = b[1].minus(b[0]);
 
+if(params.LM === ''){
+  ligsM = [];
+  LM = -1;
+} else {
+  ligsM = params.LM.split(',').map(Number);
+}
+n = 0;
 for(i = 0.5; i< params.nbL; i++){ // lignes
-  tr =rotate([90,0,0], faitLigne(i, v, params.nbL, params.eC));
+  if(ligsM.length > 0){
+    LM = ligsM[n];
+    n++;
+  }
+  tr =rotate([90,0,0], faitLigne(i, v, params.nbL, params.eC, LM));
   bz = tr.getBounds()[0].z;
   tr = union(vol2surf(tr, bz));
   tr = translate([0,bz +3, 0], rotate([-90,0,0], tr.extrude({offset:[0,0,params.eC]})));
@@ -1244,8 +1257,20 @@ for(i = 0.5; i< params.nbL; i++){ // lignes
 }
 urL = union(rL);
 
+if(params.CM === ''){
+	colsM = [];
+  CM = -1;
+} else {
+  colsM = params.CM.split(',').map(Number);
+}
+//console.log('XX', colsM);
+n = 0;
 for(i = 0.5; i < params.nbC; i++){ // colonnes
-  tr =rotate([0,90,0], faitColonne(i, v, params.nbC, params.eC));
+  if(colsM.length > 0){
+    CM = colsM[n];
+    n++;
+  }
+  tr =rotate([0,90,0], faitColonne(i, v, params.nbC, params.eC, CM));
   bz = tr.getBounds()[0].z;
   tmp = union(vol2surf(tr, bz));
   tr = translate([-bz, 0, 0], rotate([0,-90,0], tmp.extrude({offset:[0,0,params.eC]})));
@@ -1335,22 +1360,22 @@ function tourneEt2d(vol, angle){
   return union(vol2surf(t, t.getBounds()[1].z));
 }
 
-function faitColonne(i, V, nbC, ec){
+function faitColonne(i, V, nbC, ec, CM){
+	//console.log(CM);
 	var vb = V.getBounds();
 	var vd = vb[1].minus(vb[0]);
   var tNc1 = [[0, vb[0].x],[nbC, vb[1].x]];
-  var b2 = lookup(i, tNc1);
-  //var tmp = translate([b2 -ec, vb[0].y, -vd.z/2], cube({size:[ec, vd.y*3, vd.z*3], center:false}));
+  var b2 = lookup((CM > -1 ? CM : i), tNc1);
   var tmp = translate([b2 -ec, -500, -500], cube({size:[ec, 1000, 1000], center:false}));
   return V.intersect(tmp);
 }
 
-function faitLigne(i, V, nbL, ec){
+function faitLigne(i, V, nbL, ec, LM){
+  //console.log(LM);
 	var vb = V.getBounds();
 	var vd = vb[1].minus(vb[0]);
   var tNl1 = [[0, vb[0].y],[nbL, vb[1].y]];
-  var b2 = lookup(i, tNl1);
-  //var tmp = translate([vb[0].x, b2 -ec, -vd.z/2], cube({size:[vd.x*3, ec, vd.z*3], center:false}));
+  var b2 = lookup((LM > -1 ? LM: i), tNl1);
   var tmp = translate([-500, b2 -ec, -500], cube({size:[1000, ec, 1000], center:false}));
   return V.intersect(tmp);
 }
@@ -1552,7 +1577,7 @@ function getParameterDefinitions() {
 
 function main(params) {
 // Récupère le volume
-var V = union(volume()).scale(params.echelle);
+var V = volume()).scale(params.echelle;
 
 // Calcule ses dimensions :
 var b = V.getBounds(); // pts extrêmes du volume (plus petit et plus grand)
