@@ -47791,7 +47791,7 @@ function faitPDF(texte, px, py){
 				n++;
 				var x = (o.x1 + o.x2) / 2;
 				var y = (o.y1 + o.y2) / 2;
-				//doc.setDrawColor(0, 0, 255);
+				doc.setDrawColor(0, 0, 255);
 				var x1, y1, g_echelle = 0.25;
 				var ch = n.toString();
 
@@ -47814,7 +47814,7 @@ function faitPDF(texte, px, py){
 				// reperes centres
 				var xrd = (x - o.x1) / 4;
 				var yrd = (y - o.y1) / 4;
-				//doc.setDrawColor(0, 0, 255);
+				doc.setDrawColor(0, 0, 255);
 				for(var xi = -3; xi <= 3; xi +=2){
 					for(var yi = -3; yi <= 3; yi +=2){
 						doc.rect(x + (xrd * xi), y + (yrd * yi), 0.2, 0.2).stroke();
@@ -47982,7 +47982,7 @@ let lv = d.filter(l => l.startsWith('v '));
 let pts = lv.map(x => {
   var tmp = x.split(/\s/);
   tmp.shift();
-  var v = tmp.filter(d => d.trim()).map(Number);
+  var v = tmp.filter(d => d.trim()).map(x => Math.round(Number(x) * 100) / 100);
   return v;
 });
 // 2°) Lit les faces (g puis [f v1// v2// v3//]... )
