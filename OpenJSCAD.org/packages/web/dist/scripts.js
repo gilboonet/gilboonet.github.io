@@ -47734,6 +47734,7 @@ function mm2pt (mm) {
 function faitPDF(texte, px, py){
 	var obj = JSON.parse(texte);
 	//var ori = (px < py ? 'portrait' : 'landscape');
+	const lig_col = "red", num_col = "blue", pt_col = "green";
 	var n = 0, i;
 	px = mm2pt(px);
 	py = mm2pt(py);
@@ -47766,24 +47767,24 @@ function faitPDF(texte, px, py){
 						.lineTo(o.x1, o.y2)
 						.lineTo(o.x2, o.y2)
 						.lineTo(o.x2, o.y1)
-						.lineTo(o.x1, o.y1).stroke();
+						.lineTo(o.x1, o.y1).stroke(lig_col);
 				}else if(o.t == 11){ // cadre prem ligne apres 1ere tranche
 					doc.save()
 						.moveTo(o.x1, o.y2)
 						.lineTo(o.x2, o.y2)
 						.lineTo(o.x2, o.y1)
-						.lineTo(o.x1, o.y1).stroke();
+						.lineTo(o.x1, o.y1).stroke(lig_col);
 				}else if(o.t == 12){ // cadre premier nouvelle ligne apres 1ere 
 					doc.save()
 					  .moveTo(o.x1, o.y1)
 						.lineTo(o.x1, o.y2)
 						.lineTo(o.x2, o.y2)
-						.lineTo(o.x2, o.y1).stroke();
+						.lineTo(o.x2, o.y1).stroke(lig_col);
 				}else if(o.t == 13){ // cadre
 					doc.save()
 					  .moveTo(o.x1, o.y2)
 						.lineTo(o.x2, o.y2)
-						.lineTo(o.x2, o.y1).stroke();
+						.lineTo(o.x2, o.y1).stroke(lig_col);
 				}
 
 				// n° au milieu
@@ -47791,7 +47792,7 @@ function faitPDF(texte, px, py){
 				n++;
 				var x = (o.x1 + o.x2) / 2;
 				var y = (o.y1 + o.y2) / 2;
-				doc.setDrawColor(0, 0, 255);
+				//doc.setDrawColor(0, 0, 255);
 				var x1, y1, g_echelle = 0.25;
 				var ch = n.toString();
 
@@ -47808,21 +47809,21 @@ function faitPDF(texte, px, py){
 						//x0 = x1;
 						//y0 = y1;
 					}
-					doc.stroke();
+					doc.stroke(num_col);
 				}
 
 				// reperes centres
 				var xrd = (x - o.x1) / 4;
 				var yrd = (y - o.y1) / 4;
-				doc.setDrawColor(0, 0, 255);
+				//doc.setDrawColor(0, 0, 255);
 				for(var xi = -3; xi <= 3; xi +=2){
 					for(var yi = -3; yi <= 3; yi +=2){
-						doc.rect(x + (xrd * xi), y + (yrd * yi), 0.2, 0.2).stroke();
+						doc.rect(x + (xrd * xi), y + (yrd * yi), 0.2, 0.2).stroke(pt_col);
 					}
 				}
 				break;
 			case 2: // ligne
-				doc.save().moveTo(o.x1, o.y1).lineTo(o.x2, o.y2).stroke();
+				doc.save().moveTo(o.x1, o.y1).lineTo(o.x2, o.y2).stroke(lig_col);
 				break;
 			case 3: // texte
 				//doc.setTextColor(0, 0, 255);
