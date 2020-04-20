@@ -1065,7 +1065,8 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
         if (tmp.length >0){
           t2d = union(tmp);
           b2 = t2d.getBounds();
-          t2d = translate(b2[0].times(-1), t2d);
+          //t2d = translate(b2[0].times(-1), t2d);
+          t2d = translate([d.x/2, d.y/2], t2d);
         }
 
         r.push(translate([dx, dy], t2d));
@@ -1535,8 +1536,9 @@ for(n = 0; n < vol.polygons.length; n++){
   ok = true;
   for(i=0; (i < P.vertices.length) && ok; i++){
     pt = P.vertices[i].pos;
-    if(Math.abs(pt.z - orig)< 0.05){
-      pts.push([pt.x, pt.y]);
+    if(Math.abs(toFixedNumber(pt.z,2,10) - orig) < 0.05){
+      pts.push([toFixedNumber(pt.x,2,10), toFixedNumber(pt.y,2,10)]);
+      //pts.push([pt.x, pt.y]);
     } else {
       ok = false;
     }
@@ -1548,6 +1550,12 @@ for(n = 0; n < vol.polygons.length; n++){
 
 return S;
 }
+
+function toFixedNumber(num, digits, base){
+  var pow = Math.pow(base||10, digits);
+  return Math.round(num*pow) / pow;
+}
+
 /*
 function poseAPlat(p){
   const v1 = p.vertices[0].pos, v2 = p.vertices[1].pos, v3 = p.vertices[2].pos;
