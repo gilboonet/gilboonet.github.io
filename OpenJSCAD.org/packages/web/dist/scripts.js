@@ -48092,6 +48092,7 @@ function init() {
   "canardPlastiq274",
   "chat234",
   "chat310",
+  "cheval246",
   "chien354",
   "cubocta20",
 	"cygne500",
