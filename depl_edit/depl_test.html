@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Language" content="fr" /> 
+<meta http-equiv=“Pragma” content=”no-cache”>
+<meta http-equiv=“Expires” content=”-1″>
+<meta http-equiv=“CACHE-CONTROL” content=”NO-CACHE”>
+<html>
+<head>
+<!--link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"-->
+<script src="https://kit.fontawesome.com/f22da9fa3e.js" crossorigin="anonymous"></script>
+<!--script src="../earcut.js"></script-->
+<style>
+  svg { outline: 3px solid black; margin-top: 30px;}
+  
+  .draggable { cursor: move;}
+  .attacher { cursor: zoom-in;}
+  .detacher { cursor: zoom-out;}
+    
+  .i1 { width:30px; padding:4px; margin:0px;}
+  .b1 { 
+		background-color: SkyBlue; border: none; color: white; cursor: pointer;
+		text-decoration: none; display: inline-block; padding:4px; text-align: center; vertical-align: middle; } 
+		
+	.b1:hover { background-color: RoyalBlue; }
+	
+.header{
+	overflow: hidden; background-color:white;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+</style>
+</head>
+<body onload="debut()">
+	<div class="header">
+	<input id="fichier" type="file" accept=".obj"/>
+	<i id="blaEchelle">Echelle:</i><input class="i1" type="text" id="echelle" value="" onchange="chargeEchelle()">
+	<button class="b1" onclick="sauveSVG()"><i class="fas fa-download"></i>SVG</button>
+	<button class="b1" onclick="debut()"><i class="far fa-file"></i>Nouveau</button>
+	<button class="b1" onclick="sauveDonnees()"><i class="fas fa-download"></i>Data</button>
+	<button class="b1" onclick="chargeDonnees()"><i class="fas fa-upload"></i>Data</button>
+	<input id="fichierD" type="file" accept=".json"/>
+	<input class="i1" type="text" id="rech" value=""><button onclick="redeploie()" class="b1"><i class="fa fa-search"></i></button>
+	<i id="blaCourant">Courant:</i><input class="i1" type="text" id="courant" value="">
+	
+	<button class="b1" onclick="tourneTriangle(1)"><i class="fas fa-undo"></i></button>
+	<button class="b1" onclick="tourneTriangle(-1)"><i class="fas fa-redo"></i></button>
+	<button class="b1" onclick="bougePiece( 1, 0)"><i class="fas fa-arrow-left"></i></button>
+	<button class="b1" onclick="bougePiece( 0,-1)"><i class="fas fa-arrow-down"></i></button>
+	<button class="b1" onclick="bougePiece( 0, 1)"><i class="fas fa-arrow-up"></i></button>
+	<button class="b1" onclick="bougePiece(-1, 0)"><i class="fas fa-arrow-right"></i></button>
+  </div>
+  <svg xmlns="http://www.w3.org/2000/svg" id="leSvg" height="297mm" width="420mm"></svg> 
+  <svg xmlns="http://www.w3.org/2000/svg" id="mm" height="297mm" width="79mm"></svg> 
+<script>
+var nn = 0, epsilon = 0.001, fZoom, tP1 = 11, tP2 = 9, ok = false
+var Triangles = [], Pages = [], Lignes = [], Nums = [], lec = [];
+// https://www.thingiverse.com/thing:3831583
+volume = function () {
+let faces =[[0,2,1],[0,6,3],[0,7,2],[1,6,0],[1,16,6],[2,8,1],[2,14,8],[2,17,14],[3,4,0],[3,5,4],[3,9,5],[3,18,9],[4,7,0],[4,19,7],[5,10,4],[5,12,10],[6,18,3],[6,29,18],[7,17,2],[7,30,17],[8,13,1],[8,81,13],[9,11,5],[9,25,11],[9,33,25],[10,19,4],[10,34,19],[11,12,5],[11,15,12],[11,20,15],[11,25,20],[12,26,10],[13,16,1],[13,35,16],[13,75,35],[13,81,75],[14,76,8],[15,21,12],[15,24,21],[16,29,6],[16,46,29],[17,36,14],[17,47,36],[18,33,9],[18,45,33],[19,30,7],[19,48,30],[20,23,15],[20,31,23],[20,37,31],[21,26,12],[21,38,26],[22,24,23],[22,27,24],[22,91,27],[23,24,15],[23,28,22],[23,31,28],[24,32,21],[25,37,20],[25,42,37],[26,34,10],[26,44,34],[27,32,24],[27,39,32],[27,99,39],[28,91,22],[29,45,18],[29,59,45],[30,47,17],[30,60,47],[31,40,28],[31,41,40],[32,38,21],[32,43,38],[33,42,25],[33,55,42],[34,48,19],[34,56,48],[35,46,16],[35,53,46],[35,75,53],[36,54,14],[37,41,31],[37,51,41],[38,44,26],[38,52,44],[39,43,32],[39,49,43],[39,99,49],[40,93,28],[41,50,40],[41,57,50],[42,51,37],[42,63,51],[43,52,38],[43,58,52],[44,56,34],[44,64,56],[45,55,33],[45,70,55],[46,59,29],[46,72,59],[47,54,36],[47,73,54],[48,60,30],[48,71,60],[49,58,43],[49,61,58],[49,97,61],[50,93,40],[51,57,41],[51,68,57],[52,64,44],[52,69,64],[53,72,46],[53,75,72],[54,76,14],[55,63,42],[55,79,63],[56,71,48],[56,80,71],[57,62,50],[57,65,62],[57,68,65],[58,69,52],[59,70,45],[59,82,70],[60,73,47],[60,83,73],[61,66,58],[61,67,66],[61,97,67],[62,95,50],[63,68,51],[63,77,68],[63,79,77],[64,80,56],[65,67,62],[65,74,66],[66,67,65],[66,69,58],[66,74,69],[67,95,62],[68,74,65],[68,77,74],[69,78,64],[70,79,55],[70,85,79],[71,83,60],[71,86,83],[72,82,59],[72,87,82],[73,76,54],[73,88,76],[74,78,69],[75,87,72],[76,81,8],[76,88,81],[77,78,74],[77,84,78],[78,80,64],[78,84,80],[79,84,77],[79,85,84],[80,86,71],[81,87,75],[81,88,87],[82,85,70],[82,89,85],[83,88,73],[83,89,88],[84,86,80],[85,86,84],[85,89,86],[86,89,83],[87,89,82],[88,89,87],[90,27,91],[90,99,27],[91,28,92],[91,93,98],[91,98,90],[92,28,93],[92,93,91],[93,50,94],[94,50,95],[94,95,93],[95,67,96],[96,67,97],[96,93,95],[96,98,93],[97,49,98],[97,98,96],[98,49,99],[99,90,98]]
+let vertices = [[-64.03382874,-3.5318415e-11,30.00343132],[-59.91656113,-19.46807098,15],[-59.91656113,19.46807098,15],[-57.06335449,-18.541008,45.06736374],[-57.06335449,18.541008,45.06764603],[-54.99999619,-5.3390924e-8,60.02113724],[-51.80445862,-37.63814163,30.00343132],[-51.80445862,37.63814163,30.00343132],[-50,0,0],[-44.49592972,-32.32818604,60.02108765],[-44.49592972,32.32818604,60.02125168],[-43.75030136,-14.21533489,75.00775909],[-43.75030136,14.21533489,75.00778961],[-40.45085144,-29.38926315,0],[-40.45085144,29.38926315,0],[-40,2.4979541e-10,90.0043335],[-37.0304718,-50.96807098,15],[-37.0304718,50.96807098,15],[-35.26709366,-48.54098892,45.06713486],[-35.26709366,48.54098892,45.06787872],[-32.36067963,-23.51140976,90.0043335],[-32.36067963,23.51140976,90.0043335],[-31.99938583,-0.0000014563998,120.19831085],[-31.75780487,-10.31899834,105.72114563],[-31.75780487,10.31847382,105.72861481],[-27.03917313,-37.21622849,75.00775146],[-27.03917313,37.21622849,75.00783539],[-25.88804817,18.80876541,120.19831085],[-25.88804626,-18.80876732,120.19831085],[-19.78754234,-60.89979172,30.00343132],[-19.78754234,60.89979172,30.00343132],[-19.62740326,-27.01506424,105.71511078],[-19.62740326,27.01453972,105.73464966],[-16.99593353,-52.30810547,60.02111816],[-16.99593353,52.30810547,60.02138519],[-15.45084953,-47.55282593,0],[-15.45084953,47.55282593,0],[-12.36067963,-38.04225922,90.0043335],[-12.36067963,38.04225922,90.0043335],[-9.88835526,30.43322372,120.19831085],[-9.88835239,-30.43322372,120.19831085],[-1.9238634e-8,-33.3923912,105.7128067],[-1.0984579e-8,-46.00178909,75.00778198],[-1.0593921e-8,33.39186859,105.73696136],[-1.0428439e-8,46.00178909,75.00788879],[-2.7866998e-10,-59.99996185,45.06704712],[4.2464752e-15,-63,15],[4.9960036e-15,63,15],[2.7941816e-10,59.99996185,45.06796646],[9.88835239,30.43322372,120.19831085],[9.88835526,-30.43322372,120.19831085],[12.36067963,-38.04225922,90.0043335],[12.36067963,38.04225922,90.0043335],[15.45084953,-47.55282593,0],[15.45084953,47.55282593,0],[16.99593353,-52.30810547,60.02122116],[16.99593353,52.30810547,60.02148819],[19.62740326,-27.01506424,105.71511078],[19.62740326,27.01453972,105.73464966],[19.78754234,-60.89979172,30.00343132],[19.78754234,60.89979172,30.00343132],[25.88804626,18.80876732,120.19831085],[25.88804817,-18.80876541,120.19831085],[27.03917313,-37.21622849,75.00782776],[27.03917313,37.21622849,75.00791168],[31.75780487,-10.31899834,105.72115326],[31.75780487,10.31847382,105.72861481],[31.99938583,0.0000014563998,120.19831085],[32.36067963,-23.51140976,90.0043335],[32.36067963,23.51140976,90.0043335],[35.26709366,-48.54098892,45.06713486],[35.26709366,48.54098892,45.06787872],[37.0304718,-50.96807098,15],[37.0304718,50.96807098,15],[40,-2.488052e-10,90.0043335],[40.45085144,-29.38926315,0],[40.45085144,29.38926315,0],[43.75030136,-14.21533489,75.00787354],[43.75030136,14.21533489,75.00791168],[44.49592972,-32.32818604,60.02135468],[44.49592972,32.32818604,60.02151871],[50,0,0],[51.80445862,-37.63814163,30.00343132],[51.80445862,37.63814163,30.00343132],[54.99999619,-5.4976162e-8,60.02146912],[57.06335449,-18.541008,45.06736374],[57.06335449,18.541008,45.06764603],[59.91656113,-19.46807098,15],[59.91656113,19.46807098,15],[64.03382874,3.5309533e-11,30.00343132],[-25.88804817,18.80876541,135.19831085],[-31.99938583,-0.0000014563998,135.19831085],[-25.88804626,-18.80876732,135.19831085],[-9.88835239,-30.43322372,135.19831085],[9.88835526,-30.43322372,135.19831085],[25.88804817,-18.80876541,135.19831085],[31.99938583,0.0000014563998,135.19831085],[25.88804626,18.80876732,135.19831085],[9.88835239,30.43322372,135.19831085],[-9.88835526,30.43322372,135.19831085]]
+let groups = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+return {faces:faces, vertices:vertices, groups:groups}
+}
+const svgNS = "http://www.w3.org/2000/svg" , gLargeur = document.getElementById('leSvg').width.baseVal.value
+var vol, donnees, pCourante, selEl = null, sElOffset, sCoord, poseCourant
+var rechEnCours = false;
+function chargeEchelle(){
+	var ech = document.getElementById("echelle")
+	if(ech.value == ''){
+		fZoom = 10 / 102.28 * 38.53
+	} else {
+		fZoom = parseFloat(ech.value)
+	}
+	chargeVolume()
+	//redeploie()
+}
+function initVolume(){
+  if(!vol){
+		vol = volume()
+		vol.vertices = vol.vertices.map(x=> x.map(y=> y*fZoom))
+	}
+}
+
+function chargeVolume() {
+	if(event.target.files){
+	
+		var fichier = event.target.files[0];
+		var ext = fichier.name.split('.')[1].toUpperCase();
+		switch(ext){
+			case 'JSCAD':
+				var fnChargement = function () {
+					volume = this.result;
+				};
+				break;
+			case 'STL':
+				var fnChargement = function () {
+					volume = stl2jscad(this.result);
+				};
+				break;
+			case 'OBJ':
+				var fnChargement = function () {
+					vol = obj2jscad(this.result)
+					vol.vertices = vol.vertices.map(x=> x.map(y=> y*fZoom))
+					ok = true
+					commencer()
+					makeDraggable()
+					redeploie()
+				};
+		}
+
+		const lecteur = new FileReader();
+		lecteur.addEventListener("load", fnChargement, false);
+
+		lecteur.readAsText(fichier);
+	}
+}
+
+function obj2jscad(data){
+let d = data.split(/\n/);
+// 1°) Lit les vertices ( v x y z)
+let lv = d.filter(l => l.startsWith('v '));
+let pts = lv.map(x => {
+  var tmp = x.split(/\s/);
+  tmp.shift();
+  var v = tmp.filter(d => d.trim()).map(x => Math.round(Number(x) * 100) / 100);
+  return v;
+});
+// 2°) Lit les faces (g puis [f v1// v2// v3//]... )
+let lf = d.filter(l => l.startsWith('g ') || l.startsWith('f '));
+let faces = [], groupes = [], nfg = 0;
+for(let i = 0; i < lf.length; i++){
+  if(lf[i].startsWith('g ')){
+    nfg++;
+  } else {
+    var tmp = lf[i].split(/\s/);
+    tmp.shift();
+    let f = tmp.map(x => {
+			var n = x.split(/\//);
+			return Number(n[0])-1;
+		});
+		var nd = f[f.length -1];
+		if ((nd == -1) || !(Number.isInteger(nd))){
+			f.pop();
+		}
+    /*if(f.length > 3){
+			var fPts = f.map(x => pts[x])
+			fTmp = earcut(fPts.flat(), null, 3)
+			console.log('-----',f)
+			while(fTmp.length > 0){
+				ff = fTmp.splice(0,3).map(x => f[x])
+				faces.push(ff)
+				console.log(ff)
+			}
+		} else {*/
+    faces.push(f);
+    //}
+    groupes.push(nfg);
+  }
+}
+
+let sortie = { faces : faces, vertices: pts, groups: groupes }
+return sortie
+}
+
+function debut(){
+	document.getElementById("fichier").addEventListener("change", chargeVolume, false);
+	document.getElementById("fichierD").addEventListener("change", chargeDonnees, false);
+	chargeEchelle()
+  initVolume()
+	
+	commencer()
+	makeDraggable()
+	redeploie()
+}
+
+function commencer(){
+	if(!ok)return
+	var max = vol.faces.length -1
+	var n = prompt("Commencer par quelle facette (0 - "+ max +") ?", "0")
+	
+	if (n != null) {
+		n = parseInt(n)
+		console.log(n)
+		if( (n<0) || (n > max)){
+			n = getRandomInt(max)
+		}
+		donnees = { pages:[ [	{n:n, x:750,y:550, a:0} ] ] }
+	}
+}
+
+function makeDraggable(){
+//http://www.petercollingridge.co.uk/tutorials/svg/interactive/dragging/	
+	var svg = document.getElementById("leSvg")
+  svg.addEventListener('mousedown', startDrag);
+  svg.addEventListener('mousemove', drag);
+  svg.addEventListener('mouseup', endDrag);
+  svg.addEventListener('mouseleave', endDrag);
+
+  function getMousePosition(evt) {
+    var CTM = svg.getScreenCTM();
+    return {
+      x: (evt.clientX - CTM.e) / CTM.a,
+      y: (evt.clientY - CTM.f) / CTM.d
+    };
+  }
+ 
+function startDrag(evt) {
+	if (evt.target.classList.contains('draggable')) {
+		selEl = evt.target
+		poseCourant = selEl.textContent
+		document.getElementById("courant").value = poseCourant
+		sCoord = [
+			parseFloat(selEl.getAttributeNS(null, "x")),
+			parseFloat(selEl.getAttributeNS(null, "y"))
+		]
+		sElOffset = getMousePosition(evt)
+		sElOffset.x -= parseFloat(sCoord[0])
+		sElOffset.y -= parseFloat(sCoord[1])
+	}
+}
+function drag(evt) {
+	if (selEl) {
+		evt.preventDefault();
+    var coord = getMousePosition(evt)
+    var nx = coord.x - sElOffset.x
+    var ny = coord.y - sElOffset.y
+    selEl.setAttributeNS(null, "x", nx);
+    selEl.setAttributeNS(null, "y", ny);
+	}
+}
+function endDrag(evt) {
+
+  if(selEl){
+		var coord = getMousePosition(evt)
+		delta = [
+		  sCoord[0] - parseFloat(selEl.getAttributeNS(null, "x")),
+		  sCoord[1] - parseFloat(selEl.getAttributeNS(null, "y"))
+		]
+		
+		t = donnees.pages[pCourante-1].find(x=>x.n == selEl.textContent)
+		t.x -= delta[0]
+		t.y -= delta[1]
+		
+		selEl = null
+		redeploie()
+	}
+}
+}
+
+function bougePiece(dx, dy){
+	if(!poseCourant){ poseCourant = document.getElementById("courant").value}
+	t = donnees.pages[pCourante-1].find(x=>x.n == poseCourant)
+	t.x -= dx
+	t.y -= dy
+		
+	redeploie()
+}
+function tourneTriangle(sens){
+	var n = document.getElementById("courant").value
+	if(n){
+		var t = donnees.pages[pCourante-1].find(x=>x.n == n)
+		t.a = t.a + sens
+		redeploie()
+	}
+}
+function sauveSVG(){
+// 1. Keep a DOM reference to the SVG element
+  var SVGDomElement = document.getElementById("leSvg");
+	var elsT = document.getElementsByTagNameNS( "http://www.w3.org/2000/svg", "text" )
+  l = Array.from(elsT)
+  var t = l.filter(el => el.id.startsWith('T_'))
+	var tT = l.filter(el => el.id.startsWith('TT_'))
+	if(tT.length == vol.faces.length){
+		var nv = 0;
+		for(var i = 0; i < t.length; i++){
+			n1 = t[i].id.split('_')
+			n1.shift()
+			t1 = l.find(el => el.id == 'T_' + n1[0] + '_' + n1[1])
+			t2 = l.find(el => el.id == 'T_' + n1[1] + '_' + n1[0])
+			if(t1.innerHTML != t2.innerHTML){
+				t1.innerHTML = nv
+				t1.setAttributeNS(null,"fill", "black")
+				t2.innerHTML = nv
+				t2.setAttributeNS(null,"fill", "black")
+				nv++
+			}
+		}
+		tT.map(x=> x.parentNode.removeChild( x ))
+	}
+// 2. Serialize element into plain SVG
+var serializedSVG = new XMLSerializer().serializeToString(SVGDomElement);
+
+const blob = new Blob([serializedSVG], {type: 'image/svg+xml'});
+let objectURL = window.URL.createObjectURL(blob);
+let anchor = document.createElement('a');
+
+anchor.href = objectURL;
+anchor.download = name;
+anchor.click();
+
+URL.revokeObjectURL(objectURL);
+}
+function d2ize(p){
+// https://stackoverflow.com/a/8051489
+var x0 = p[0][0], y0 = p[0][1], z0 = p[0][2],
+    x1 = p[1][0], y1 = p[1][1], z1 = p[1][2],
+    x2 = p[2][0], y2 = p[2][1], z2 = p[2][2]
+    
+var X0 = 0, Y0 = 0
+var X1 = Math.sqrt((x1 - x0)*(x1 - x0) + (y1 - y0)*(y1 - y0) + (z1 - z0)*(z1 - z0)),
+    Y1 = 0
+var X2 = ((x1 - x0) * (x2 - x0) + (y1 - y0) * (y2 - y0) + (z1 - z0) * (z2 - z0)) / X1,
+    Y2 = Math.sqrt((x2 - x0)*(x2 - x0) + (y2 - y0)*(y2 - y0) + (z2 - z0)*(z2 - z0) - X2*X2)
+    
+//return [[X0, gLargeur-Y0], [X1, gLargeur-Y1], [X2, gLargeur-Y2]]
+return [[X0, Y0], [X1, Y1], [X2, Y2]]
+
+}
+function distance2d(p1, p2){
+  var a = p2[0] - p1[0]
+  var b = p2[1] - p1[1]
+
+  return Math.sqrt(a*a + b*b)
+}
+function distance(p1, p2) {
+  var a = p2[0] - p1[0]
+  var b = p2[1] - p1[1]
+  var c = p2[2] - p1[2]
+
+  return Math.sqrt(a * a + b * b + c * c)
+}
+function rad2deg(r){ return r * (180 / Math.PI)}
+function rotation(cx, cy, x, y, angle) {
+  var radians = (Math.PI / 180) * angle,
+      cos = Math.cos(radians),
+      sin = Math.sin(radians),
+      nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
+      ny = (cos * (y - cy)) - (sin * (x - cx)) + cy
+
+  return [nx, ny]
+}
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+function coordonneesDepuisDistances(d){
+  var a = d[0], b = d[1], c = d[2], result = [0,0];
+
+  if(a > 0){
+    result[0] = (c*c - b*b + a*a) / (2*a);
+  }
+
+  result[1] = Math.sqrt(c*c - result[0]*result[0]);
+  return result;
+}
+function centroid(pts){
+  var a = pts[0], b = pts[1], c = pts[2] 
+  var cX = ((a[0] + b[0] + c[0]) / 3)
+  var cY = ((a[1] + b[1] + c[1]) / 3)
+  //var cZ = ((a[2] + b[2] + c[2]) / 3)
+
+  return [cX, cY]
+}
+function milieu(a, b){
+  var cX = ((a[0] + b[0]) / 2)
+  var cY = ((a[1] + b[1]) / 2)
+
+  return [cX, cY]
+}
+function calculeDistances(v, triangle){
+  var p3A = v.vertices[triangle[0]]
+  var p3B = v.vertices[triangle[1]]
+  var p3C = v.vertices[triangle[2]]
+  var a = distance(p3B, p3C)
+  var b = distance(p3C, p3A)
+  var c = distance(p3A, p3B)
+
+  return [a, b, c]
+}
+function calculeAngles(d){
+  var a = d[0], b = d[1], c = d[2]
+  
+  var aA = Math.acos((b*b + c*c - a*a) / (2 * b * c))
+  var aB = Math.acos((c*c + a*a - b*b) / (2 * c * a))
+  var aC = Math.acos((a*a + b*b - c*c) / (2 * a * b))
+
+  return [aA, aB, aC]
+}
+function rechercheVoisin(nFace, rech, tableau){
+  return tableau.findIndex(function(el, i){return (i!== nFace) && el.includes(rech[0]) && el.includes(rech[1])})
+}
+function troisiemePoint(triangle, pts){
+  return triangle.findIndex(el => (el != pts[0]) && (el != pts[1]) )
+}
+function angle(p1, p2){
+  var cx= p1[0], cy= p1[1], ex = p2[0], ey= p2[1]
+  var dy = ey - cy
+  var dx = ex - cx
+  var theta = Math.atan2(dy, dx) // range (-PI, PI]
+  //theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
+  //if (theta < 0) theta = 360 + theta; // range [0, 360)
+  return theta
+}
+function deplace(x, y, dx, x1, y1, x2, y2){ 
+// https://stackoverflow.com/a/38994057
+  var a = [x2 - x1, y2 - y1],
+      mag = Math.sqrt(a[0]*a[0] + a[1]*a[1])
+  if (mag == 0) {
+    a[0] = a[1] = 0
+  } else {
+    a[0] = a[0] / mag * dx
+    a[1] = a[1] / mag * dx
+  }
+  return [x + a[0], y + a[1]]
+}
+function calculeAngleBAC(A, B, C){
+  var AB = [B[0]-A[0], B[1]-A[1]]
+  var AC = [C[0]-A[0], C[1]-A[1]]
+  var ang = Math.atan2((AB[0]*AC[0])+(AB[1]*AC[1]), (AB[1]*AC[0])-(AB[0]*AC[1]))
+
+  return ang
+}
+function ajoutePoly(pts, source = "leSvg"){
+  var tri = document.createElementNS(svgNS, "polygon")
+  tri.setAttributeNS(null, "style", "fill:none;stroke:black;stroke-width:1")
+  var fPts = pts.flat()
+  tri.setAttributeNS(null, "points", fPts)
+  document.getElementById(source).appendChild(tri)
+}
+function ajouteRect(x, y, h, w, f, source = "leSvg"){
+  var rect = document.createElementNS(svgNS, 'rect')
+  rect.setAttributeNS(null, 'x', x);
+  rect.setAttributeNS(null, 'y', y);
+  rect.setAttributeNS(null, 'height', h);
+  rect.setAttributeNS(null, 'width', w);
+  rect.setAttributeNS(null, 'stroke', 'black');
+  if(f){
+    rect.setAttributeNS(null, 'fill', f);
+    rect.setAttributeNS(null, 'fill-opacity', '0.7');
+  }
+  document.getElementById(source).appendChild(rect);
+}
+function ajouteNb(x, y, n, source = "leSvg"){
+  var txt = document.createElementNS(svgNS, "text")
+  txt.setAttributeNS(null,"x", x)
+  txt.setAttributeNS(null,"y", y)
+  txt.setAttributeNS(null,"fill", 'black')
+  txt.setAttributeNS(null,"font-size", "9px")
+  txt.setAttributeNS(null,"dominant-baseline", "middle")
+  txt.setAttributeNS(null,"text-anchor", "middle")
+  txt.innerHTML = n
+  document.getElementById(source).appendChild(txt)
+}
+function ajouteLigne(pt1, pt2, coul = "black", source = "leSvg"){
+  var lig = document.createElementNS(svgNS, 'line')
+  lig.setAttributeNS(null, "x1", pt1[0])
+  lig.setAttributeNS(null, "y1", pt1[1])
+  lig.setAttributeNS(null, "x2", pt2[0])
+  lig.setAttributeNS(null, "y2", pt2[1])
+  lig.setAttributeNS(null, "stroke-width", 1)
+  lig.setAttributeNS(null, "stroke", coul)
+  if(coul == "maroon"){
+    lig.setAttributeNS(null, "stroke-dasharray", 12)
+  } else if (coul == "green"){
+    lig.setAttributeNS(null, "stroke-dasharray", '1, 8')
+  }
+  document.getElementById(source).appendChild(lig)
+}
+function ajouteTexte(centre, t, coul = "black", source = "leSvg"){
+  var txt = document.createElementNS(svgNS, "text")
+  txt.setAttributeNS(null,"x", centre[0])
+  txt.setAttributeNS(null,"y", centre[1])
+  if(coul == "orange"){
+    txt.setAttributeNS(null,"font-weight", "bolder")
+    txt.classList.add("draggable")
+  } else {
+    txt.classList.add("detacher")
+		txt.addEventListener('click', clicDetacher);
+    
+    var L = Lignes.filter(x => (x.triP == t) && (x.etat == 'C'))
+  }
+  txt.setAttribute("id", "TT_" + t)
+  txt.setAttributeNS(null,"fill", coul)
+  txt.setAttributeNS(null,"font-size", tP1 + "px")
+  txt.setAttributeNS(null,"dominant-baseline", "middle")
+  txt.setAttributeNS(null,"text-anchor", "middle")
+  txt.setAttributeNS(null,"z-index", 1)
+  txt.innerHTML = t
+  decoSiRecherche(txt, t)
+  
+  document.getElementById(source).appendChild(txt)
+}
+function decoSiRecherche(txt, t){
+  var r = document.getElementById("rech").value
+  if(r &&(r == t)){
+    txt.setAttributeNS(null,"font-weight", "bolder")
+    txt.setAttributeNS(null,"fill", "red")
+  }
+}
+function ajouteTexte2(pt1, pt2, pt3, p, t, coul = "black", source = "leSvg"){
+  var svg = document.getElementById(source)
+  var txt = document.createElementNS(svgNS, "text")
+  centre = milieu(pt1, pt2)
+  pt = deplace(centre[0], centre[1], tP2-3, centre[0], centre[1], pt3[0], pt3[1])
+  txt.setAttributeNS(null,"x", pt[0])
+  txt.setAttributeNS(null,"y", pt[1])
+  txt.setAttribute("id", "T_" +p +'_' +t)
+  txt.classList.add("attacher")
+
+  if(!poseCourant){
+		poseCourant = document.getElementById("courant").value
+	}
+	
+	var v = donnees.pages[pCourante-1].find(x => x.n == poseCourant)
+	if(v.lies){
+		var v2 = v.lies.filter(x => x.l == t)
+		if(v2.length > 0){
+			coul = "blue"
+		}
+	}
+	 
+  txt.setAttributeNS(null,"fill", coul)
+  txt.setAttributeNS(null,"font-size", tP2 + "px")
+  txt.setAttributeNS(null,"dominant-baseline", "middle")
+  txt.setAttributeNS(null,"text-anchor", "middle")
+  txt.setAttributeNS(null,"z-index", 2)  
+  var a = rad2deg(angle(pt1, pt2))
+  txt.setAttributeNS(null,"transform", "rotate(" 
+    + (a+180)
+    + "," + pt[0]
+    + "," + pt[1]
+    +")")
+  txt.innerHTML = t
+
+  decoSiRecherche(txt, t)
+  
+  svg.appendChild(txt)
+  txt.setAttribute("tag", p + "," + t)
+  txt.addEventListener('click', clicAttacher);
+} 
+function clicAttacher(evt){
+	el = evt.target
+	d = el.getAttribute("tag").split(",").map(x=>parseInt(x))
+	
+	if(!poseCourant){ poseCourant = document.getElementById("courant").value}
+	if(d[1] != poseCourant){
+	  var t = donnees.pages[pCourante-1].find(x=>x.n == poseCourant)
+	  if(!('lies' in t)){ t.lies = [] }
+	
+	  var ok = false
+	  var v = t.lies.findIndex(x => x.l == d[1])
+	  if(v > -1) {
+			var v2 = t.lies.findIndex(x => x.p == d[1])
+			if(v2 == -1){
+			  t.lies.splice(v, 1)
+			  ok = true
+			}
+		} else {
+			ok = true
+		}
+		
+ 		if(ok){
+ 		  t.lies.push({p:d[0], l:d[1]})
+			//sauveDonnees()
+			redeploie()
+		}
+	}
+	//console.log("clic", d,t)
+}
+function clicDetacher(evt){
+	el = evt.target
+	if(!poseCourant){
+		poseCourant = document.getElementById("courant").value
+	}
+	var t = donnees.pages[pCourante-1].find(x=>x.n == poseCourant)
+	var l = t.lies.findIndex(x => x.l == el.textContent)
+	var l2 = t.lies.filter(x => x.p == el.textContent)
+	
+	if((l > -1) && (l2.length == 0)){
+		t.lies.splice(l, 1)
+		redeploie()
+	}
+}
+function debug_triangle(p){
+  ajouteTexte(p[0], "a", "blue")
+  ajouteTexte(p[1], "b", "blue")
+  ajouteTexte(p[2], "c", "blue")
+}
+function creePage(nP, l, h){
+  var page = { num: nP, largeur: l, hauteur: h,
+               trianglesPoses: [], triangles: [], lignes: [] }
+
+  return page
+}
+function creeTriangle(nT, pT, fT, dT){
+  var triangle = { num: nT, pts: pT, faces: fT }
+
+  // recherche voisins
+  var voisins = []
+  for(var i = 0; i< fT.length; i++){
+    var f1 = fT[i], f2 = fT[(i+1)%fT.length]
+    voisins.push(rechercheVoisin(nT, [f1, f2], vol.faces))
+  }
+
+  triangle.voisins = voisins
+  
+  return triangle
+}
+function poseTriangle(nT, delta = [0,0], angle = 0){
+  var triangle = vol.faces[nT]
+  var pts = d2ize(triangle.map(x=> vol.vertices[x]))
+  
+  if (angle != 0){
+      var c = centroid(pts)
+      pts = pts.map(x => rotation(c[0], c[1], x[0], x[1], angle))
+  }
+  
+  pts = pts.map(x => [x[0] + delta[0], x[1]+ delta[1]])
+  var leT = creeTriangle(nT, pts, triangle)
+  Triangles.push(leT)
+  lec = lec.concat(nT)
+  for(var i = 0; i < pts.length; i++){
+    editeLigne(nT, leT.voisins[i], pts[i], pts[(i+1)%3], pts[(i+2)%3], 'C')
+  }
+  
+  Nums.push({pt:centroid(pts), n:nT, c:"orange"})
+}
+function petit(a, b){ return Math.min(a, b)}
+function grand(a, b){ return Math.max(a, b)}
+function trouveTriangle(n){
+  return Triangles.find(x => x.num === n)
+}
+function ajouteVoisins(t){
+  ajouteTexte(milieu(t.pts[0], t.pts[1]), t.voisins[0], "green")
+  ajouteTexte(milieu(t.pts[1], t.pts[2]), t.voisins[1], "green")
+  ajouteTexte(milieu(t.pts[2], t.pts[0]), t.voisins[2], "green")
+}
+function ajouteDist(t){
+  var d = t.distances.map(x=> x.toFixed(2))
+  ajouteTexte(milieu(t.pts[0], t.pts[1]), d[0], "green")
+  ajouteTexte(milieu(t.pts[1], t.pts[2]), d[1], "green")
+  ajouteTexte(milieu(t.pts[2], t.pts[0]), d[2], "green")
+}
+function estCoplanaire(t, p){
+// Function to find equation of plane.
+// https://www.geeksforgeeks.org/program-to-check-whether-4-points-in-a-3-d-plane-are-coplanar/
+var x1 = t[0][0], y1 = t[0][1], z1 = t[0][2],
+      x2 = t[1][0], y2 = t[1][1], z2 = t[1][2],
+      x3 = t[2][0], y3 = t[2][1], z3 = t[2][2],
+      x  = p[0],    y  = p[1],    z  = p[2]
+
+  var a1 = x2 - x1,
+      b1 = y2 - y1,
+      c1 = z2 - z1,
+      a2 = x3 - x1,
+      b2 = y3 - y1,
+      c2 = z3 - z1,
+      a = b1 * c2 - b2 * c1,
+      b = a2 * c1 - a1 * c2,
+      c = a1 * b2 - b1 * a2,
+      d = (- a * x1 - b * y1 - c * z1)
+// equation of plane is: a*x + b*y + c*z = 0 #  
+   
+// checking if the 4th point satisfies  
+// the above equation  
+//  return (a * x + b * y + c * z + d == 0)
+  return a * x + b * y + c * z + d
+}
+function trouveLigneIndex(pN, gN){
+  return Lignes.findIndex(x => (x.pN === pN) && (x.gN === gN))
+}
+function editeLigne(n1, n2, p1, p2, p3, etat){
+  var pN = petit(n1, n2), gN = grand(n1, n2)
+  var L = trouveLigneIndex(pN, gN)
+
+  if(L === -1){
+    Lignes.push({pN: pN, gN: gN, p1: p1, p2: p2, p3: p3, etat:etat, triP:n1, triV:n2})
+  } else {
+    if(etat != 'C'){
+      Lignes[L].etat = etat
+    } else {
+      Lignes[L].p1b = p1
+      Lignes[L].p2b = p2
+      Lignes[L].p3b = p3
+    }
+  }
+}
+function traceLignes(){
+  for(var i in Lignes){
+  var L = Lignes[i]
+  switch(L.etat){
+    case 'C': coul = "red"
+      break
+    case 'M': coul = "maroon"
+      break
+    case 'V': coul = "green"
+  }
+  
+  if(L.etat != 'P'){
+    ajouteLigne(L.p1, L.p2, coul)
+    if(L.etat == 'C'){
+      ajouteTexte2(L.p1, L.p2, L.p3, L.triP, L.triV, "black")
+      if(L.p1b){
+        ajouteLigne(L.p1b, L.p2b, coul)
+        ajouteTexte2(L.p1b, L.p2b, L.p3b, L.triV, L.triP, "black")
+      }
+    }
+  }
+}
+
+}
+function traceNums(){
+  for(var i in Nums){
+    var num = Nums[i]
+    var nb = comptePlis(num.n)
+    if(num.c == "orange"){
+      var c = num.c
+    } else {
+      var c = (nb < 3) ? num.c : "violet"
+    }
+    ajouteTexte(num.pt, num.n, c)
+  }
+}
+function comptePlis(tN){
+  var n = 0
+  for(var i =0; i < Lignes.length; i++){
+    var L = Lignes[i]
+    if ( (L.etat != 'C') && ((L.pN == tN) || (L.gN == tN)) ){
+      n++
+    }
+  }
+  return n
+}
+function lie(l){
+  lec = lec.concat(l)
+  for(var i = 0; i < l.length-1; i++){
+    lieTriangle(l[i], l[i+1])
+  }
+}
+function lieTriangle(nTPose, nTALier){
+  var tPose = trouveTriangle(nTPose)
+  
+  lec = lec.concat(nTALier)
+  
+  tALier = vol.faces[nTALier]
+  nv2 = tPose.voisins.indexOf(nTALier)
+  nv2b = (nv2 + 1) % 3
+
+  var pts = d2ize(tALier.map(x=> vol.vertices[x]))
+  var leT = creeTriangle(nTALier, pts, tALier)
+  Triangles.push(leT)
+
+  nv1 = leT.voisins.indexOf(nTPose)
+  nv1b = (nv1 + 1) % 3
+
+  // ALIGNEMENT P1.triangle sur P2.posé
+  PT1 = pts[nv1], PT2 = pts[nv1b]
+  PP1 = tPose.pts[nv2], PP2 = tPose.pts[nv2b], PP3 = tPose.pts[(nv2b+1)%3]
+  dk = [ PP2[0] - PT1[0], PP2[1] - PT1[1] ]
+  pts = pts.map(x => [x[0] + dk[0], x[1] + dk[1]])
+  PT1 = pts[nv1], PT2 = pts[nv1b]
+
+  // ROTATION
+  var distance_milieu = distance2d(milieu(PT2, PP1), PT1)
+  if(distance_milieu === 0){
+    ang = 180
+  } else {
+    A = PT2, B = PT1, C = PP1
+    var a = calculeAngles([distance2d(B,C), distance2d(A,C), distance2d(A,B)])
+    if(!Number.isNaN(a[1])){
+      ang = rad2deg(a[1])
+    } else {
+      ang = 0
+    }    
+  }
+  sauvePts = pts
+  pts = pts.map(x => rotation(PP2[0], PP2[1], x[0], x[1], ang))
+  var dist2 = Math.abs(distance2d(pts[nv1b], tPose.pts[nv2]))
+  if(dist2 > epsilon){
+    pts = sauvePts.map(x => rotation(PP2[0], PP2[1], x[0], x[1], -ang))
+  }
+
+  leT.pts = pts
+  //ajouteTriangle(pts)
+  for(var i = 0; i < pts.length; i++){
+    editeLigne(nTALier, leT.voisins[i], pts[i], pts[(i+1)%3], pts[(i+2)%3], 'C')
+  }
+
+  //ajouteTexte(centroid(pts), nTALier)
+  Nums.push({pt:centroid(pts), n:nTALier, c:"black"})
+
+  // coplanaire
+  t1 = tPose.faces.map(x => vol.vertices[x])
+  t2 = tALier.map(x => vol.vertices[x])
+
+  cp = estCoplanaire(t1, t2[(nv1b + 1)%3])
+  if (cp === 0){
+    editeLigne(nTPose, nTALier, PP1, PP2, PP3, "P" )
+  } else {
+    if (cp < 0){
+      coul = "maroon"
+      editeLigne(nTPose, nTALier, PP1, PP2, PP3, "M" )
+    } else {
+      coul = "green"
+      editeLigne(nTPose, nTALier, PP1, PP2, PP3, "V" )
+    }
+    //ajouteLigne(PP1, PP2, coul)
+  }
+}
+function faitTableauManquants(nP, nbT, coul){
+  const L = 20
+  var x = 0, y = L
+  //lec = []
+  //definitPage(nP)
+  l = [...new Set(lec)]; 
+  var t = l.sort(function(a,b){return a > b})
+  ajouteRect(L*2* parseInt(nP-1), 0, (L-4), L*2, coul,"mm")
+  ajouteNb(L*2* parseInt(nP-1)+(L-1), 10, nP+":"+t.length,"mm")
+  const xMax = L * (Math.sqrt(nbT)-1)
+
+  for(var i = 0; i < nbT; i++){
+    ajouteRect(x,y, L, L,'none',"mm")
+    if(t.indexOf(i)> -1){
+      ajouteRect(x,y, L, L, coul,"mm")
+    }
+    ajouteNb(x+(L/2),y+(L/2), i,"mm")
+    if(x < xMax){
+      x += L
+    } else {
+      x = 0
+      y += L
+    }
+  }
+}
+function chargeDonnees(){
+	var fichier = event.target.files[0]
+	var fnChargeDonnees = function () {
+		makeDraggable()
+		donnees = JSON.parse(this.result)
+		ok = true
+		redeploie()
+	}
+	
+	const lecteur = new FileReader()
+	lecteur.addEventListener("load", fnChargeDonnees, false)
+	lecteur.readAsText(fichier)
+}
+function redeploie(){
+	if(donnees){
+		// sauve scroll
+		var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+    scrollTop = window.pageYOffset || document.documentElement.scrollTop
+    
+		// définition des pages
+		const urlParams = new URLSearchParams(window.location.search)
+		nPage = urlParams.get("page")
+		pCourante = nPage
+		initVolume()
+		var elsT = document.getElementsByTagNameNS( "http://www.w3.org/2000/svg", "text" )
+		var elsP = document.getElementsByTagNameNS( "http://www.w3.org/2000/svg", "line" )
+		var elsR = document.getElementsByTagNameNS( "http://www.w3.org/2000/svg", "rect" )
+		Array.from(elsT).concat(Array.from(elsP), Array.from(elsR))
+		.map(x=> x.parentNode.removeChild( x ))
+  
+		Lignes = []
+		Nums = []
+		Triangles = []
+		lec = []
+
+		definitPage(nPage)
+		faitTableauManquants("1", vol.faces.length, "lightcoral")
+		// actions de finalisation
+		traceLignes()
+		traceNums()
+		rech.focus()
+		rechEnCours = false	
+		
+		// restore scroll
+		document.documentElement.scrollTop = document.body.scrollTop = scrollLeft;
+		document.documentElement.scrollLeft = document.body.scrollLeft = scrollTop;
+  }
+}	
+function getJSON(path) {
+// return JSON data from any file path (asynchronous)
+  return fetch(path).then(response => response.json());
+}
+function sauveDonnees(){
+	var JSONDonnees = JSON.stringify(donnees)
+	download(JSONDonnees, 'donnees.json', 'application/json')
+}
+function sauveDonneesFixe(){
+	donnees = {
+		pages:[
+			[	{n:0, x:750,y:550, a:0}
+			]
+		]
+	}
+	sauveDonnees()
+}
+function download(content, fileName, contentType) {
+  var a = document.createElement("a");
+  var file = new Blob([content], {type: contentType});
+  a.href = URL.createObjectURL(file);
+  a.download = fileName;
+  a.click();
+}
+function definitPage(nP){
+  var d = donnees.pages[nP-1]
+	for(var i = 0; i < d.length; i++){
+		var pose = d[i]
+		poseTriangle(pose.n, [pose.x, pose.y], pose.a)
+		if(!poseCourant){
+		  poseCourant = pose.n
+		  document.getElementById("courant").value = pose.n
+		}
+		var lies = d[i].lies
+		if(lies){
+			lies[j]
+			for(var j = 0; j < lies.length; j++){
+				lieTriangle(lies[j].p, lies[j].l)
+			}
+		}
+	}
+}
+
+</script>
+
+</body>
+</html>
