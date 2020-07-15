@@ -6,7 +6,7 @@
 <meta http-equiv=“CACHE-CONTROL” content=”NO-CACHE”-->
 <html>
 <head>
-<script src="https://kit.fontawesome.com/f22da9fa3e.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
   svg { outline: 3px solid black; margin-top: 30px;}
   
@@ -21,32 +21,27 @@
 		
 	.b1:hover { background-color: RoyalBlue; }
 	
-.header{
-	overflow: hidden; background-color:white;
-  position: fixed;
-  top: 0;
-  width: 100%;
-}
+.header{ overflow: hidden; background-color:white; position: fixed; top: 0; width: 100%; }
 </style>
 </head>
 <body onload="debut()">
 	<div class="header">
 	<input id="fichier" type="file" accept=".obj"/>
 	<i id="blaEchelle">Echelle:</i><input class="i1" type="text" id="echelle" value="" onchange="chargeEchelle()">
-	<button class="b1" onclick="sauveSVG()"><i class="fas fa-download"></i>SVG</button>
-	<button class="b1" onclick="debut()"><i class="far fa-file"></i>Nouveau</button>
-	<button class="b1" onclick="sauveDonnees()"><i class="fas fa-download"></i>Data</button>
-	<button class="b1" onclick="chargeDonnees()"><i class="fas fa-upload"></i>Data</button>
+	<button class="b1" onclick="sauveSVG()"><i class="fa fa-download"></i>SVG</button>
+	<button class="b1" onclick="debut()"><i class="fa fa-file"></i>Nouveau</button>
+	<button class="b1" onclick="sauveDonnees()"><i class="fa fa-download"></i>Data</button>
+	<button class="b1" onclick="chargeDonnees()"><i class="fa fa-upload"></i>Data</button>
 	<input id="fichierD" type="file" accept=".json"/>
 	<input class="i1" type="text" id="rech" value=""><button onclick="redeploie()" class="b1"><i class="fa fa-search"></i></button>
 	<i id="blaCourant">Courant:</i><input class="i1" type="text" id="courant" value="">
 	
-	<button class="b1" onclick="tourneTriangle(1)"><i class="fas fa-undo"></i></button>
-	<button class="b1" onclick="tourneTriangle(-1)"><i class="fas fa-redo"></i></button>
-	<button class="b1" onclick="bougePiece( 1, 0)"><i class="fas fa-arrow-left"></i></button>
-	<button class="b1" onclick="bougePiece( 0,-1)"><i class="fas fa-arrow-down"></i></button>
-	<button class="b1" onclick="bougePiece( 0, 1)"><i class="fas fa-arrow-up"></i></button>
-	<button class="b1" onclick="bougePiece(-1, 0)"><i class="fas fa-arrow-right"></i></button>
+	<button class="b1" onclick="tourneTriangle(1)"><i class="fa fa-rotate-left"></i></button>
+	<button class="b1" onclick="tourneTriangle(-1)"><i class="fa fa-rotate-right"></i></button>
+	<button class="b1" onclick="bougePiece( 1, 0)"><i class="fa fa-arrow-left"></i></button>
+	<button class="b1" onclick="bougePiece( 0,-1)"><i class="fa fa-arrow-down"></i></button>
+	<button class="b1" onclick="bougePiece( 0, 1)"><i class="fa fa-arrow-up"></i></button>
+	<button class="b1" onclick="bougePiece(-1, 0)"><i class="fa fa-arrow-right"></i></button>
   </div>
   <svg xmlns="http://www.w3.org/2000/svg" id="leSvg" height="297mm" width="420mm"></svg> 
   <svg xmlns="http://www.w3.org/2000/svg" id="mm" height="297mm" width="79mm"></svg> 
