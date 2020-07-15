@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
 <meta http-equiv="Content-Language" content="fr" /> 
-<meta http-equiv=“Pragma” content=”no-cache”>
+<!--meta http-equiv=“Pragma” content=”no-cache”>
 <meta http-equiv=“Expires” content=”-1″>
-<meta http-equiv=“CACHE-CONTROL” content=”NO-CACHE”>
+<meta http-equiv=“CACHE-CONTROL” content=”NO-CACHE”-->
 <html>
 <head>
 <!--link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"-->
 <script src="https://kit.fontawesome.com/f22da9fa3e.js" crossorigin="anonymous"></script>
+<!--script src="../earcut.js"></script-->
 <style>
-  svg { outline: 3px solid black; }
+  svg { outline: 3px solid black; margin-top: 30px;}
   
   .draggable { cursor: move;}
   .attacher { cursor: zoom-in;}
@@ -17,20 +18,28 @@
     
   .i1 { width:30px; padding:4px; margin:0px;}
   .b1 { 
-		background-color: DodgerBlue; border: none; color: white; cursor: pointer;
+		background-color: SkyBlue; border: none; color: white; cursor: pointer;
 		text-decoration: none; display: inline-block; padding:4px; text-align: center; vertical-align: middle; } 
 		
-	.b1:hover { background-color: RoyalBlue; }		
+	.b1:hover { background-color: RoyalBlue; }
+	
+.header{
+	overflow: hidden; background-color:white;
+  position: fixed;
+  top: 0;
+  width: 100%;
 }
 </style>
 </head>
 <body onload="debut()">
-  <svg xmlns="http://www.w3.org/2000/svg" id="leSvg" height="297mm" width="420mm"></svg> 
-  <svg xmlns="http://www.w3.org/2000/svg" id="mm" height="100mm" width="100mm"></svg> 
-  </br>
+	<div class="header">
+	<input id="fichier" type="file" accept=".obj"/>
+	<i id="blaEchelle">Echelle:</i><input class="i1" type="text" id="echelle" value="" onchange="chargeEchelle()">
 	<button class="b1" onclick="sauveSVG()"><i class="fas fa-download"></i>SVG</button>
 	<button class="b1" onclick="debut()"><i class="far fa-file"></i>Nouveau</button>
 	<button class="b1" onclick="sauveDonnees()"><i class="fas fa-download"></i>Data</button>
+	<button class="b1" onclick="chargeDonnees()"><i class="fas fa-upload"></i>Data</button>
+	<input id="fichierD" type="file" accept=".json"/>
 	<input class="i1" type="text" id="rech" value=""><button onclick="redeploie()" class="b1"><i class="fa fa-search"></i></button>
 	<i id="blaCourant">Courant:</i><input class="i1" type="text" id="courant" value="">
 	
@@ -40,29 +49,133 @@
 	<button class="b1" onclick="bougePiece( 0,-1)"><i class="fas fa-arrow-down"></i></button>
 	<button class="b1" onclick="bougePiece( 0, 1)"><i class="fas fa-arrow-up"></i></button>
 	<button class="b1" onclick="bougePiece(-1, 0)"><i class="fas fa-arrow-right"></i></button>
-
+  </div>
+  <svg xmlns="http://www.w3.org/2000/svg" id="leSvg" height="297mm" width="420mm"></svg> 
+  <svg xmlns="http://www.w3.org/2000/svg" id="mm" height="297mm" width="79mm"></svg> 
 <script>
-var nn = 0, epsilon = 0.001, fZoom, tP1 = 11, tP2 = 9
-var Triangles = [], Pages = [], Lignes = [], Nums = [], lec = []
+var nn = 0, epsilon = 0.001, fZoom, tP1 = 11, tP2 = 9, ok = false
+var Triangles = [], Pages = [], Lignes = [], Nums = [], lec = [];
+// https://www.thingiverse.com/thing:3831583
 volume = function () {
-let faces =[[0,44,7],[0,52,43],[1,13,12],[1,42,4],[1,44,42],[1,52,7],[2,40,4],[2,41,40],[2,42,41],[3,9,4],[3,28,5],[3,40,28],[4,9,1],[4,40,3],[4,42,2],[5,9,3],[5,11,9],[5,29,11],[5,31,29],[6,28,25],[6,31,28],[6,60,19],[6,71,60],[7,44,1],[7,52,0],[8,46,45],[8,47,41],[8,71,40],[9,13,1],[9,27,13],[10,53,12],[10,58,53],[11,27,9],[11,30,14],[12,13,10],[12,52,1],[12,53,52],[13,16,10],[13,27,16],[14,23,15],[14,27,11],[14,64,21],[15,18,17],[15,23,18],[15,27,14],[15,57,16],[16,27,15],[16,57,10],[17,57,15],[17,58,57],[17,66,55],[18,32,24],[18,66,17],[18,77,66],[19,30,6],[19,60,50],[19,64,30],[20,22,21],[20,36,22],[20,64,33],[21,23,14],[21,64,20],[22,23,21],[22,36,26],[22,67,23],[23,32,18],[23,67,32],[24,77,18],[24,79,77],[25,71,6],[26,36,35],[26,67,22],[28,31,5],[28,40,25],[29,30,11],[29,31,30],[30,31,6],[30,64,14],[32,39,24],[32,67,37],[33,35,20],[33,69,34],[33,78,69],[34,35,33],[34,67,35],[34,69,67],[35,36,20],[35,67,26],[37,39,32],[37,67,38],[38,39,37],[38,68,59],[38,79,39],[39,79,24],[40,47,8],[40,71,25],[41,46,8],[41,47,40],[42,46,41],[42,49,45],[43,44,0],[43,49,44],[43,52,49],[44,49,42],[45,46,42],[45,70,8],[45,73,70],[48,72,51],[48,75,72],[49,58,55],[49,73,45],[50,64,19],[50,75,54],[51,70,48],[51,71,70],[51,72,60],[52,53,49],[53,58,49],[54,63,50],[54,73,56],[54,74,73],[54,75,74],[55,58,17],[55,66,56],[55,73,49],[56,63,54],[56,66,59],[56,73,55],[57,58,10],[59,61,56],[59,62,61],[59,68,62],[59,77,38],[60,71,51],[60,72,50],[61,63,56],[61,65,63],[62,65,61],[62,76,65],[63,64,50],[63,78,64],[64,78,33],[65,76,69],[65,78,63],[66,77,59],[67,68,38],[67,76,68],[68,76,62],[69,76,67],[69,78,65],[70,71,8],[70,73,48],[72,75,50],[73,74,48],[74,75,48],[77,79,38]]
-let vertices = [[-0.79508661,20.96609345,16.37343018],[-8.22914161,13.98059345,7.22516118],[-7.40571961,30.81744245,2.15907118],[-9.27822561,30.72870545,-8.52919982],[-8.60394261,27.85787445,-1.50807782],[-12.80329361,12.74718345,-3.49944882],[-4.67611061,18.29598445,-10.70843682],[-7.07507461,18.68410345,12.37277418],[6.99330339,39.79478345,-7.53510882],[-10.27839361,15.02815545,0.91086418],[0.14862839,9.35439545,14.44037818],[-11.92157361,4.79556545,-1.78444882],[-4.60372661,13.45934545,13.02678918],[-8.65333961,5.28797445,12.64499918],[-11.85803361,-3.06271455,-1.95080782],[-6.38757661,-6.40529555,12.06034318],[-8.20815761,-2.06382455,18.24144918],[4.88312539,-6.53522655,12.43087218],[-2.67027361,-9.79665555,11.86218518],[-4.45661761,3.03729545,-7.96878582],[-21.40756361,-11.76813555,-8.16591782],[-20.59258361,-8.11850555,-2.78316682],[-22.74570361,-15.10359555,2.78628318],[-12.11340361,-9.49717555,5.60870218],[1.16371239,-18.08221755,16.14746318],[-4.76020961,36.93561445,-15.65127782],[-22.20334361,-22.81923255,4.17087418],[-13.15011361,0.019533446,6.88546218],[-10.93098361,29.64612445,-12.30310582],[-13.54154361,5.29149545,-7.32958782],[-8.57363361,4.17489545,-6.72984882],[-10.46839361,19.03300345,-8.75345782],[-11.02602361,-16.50021655,13.65268918],[-12.71452361,-13.66430155,-11.74324982],[-12.13148361,-22.81412655,-12.22643882],[-19.59743461,-22.81398755,-10.24035782],[-23.80681361,-22.75423355,-3.59041782],[-10.89750361,-22.80946155,14.81531018],[15.64177639,-22.81684355,8.22053318],[-1.76692661,-22.80203055,17.35661518],[-7.27784661,39.81833545,-8.91151582],[0.15211539,34.18935245,3.15695418],[-0.16643761,29.45721345,2.05611218],[6.03169639,19.38031245,13.38723918],[-0.04741761,25.33107645,6.36746018],[8.53902039,28.06436445,-1.46912982],[6.28116739,31.44413645,2.97882318],[-2.65868161,39.93733445,-5.63754782],[10.95210639,22.06790445,-6.07313682],[9.20395939,13.76607345,6.02864318],[6.90608039,3.13712345,-7.30200782],[10.09931639,28.56582545,-12.42527982],[1.60700639,15.24792345,11.08495518],[5.30351839,11.20197545,12.86097118],[10.40917639,3.77541445,-4.17156782],[13.08880639,0.082274446,5.62169118],[11.75653639,-3.18427555,-0.36598782],[2.60212739,-2.28216455,20.25274818],[10.15114639,-1.75883655,15.51521518],[15.22935639,-14.32976255,6.60329218],[4.15521939,16.17339545,-10.16774882],[20.12047639,-8.92552555,-1.03703882],[24.01385539,-15.22149055,-0.71990782],[9.51686839,-2.27244455,-7.64215682],[-5.30689561,-2.04796555,-8.53680582],[20.20950539,-10.03486555,-8.74306682],[8.59161939,-9.09733555,9.11871118],[-15.48214361,-22.81300055,8.20394318],[22.49298739,-22.81963655,3.74205218],[14.36783639,-22.82025955,-11.94132782],[9.18303939,31.23269545,-8.68467882],[5.85688539,36.60264445,-16.07235882],[10.39551639,19.01195445,-8.79430982],[11.92790639,6.18596545,-0.47921882],[14.24007639,5.88211545,-2.61879882],[13.15473639,5.86999345,-7.52027682],[22.88881539,-22.81562455,-7.09133682],[11.40455639,-15.72926255,12.96756218],[12.27152639,-14.66391355,-12.15158682],[9.65503539,-22.79941055,15.85240418]]
-let groups = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+let faces =[[0,2,1],[0,6,3],[0,7,2],[1,6,0],[1,16,6],[2,8,1],[2,14,8],[2,17,14],[3,4,0],[3,5,4],[3,9,5],[3,18,9],[4,7,0],[4,19,7],[5,10,4],[5,12,10],[6,18,3],[6,29,18],[7,17,2],[7,30,17],[8,13,1],[8,81,13],[9,11,5],[9,25,11],[9,33,25],[10,19,4],[10,34,19],[11,12,5],[11,15,12],[11,20,15],[11,25,20],[12,26,10],[13,16,1],[13,35,16],[13,75,35],[13,81,75],[14,76,8],[15,21,12],[15,24,21],[16,29,6],[16,46,29],[17,36,14],[17,47,36],[18,33,9],[18,45,33],[19,30,7],[19,48,30],[20,23,15],[20,31,23],[20,37,31],[21,26,12],[21,38,26],[22,24,23],[22,27,24],[22,91,27],[23,24,15],[23,28,22],[23,31,28],[24,32,21],[25,37,20],[25,42,37],[26,34,10],[26,44,34],[27,32,24],[27,39,32],[27,99,39],[28,91,22],[29,45,18],[29,59,45],[30,47,17],[30,60,47],[31,40,28],[31,41,40],[32,38,21],[32,43,38],[33,42,25],[33,55,42],[34,48,19],[34,56,48],[35,46,16],[35,53,46],[35,75,53],[36,54,14],[37,41,31],[37,51,41],[38,44,26],[38,52,44],[39,43,32],[39,49,43],[39,99,49],[40,93,28],[41,50,40],[41,57,50],[42,51,37],[42,63,51],[43,52,38],[43,58,52],[44,56,34],[44,64,56],[45,55,33],[45,70,55],[46,59,29],[46,72,59],[47,54,36],[47,73,54],[48,60,30],[48,71,60],[49,58,43],[49,61,58],[49,97,61],[50,93,40],[51,57,41],[51,68,57],[52,64,44],[52,69,64],[53,72,46],[53,75,72],[54,76,14],[55,63,42],[55,79,63],[56,71,48],[56,80,71],[57,62,50],[57,65,62],[57,68,65],[58,69,52],[59,70,45],[59,82,70],[60,73,47],[60,83,73],[61,66,58],[61,67,66],[61,97,67],[62,95,50],[63,68,51],[63,77,68],[63,79,77],[64,80,56],[65,67,62],[65,74,66],[66,67,65],[66,69,58],[66,74,69],[67,95,62],[68,74,65],[68,77,74],[69,78,64],[70,79,55],[70,85,79],[71,83,60],[71,86,83],[72,82,59],[72,87,82],[73,76,54],[73,88,76],[74,78,69],[75,87,72],[76,81,8],[76,88,81],[77,78,74],[77,84,78],[78,80,64],[78,84,80],[79,84,77],[79,85,84],[80,86,71],[81,87,75],[81,88,87],[82,85,70],[82,89,85],[83,88,73],[83,89,88],[84,86,80],[85,86,84],[85,89,86],[86,89,83],[87,89,82],[88,89,87],[90,27,91],[90,99,27],[91,28,92],[91,93,98],[91,98,90],[92,28,93],[92,93,91],[93,50,94],[94,50,95],[94,95,93],[95,67,96],[96,67,97],[96,93,95],[96,98,93],[97,49,98],[97,98,96],[98,49,99],[99,90,98]]
+let vertices = [[-64.03382874,-3.5318415e-11,30.00343132],[-59.91656113,-19.46807098,15],[-59.91656113,19.46807098,15],[-57.06335449,-18.541008,45.06736374],[-57.06335449,18.541008,45.06764603],[-54.99999619,-5.3390924e-8,60.02113724],[-51.80445862,-37.63814163,30.00343132],[-51.80445862,37.63814163,30.00343132],[-50,0,0],[-44.49592972,-32.32818604,60.02108765],[-44.49592972,32.32818604,60.02125168],[-43.75030136,-14.21533489,75.00775909],[-43.75030136,14.21533489,75.00778961],[-40.45085144,-29.38926315,0],[-40.45085144,29.38926315,0],[-40,2.4979541e-10,90.0043335],[-37.0304718,-50.96807098,15],[-37.0304718,50.96807098,15],[-35.26709366,-48.54098892,45.06713486],[-35.26709366,48.54098892,45.06787872],[-32.36067963,-23.51140976,90.0043335],[-32.36067963,23.51140976,90.0043335],[-31.99938583,-0.0000014563998,120.19831085],[-31.75780487,-10.31899834,105.72114563],[-31.75780487,10.31847382,105.72861481],[-27.03917313,-37.21622849,75.00775146],[-27.03917313,37.21622849,75.00783539],[-25.88804817,18.80876541,120.19831085],[-25.88804626,-18.80876732,120.19831085],[-19.78754234,-60.89979172,30.00343132],[-19.78754234,60.89979172,30.00343132],[-19.62740326,-27.01506424,105.71511078],[-19.62740326,27.01453972,105.73464966],[-16.99593353,-52.30810547,60.02111816],[-16.99593353,52.30810547,60.02138519],[-15.45084953,-47.55282593,0],[-15.45084953,47.55282593,0],[-12.36067963,-38.04225922,90.0043335],[-12.36067963,38.04225922,90.0043335],[-9.88835526,30.43322372,120.19831085],[-9.88835239,-30.43322372,120.19831085],[-1.9238634e-8,-33.3923912,105.7128067],[-1.0984579e-8,-46.00178909,75.00778198],[-1.0593921e-8,33.39186859,105.73696136],[-1.0428439e-8,46.00178909,75.00788879],[-2.7866998e-10,-59.99996185,45.06704712],[4.2464752e-15,-63,15],[4.9960036e-15,63,15],[2.7941816e-10,59.99996185,45.06796646],[9.88835239,30.43322372,120.19831085],[9.88835526,-30.43322372,120.19831085],[12.36067963,-38.04225922,90.0043335],[12.36067963,38.04225922,90.0043335],[15.45084953,-47.55282593,0],[15.45084953,47.55282593,0],[16.99593353,-52.30810547,60.02122116],[16.99593353,52.30810547,60.02148819],[19.62740326,-27.01506424,105.71511078],[19.62740326,27.01453972,105.73464966],[19.78754234,-60.89979172,30.00343132],[19.78754234,60.89979172,30.00343132],[25.88804626,18.80876732,120.19831085],[25.88804817,-18.80876541,120.19831085],[27.03917313,-37.21622849,75.00782776],[27.03917313,37.21622849,75.00791168],[31.75780487,-10.31899834,105.72115326],[31.75780487,10.31847382,105.72861481],[31.99938583,0.0000014563998,120.19831085],[32.36067963,-23.51140976,90.0043335],[32.36067963,23.51140976,90.0043335],[35.26709366,-48.54098892,45.06713486],[35.26709366,48.54098892,45.06787872],[37.0304718,-50.96807098,15],[37.0304718,50.96807098,15],[40,-2.488052e-10,90.0043335],[40.45085144,-29.38926315,0],[40.45085144,29.38926315,0],[43.75030136,-14.21533489,75.00787354],[43.75030136,14.21533489,75.00791168],[44.49592972,-32.32818604,60.02135468],[44.49592972,32.32818604,60.02151871],[50,0,0],[51.80445862,-37.63814163,30.00343132],[51.80445862,37.63814163,30.00343132],[54.99999619,-5.4976162e-8,60.02146912],[57.06335449,-18.541008,45.06736374],[57.06335449,18.541008,45.06764603],[59.91656113,-19.46807098,15],[59.91656113,19.46807098,15],[64.03382874,3.5309533e-11,30.00343132],[-25.88804817,18.80876541,135.19831085],[-31.99938583,-0.0000014563998,135.19831085],[-25.88804626,-18.80876732,135.19831085],[-9.88835239,-30.43322372,135.19831085],[9.88835526,-30.43322372,135.19831085],[25.88804817,-18.80876541,135.19831085],[31.99938583,0.0000014563998,135.19831085],[25.88804626,18.80876732,135.19831085],[9.88835239,30.43322372,135.19831085],[-9.88835526,30.43322372,135.19831085]]
+let groups = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 return {faces:faces, vertices:vertices, groups:groups}
 }
 const svgNS = "http://www.w3.org/2000/svg" , gLargeur = document.getElementById('leSvg').width.baseVal.value
 var vol, donnees, pCourante, selEl = null, sElOffset, sCoord, poseCourant
 var rechEnCours = false;
+function chargeEchelle(){
+	var ech = document.getElementById("echelle")
+	if(ech.value == ''){
+		fZoom = 10 / 102.28 * 38.53
+	} else {
+		fZoom = parseFloat(ech.value)
+	}
+	chargeVolume()
+	//redeploie()
+}
 function initVolume(){
   if(!vol){
-		//fZoom = 3*4
-		fZoom = 10
-		vol = volume() 
+		vol = volume()
 		vol.vertices = vol.vertices.map(x=> x.map(y=> y*fZoom))
 	}
 }
+
+function chargeVolume() {
+	if(event.target.files){
+	
+		var fichier = event.target.files[0];
+		var ext = fichier.name.split('.')[1].toUpperCase();
+		switch(ext){
+			case 'JSCAD':
+				var fnChargement = function () {
+					volume = this.result;
+				};
+				break;
+			case 'STL':
+				var fnChargement = function () {
+					volume = stl2jscad(this.result);
+				};
+				break;
+			case 'OBJ':
+				var fnChargement = function () {
+					vol = obj2jscad(this.result)
+					vol.vertices = vol.vertices.map(x=> x.map(y=> y*fZoom))
+					ok = true
+					commencer()
+					makeDraggable()
+					redeploie()
+				};
+		}
+
+		const lecteur = new FileReader();
+		lecteur.addEventListener("load", fnChargement, false);
+
+		lecteur.readAsText(fichier);
+	}
+}
+
+function obj2jscad(data){
+let d = data.split(/\n/);
+// 1°) Lit les vertices ( v x y z)
+let lv = d.filter(l => l.startsWith('v '));
+let pts = lv.map(x => {
+  var tmp = x.split(/\s/);
+  tmp.shift();
+  var v = tmp.filter(d => d.trim()).map(x => Math.round(Number(x) * 100) / 100);
+  return v;
+});
+// 2°) Lit les faces (g puis [f v1// v2// v3//]... )
+let lf = d.filter(l => l.startsWith('g ') || l.startsWith('f '));
+let faces = [], groupes = [], nfg = 0;
+for(let i = 0; i < lf.length; i++){
+  if(lf[i].startsWith('g ')){
+    nfg++;
+  } else {
+    var tmp = lf[i].split(/\s/);
+    tmp.shift();
+    let f = tmp.map(x => {
+			var n = x.split(/\//);
+			return Number(n[0])-1;
+		});
+		var nd = f[f.length -1];
+		if ((nd == -1) || !(Number.isInteger(nd))){
+			f.pop();
+		}
+    /*if(f.length > 3){
+			var fPts = f.map(x => pts[x])
+			fTmp = earcut(fPts.flat(), null, 3)
+			console.log('-----',f)
+			while(fTmp.length > 0){
+				ff = fTmp.splice(0,3).map(x => f[x])
+				faces.push(ff)
+				console.log(ff)
+			}
+		} else {*/
+    faces.push(f);
+    //}
+    groupes.push(nfg);
+  }
+}
+
+let sortie = { faces : faces, vertices: pts, groups: groupes }
+return sortie
+}
+
 function debut(){
+	document.getElementById("fichier").addEventListener("change", chargeVolume, false);
+	document.getElementById("fichierD").addEventListener("change", chargeDonnees, false);
+	chargeEchelle()
   initVolume()
+	
+	commencer()
+	makeDraggable()
+	redeploie()
+}
+
+function commencer(){
+	if(!ok)return
 	var max = vol.faces.length -1
 	var n = prompt("Commencer par quelle facette (0 - "+ max +") ?", "0")
 	
@@ -72,14 +185,7 @@ function debut(){
 		if( (n<0) || (n > max)){
 			n = getRandomInt(max)
 		}
-		donnees = {
-		pages:[
-			[	{n:n, x:750,y:550, a:0}
-			]
-		]
-	}
-	makeDraggable()
-	redeploie()
+		donnees = { pages:[ [	{n:n, x:750,y:550, a:0} ] ] }
 	}
 }
 
@@ -160,8 +266,28 @@ function tourneTriangle(sens){
 }
 function sauveSVG(){
 // 1. Keep a DOM reference to the SVG element
-var SVGDomElement = document.getElementById("leSvg");
-
+  var SVGDomElement = document.getElementById("leSvg");
+	var elsT = document.getElementsByTagNameNS( "http://www.w3.org/2000/svg", "text" )
+  l = Array.from(elsT)
+  var t = l.filter(el => el.id.startsWith('T_'))
+	var tT = l.filter(el => el.id.startsWith('TT_'))
+	if(tT.length == vol.faces.length){
+		var nv = 0;
+		for(var i = 0; i < t.length; i++){
+			n1 = t[i].id.split('_')
+			n1.shift()
+			t1 = l.find(el => el.id == 'T_' + n1[0] + '_' + n1[1])
+			t2 = l.find(el => el.id == 'T_' + n1[1] + '_' + n1[0])
+			if(t1.innerHTML != t2.innerHTML){
+				t1.innerHTML = nv
+				t1.setAttributeNS(null,"fill", "black")
+				t2.innerHTML = nv
+				t2.setAttributeNS(null,"fill", "black")
+				nv++
+			}
+		}
+		tT.map(x=> x.parentNode.removeChild( x ))
+	}
 // 2. Serialize element into plain SVG
 var serializedSVG = new XMLSerializer().serializeToString(SVGDomElement);
 
@@ -319,7 +445,7 @@ function ajouteNb(x, y, n, source = "leSvg"){
   txt.setAttributeNS(null,"x", x)
   txt.setAttributeNS(null,"y", y)
   txt.setAttributeNS(null,"fill", 'black')
-  txt.setAttributeNS(null,"font-size", "10px")
+  txt.setAttributeNS(null,"font-size", "9px")
   txt.setAttributeNS(null,"dominant-baseline", "middle")
   txt.setAttributeNS(null,"text-anchor", "middle")
   txt.innerHTML = n
@@ -345,7 +471,7 @@ function ajouteTexte(centre, t, coul = "black", source = "leSvg"){
   txt.setAttributeNS(null,"x", centre[0])
   txt.setAttributeNS(null,"y", centre[1])
   if(coul == "orange"){
-    txt.setAttributeNS(null,"font-weight", "bolder")    
+    txt.setAttributeNS(null,"font-weight", "bolder")
     txt.classList.add("draggable")
   } else {
     txt.classList.add("detacher")
@@ -353,10 +479,12 @@ function ajouteTexte(centre, t, coul = "black", source = "leSvg"){
     
     var L = Lignes.filter(x => (x.triP == t) && (x.etat == 'C'))
   }
+  txt.setAttribute("id", "TT_" + t)
   txt.setAttributeNS(null,"fill", coul)
   txt.setAttributeNS(null,"font-size", tP1 + "px")
   txt.setAttributeNS(null,"dominant-baseline", "middle")
   txt.setAttributeNS(null,"text-anchor", "middle")
+  txt.setAttributeNS(null,"z-index", 1)
   txt.innerHTML = t
   decoSiRecherche(txt, t)
   
@@ -376,6 +504,7 @@ function ajouteTexte2(pt1, pt2, pt3, p, t, coul = "black", source = "leSvg"){
   pt = deplace(centre[0], centre[1], tP2-3, centre[0], centre[1], pt3[0], pt3[1])
   txt.setAttributeNS(null,"x", pt[0])
   txt.setAttributeNS(null,"y", pt[1])
+  txt.setAttribute("id", "T_" +p +'_' +t)
   txt.classList.add("attacher")
 
   if(!poseCourant){
@@ -394,6 +523,7 @@ function ajouteTexte2(pt1, pt2, pt3, p, t, coul = "black", source = "leSvg"){
   txt.setAttributeNS(null,"font-size", tP2 + "px")
   txt.setAttributeNS(null,"dominant-baseline", "middle")
   txt.setAttributeNS(null,"text-anchor", "middle")
+  txt.setAttributeNS(null,"z-index", 2)  
   var a = rad2deg(angle(pt1, pt2))
   txt.setAttributeNS(null,"transform", "rotate(" 
     + (a+180)
@@ -678,14 +808,14 @@ function lieTriangle(nTPose, nTALier){
   }
 }
 function faitTableauManquants(nP, nbT, coul){
-  var x = 0, y = 25
-  const L = 25
+  const L = 20
+  var x = 0, y = L
   //lec = []
   //definitPage(nP)
   l = [...new Set(lec)]; 
   var t = l.sort(function(a,b){return a > b})
-  ajouteRect(25*2* parseInt(nP-1), 0, 21, 25*2, coul,"mm")
-  ajouteNb(25*2* parseInt(nP-1)+24, 10, nP+":"+t.length,"mm")
+  ajouteRect(L*2* parseInt(nP-1), 0, (L-4), L*2, coul,"mm")
+  ajouteNb(L*2* parseInt(nP-1)+(L-1), 10, nP+":"+t.length,"mm")
   const xMax = L * (Math.sqrt(nbT)-1)
 
   for(var i = 0; i < nbT; i++){
@@ -693,7 +823,7 @@ function faitTableauManquants(nP, nbT, coul){
     if(t.indexOf(i)> -1){
       ajouteRect(x,y, L, L, coul,"mm")
     }
-    ajouteNb(x+12,y+12, i,"mm")
+    ajouteNb(x+(L/2),y+(L/2), i,"mm")
     if(x < xMax){
       x += L
     } else {
@@ -703,42 +833,53 @@ function faitTableauManquants(nP, nbT, coul){
   }
 }
 function chargeDonnees(){
-	var requestURL = "http://localhost/depl_edit/Moai156/donnees.json"
-	var request = new XMLHttpRequest()
-	request.open('GET', requestURL)
-	request.responseType = 'json'
-	request.send()
-	request.onload = function(){
-		donnees = request.response
+	var fichier = event.target.files[0]
+	var fnChargeDonnees = function () {
+		makeDraggable()
+		donnees = JSON.parse(this.result)
+		ok = true
 		redeploie()
 	}
+	
+	const lecteur = new FileReader()
+	lecteur.addEventListener("load", fnChargeDonnees, false)
+	lecteur.readAsText(fichier)
 }
 function redeploie(){
-  // définition des pages
-  const urlParams = new URLSearchParams(window.location.search);
-  nPage = urlParams.get("page")
-  pCourante = nPage
-  initVolume()
-  var elsT = document.getElementsByTagNameNS( "http://www.w3.org/2000/svg", "text" )
-  var elsP = document.getElementsByTagNameNS( "http://www.w3.org/2000/svg", "line" )
-  var elsR = document.getElementsByTagNameNS( "http://www.w3.org/2000/svg", "rect" )
-  Array.from(elsT).concat(Array.from(elsP), Array.from(elsR))
-  .map(x=> x.parentNode.removeChild( x ))
+	if(donnees){
+		// sauve scroll
+		var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+    scrollTop = window.pageYOffset || document.documentElement.scrollTop
+    
+		// définition des pages
+		const urlParams = new URLSearchParams(window.location.search)
+		nPage = urlParams.get("page")
+		pCourante = nPage
+		initVolume()
+		var elsT = document.getElementsByTagNameNS( "http://www.w3.org/2000/svg", "text" )
+		var elsP = document.getElementsByTagNameNS( "http://www.w3.org/2000/svg", "line" )
+		var elsR = document.getElementsByTagNameNS( "http://www.w3.org/2000/svg", "rect" )
+		Array.from(elsT).concat(Array.from(elsP), Array.from(elsR))
+		.map(x=> x.parentNode.removeChild( x ))
   
-	Lignes = []
-	Nums = []
-	Triangles = []
-	lec = []
+		Lignes = []
+		Nums = []
+		Triangles = []
+		lec = []
 
-    definitPage(nPage)
-    faitTableauManquants("1", vol.faces.length, "lightcoral")
-    // actions de finalisation
-    traceLignes()
-    traceNums()
-    rech.focus()
-    rechEnCours = false
-  //}
-}		
+		definitPage(nPage)
+		faitTableauManquants("1", vol.faces.length, "lightcoral")
+		// actions de finalisation
+		traceLignes()
+		traceNums()
+		rech.focus()
+		rechEnCours = false	
+		
+		// restore scroll
+		document.documentElement.scrollTop = document.body.scrollTop = scrollLeft;
+		document.documentElement.scrollLeft = document.body.scrollLeft = scrollTop;
+  }
+}	
 function getJSON(path) {
 // return JSON data from any file path (asynchronous)
   return fetch(path).then(response => response.json());
