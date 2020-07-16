@@ -141,7 +141,13 @@ for(let i = 0; i < lf.length; i++){
 		if ((nd == -1) || !(Number.isInteger(nd))){
 			f.pop();
 		}
-    faces.push(f);
+    if(f.length == 3){
+			faces.push(f);
+		} else {
+			for(j = 1; j< f.length-1; j++){
+				faces.push([f[0], f[j], f[j+1]])
+			}
+		}
     groupes.push(nfg);
   }
 }
