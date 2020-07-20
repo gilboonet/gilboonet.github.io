@@ -5,50 +5,147 @@
 <meta http-equiv=“Expires” content=”-1″>
 <meta http-equiv=“CACHE-CONTROL” content=”NO-CACHE”>
 <html>
-<head>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-  svg { outline: 3px solid black; margin-top: 30px;}
-  
-  .draggable { cursor: move;}
-  .attacher { cursor: zoom-in;}
-  .detacher { cursor: zoom-out;}
-    
-  .i1 { width:30px; padding:4px; margin:0px;}
-  .b1 { 
-		background-color: SkyBlue; border: none; color: white; cursor: pointer;
-		text-decoration: none; display: inline-block; padding:4px; text-align: center; vertical-align: middle; } 	
-	.b1:hover { background-color: RoyalBlue; }
-  .b0 { 
-		background-color: LightGray; border: none; color: white; cursor: not-allowed;
-		text-decoration: none; display: inline-block; padding:4px; text-align: center; vertical-align: middle; } 	
-	
-.header{ overflow: hidden; background-color:white; position: fixed; top: 0; width: 100%; }
-</style>
-</head>
-<body onload="debut()">
-	<div class="header">
-	<input id="fichier" type="file" accept=".obj"/>
-	<i id="blaEchelle">Echelle:</i><input class="i1" type="text" id="echelle" value="" onchange="chargeEchelle()">
-	<button class="b1" onclick="sauveSVG()"><i class="fa fa-download"></i>SVG</button>
-	<button class="b1" onclick="debut()"><i class="fa fa-file"></i>Nouveau</button>
-	<button class="b1" onclick="sauveDonnees()"><i class="fa fa-download"></i>Data</button>
-	<button class="b1,b0" disabled onclick="chargeDonnees()"><i class="fa fa-upload"></i>Data</button>
-	<input id="fichierD" type="file" accept=".json"/>
-	<input class="i1" type="text" id="rech" value=""><button onclick="redeploie()" class="b1"><i class="fa fa-search"></i></button>
-	<i id="blaCourant">Courant:</i><input class="i1" type="text" id="courant" value="">
-	
-	<button class="b1" onclick="tourneTriangle(1)"><i class="fa fa-rotate-left"></i></button>
-	<button class="b1" onclick="tourneTriangle(-1)"><i class="fa fa-rotate-right"></i></button>
-	<button class="b1" onclick="bougePiece( 1, 0)"><i class="fa fa-arrow-left"></i></button>
-	<button class="b1" onclick="bougePiece( 0,-1)"><i class="fa fa-arrow-down"></i></button>
-	<button class="b1" onclick="bougePiece( 0, 1)"><i class="fa fa-arrow-up"></i></button>
-	<button class="b1" onclick="bougePiece(-1, 0)"><i class="fa fa-arrow-right"></i></button>
-  </div>
-  <svg xmlns="http://www.w3.org/2000/svg" id="leSvg" height="297mm" width="420mm"></svg> 
-  <svg xmlns="http://www.w3.org/2000/svg" id="mm" height="297mm" width="79mm"></svg> 
-<!--script src="depl_edit.js"></script-->
-<script>
+	<head>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> 
+		<style>
+html,body{
+	height: 100%;
+}
+
+.full-height {
+	height: 100%;
+}
+
+body{ 
+	background-color:white;
+}
+
+.navbar {
+  overflow: hidden;
+  background-color: white;
+  position: fixed; /* Set the navbar to fixed position */
+  top: 0; /* Position the navbar at the top of the page */
+  width: 100%; /* Full width */
+}
+
+.navbar a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  background: white;
+  color: black;
+}
+
+.main {
+  margin-top: 20px; /* Add a top margin to avoid content overlay */
+}
+
+svg { outline: 3px solid black;}
+
+.draggable { cursor: move;}
+
+.attacher { cursor: zoom-in;}
+
+.detacher { cursor: zoom-out;}
+
+.chercher { cursor: crosshair;}
+
+.i1 { width:24px; padding:2px; margin:0px;font-size:8px;}
+
+i { font-size: 10px;}
+
+.b1 { 
+	background-color: SkyBlue; 
+	border: none; 
+	color: white; 
+	cursor: pointer;
+	text-decoration: none; 
+	display: inline-block; 
+	text-align: center; 
+	vertical-align: middle;
+	height: 20px;
+	font-size: 10px;
+}
+
+.b1:hover { background-color: RoyalBlue; }
+.chercher:hover {color:white; }
+
+.b0 { 
+	background-color: LightGray; border: none; color: white; cursor: not-allowed;
+	text-decoration: none; display: inline-block; padding:4px; text-align: center; vertical-align: middle;
+}
+
+input[type="file"] { 
+  opacity: 0; /* make transparent */
+  z-index: -1; /* move under anything else */
+  position: absolute; /* don't let it take up space */
+}
+
+input[type="text"] {
+	border: 1px solid black;
+}
+
+#map {
+	position: fixed;
+	visibility: hidden;
+	top: 0; 
+	right: 0;
+}
+
+#main {
+	overflow: hidden;
+}
+		</style>
+	</head>
+	<body onload="debut()">
+		<div class="navbar">
+			<input id="fichier" type="file" accept=".obj"/>
+			<button class="b1"><label for="fichier"><i class="fa fa-upload"></i>.OBJ</label></button>
+			
+			<i id="blaEchelle">Echelle:</i><input class="i1" type="text" id="echelle" value="" onchange="chargeEchelle()">
+			<button class="b1" onclick="sauveSVG()"><i class="fa fa-download"></i>SVG</button>
+			<button class="b1" onclick="debut()"><i class="fa fa-file"></i>Nouveau</button>
+			<button class="b1" onclick="sauveDonnees()"><i class="fa fa-download"></i>Data</button>
+			
+			<input id="fichierD" type="file" accept=".json"/>
+			<button class="b1"><label for="fichierD"><i class="fa fa-upload"></i>Data</label></button>
+			<!--button class="b1"><i class="fa fa-upload"></i>Data</button-->
+			
+			<input class="i1" type="text" id="rech" value=""><button onclick="redeploie()" class="b1"><i class="fa fa-search"></i></button>
+			<i id="blaCourant">Courant:</i><input class="i1" type="text" id="courant" value="">
+			<button class="b1" onclick="tourneTriangle(1)"><i class="fa fa-rotate-left"></i></button>
+			<button class="b1" onclick="tourneTriangle(-1)"><i class="fa fa-rotate-right"></i></button>
+			<button class="b1" onclick="bougePiece( 1, 0)"><i class="fa fa-arrow-left"></i></button>
+			<button class="b1" onclick="bougePiece( 0,-1)"><i class="fa fa-arrow-down"></i></button>
+			<button class="b1" onclick="bougePiece( 0, 1)"><i class="fa fa-arrow-up"></i></button>
+			<button class="b1" onclick="bougePiece(-1, 0)"><i class="fa fa-arrow-right"></i></button>
+			<button class="b1" onclick="basculeMap()"><i class="fa fa-th"></i></button>
+		</div>
+		<div class="main, full-height" style="overflow:scroll">
+			<svg xmlns="http://www.w3.org/2000/svg" id="leSvg" height="594mm" width="840mm">
+			</svg>		
+		</div>
+		<div id="map" class="w3-col w3-right w3-container" style="width:100mm">
+			<svg xmlns="http://www.w3.org/2000/svg" id="mm" height="297mm" width="200mm">
+			</svg>
+		</div>
+	</body>
+	<script>
+var map = document.getElementById("map"),
+		docFichier = document.getElementById("fichier")
+
+function basculeMap(){
+	etat = map.style.visibility
+	console.log("basculeMap", etat)
+	map.style.visibility = etat == "visible" ? "hidden" : "visible" 
+}
 var log = []
 var nn = 0, epsilon = 0.001, fZoom, 
 		tP1 = 9, tP2 = 6, ok = false
@@ -448,6 +545,9 @@ function ajouteNb(x, y, n, source = "leSvg"){
   txt.setAttributeNS(null,"dominant-baseline", "middle")
   txt.setAttributeNS(null,"text-anchor", "middle")
   txt.innerHTML = n
+  txt.classList.add("chercher")
+	txt.addEventListener('click', clicChercher);
+  
   document.getElementById(source).appendChild(txt)
 }
 function ajouteLigne(pt1, pt2, coul = "black", source = "leSvg"){
@@ -570,7 +670,7 @@ function clicAttacher(evt){
 	//console.log("clic", d,t)
 }
 function clicDetacher(evt){
-	el = evt.target
+	var el = evt.target
 	if(!poseCourant){
 		poseCourant = document.getElementById("courant").value
 	}
@@ -582,6 +682,12 @@ function clicDetacher(evt){
 		t.lies.splice(l, 1)
 		redeploie()
 	}
+}
+
+function clicChercher(evt){
+	var el = evt.target
+	document.getElementById("rech").value = el.innerHTML
+	redeploie()
 }
 function debug_triangle(p){
   ajouteTexte(p[0], "a", "blue")
@@ -902,6 +1008,7 @@ function download(content, fileName, contentType) {
   a.click();
 }
 function definitPage(nP){
+	console.log("definitPage", nP)
   var d = donnees.pages[nP-1]
 	for(var i = 0; i < d.length; i++){
 		var pose = d[i]
@@ -920,5 +1027,4 @@ function definitPage(nP){
 	}
 }
 </script>
-</body>
 </html>
