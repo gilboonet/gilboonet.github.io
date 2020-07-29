@@ -118,7 +118,7 @@ input[type="text"] {
 			<button class="b1"><label for="fichierD"><i class="fa fa-upload"></i>Data</label></button>
 			<!--button class="b1"><i class="fa fa-upload"></i>Data</button-->
 			
-			<input class="i1" type="text" id="rech" value=""><button onclick="redeploie()" class="b1"><i class="fa fa-search"></i></button>
+			<input class="i1" type="text" id="rech" value="" onchange="redeploie()"><button onclick="redeploie()" class="b1"><i class="fa fa-search"></i></button>
 			<i id="blaCourant">Courant:</i><input class="i1" type="text" id="courant" value="">
 			<button class="b1" onclick="tourneTriangle(1)"><i class="fa fa-rotate-left"></i></button>
 			<button class="b1" onclick="tourneTriangle(-1)"><i class="fa fa-rotate-right"></i></button>
@@ -127,6 +127,8 @@ input[type="text"] {
 			<button class="b1" onclick="bougePiece( 0, 1)"><i class="fa fa-arrow-up"></i></button>
 			<button class="b1" onclick="bougePiece(-1, 0)"><i class="fa fa-arrow-right"></i></button>
 			<button class="b1" onclick="basculeMap()"><i class="fa fa-th"></i></button>
+			<input class="i1" type="text" id="echPolice1" value="" onchange="redeploie()">
+			<input class="i1" type="text" id="echPolice2" value="" onchange="redeploie()">
 		</div>
 		<div class="main, full-height" style="overflow:scroll">
 			<svg xmlns="http://www.w3.org/2000/svg" id="leSvg" height="594mm" width="840mm">
@@ -148,7 +150,7 @@ function basculeMap(){
 }
 var log = []
 var nn = 0, epsilon = 0.001, fZoom, 
-		tP1 = 9*1.5, tP2 = 6*1.5, ok = false
+		tP1 = 9, tP2 = 6, ok = false
 var Triangles = [], Pages = [], Lignes = [], Nums = [], lec = [];
 // https://www.thingiverse.com/thing:3831583
 volume = function () {
@@ -256,6 +258,8 @@ return sortie
 function debut(){
 	document.getElementById("fichier").addEventListener("change", chargeVolume, false);
 	document.getElementById("fichierD").addEventListener("change", chargeDonnees, false);
+	document.getElementById("leSvg").addEventListener('contextmenu', e => e.preventDefault())
+	
 	chargeEchelle()
   initVolume()
 	
@@ -597,6 +601,7 @@ function decoSiRecherche(txt, t){
   }
 }
 function ajouteTexte2(pt1, pt2, pt3, p, t, coul = "yellow", source = "leSvg"){
+  if(t > -1){
   var svg = document.getElementById(source)
   var txt = document.createElementNS(svgNS, "text")
   centre = milieu(pt1, pt2)
@@ -638,33 +643,43 @@ function ajouteTexte2(pt1, pt2, pt3, p, t, coul = "yellow", source = "leSvg"){
   
   svg.appendChild(txt)
   txt.setAttribute("tag", p + "," + t)
-  txt.addEventListener('click', clicAttacher);
+  //txt.addEventListener('click', clicAttacher);
+  txt.addEventListener('mousedown', clicAttacher);
+	}
 } 
 function clicAttacher(evt){
 	el = evt.target
+	b = evt.button
 	d = el.getAttribute("tag").split(",").map(x=>parseInt(x))
-	
-	if(!poseCourant){ poseCourant = document.getElementById("courant").value}
-	if(d[1] != poseCourant){
-	  var t = donnees.pages[pCourante-1].find(x=>x.n == poseCourant)
-	  if(!('lies' in t)){ t.lies = [] }
-	
-	  var ok = false
-	  var v = t.lies.findIndex(x => x.l == d[1])
-	  if(v > -1) {
-			var v2 = t.lies.findIndex(x => x.p == d[1])
-			if(v2 == -1){
-			  t.lies.splice(v, 1)
-			  ok = true
-			}
-		} else {
-			ok = true
+
+	if(b == 2){
+		document.getElementById("rech").value = d[1]
+		redeploie()
+	}
+	else {
+		if(!poseCourant){
+			poseCourant = document.getElementById("courant").value
 		}
+		if(d[1] != poseCourant){
+			var t = donnees.pages[pCourante-1].find(x=>x.n == poseCourant)
+			if(!('lies' in t)){ t.lies = [] }
+			var ok = false
+			var v = t.lies.findIndex(x => x.l == d[1])
+			if(v > -1) {
+				var v2 = t.lies.findIndex(x => x.p == d[1])
+				if(v2 == -1){
+					t.lies.splice(v, 1)
+					ok = true
+				}
+			} else {
+				ok = true
+			}
 		
- 		if(ok){
- 		  t.lies.push({p:d[0], l:d[1]})
-			//sauveDonnees()
-			redeploie()
+			if(ok){
+				t.lies.push({p:d[0], l:d[1]})
+				//sauveDonnees()
+				redeploie()
+			}
 		}
 	}
 	//console.log("clic", d,t)
@@ -919,7 +934,7 @@ function faitTableauManquants(nP, nbT, coul){
   var t = l.sort(function(a,b){return a > b})
   ajouteRect(L*2* parseInt(nP-1), 0, (L-4), L*2, coul,"mm")
   ajouteNb(L*2* parseInt(nP-1)+(L-1), 10, nP+":"+t.length,"mm")
-  const xMax = L * (Math.sqrt(nbT)-1)
+  const xMax = L * (Math.min(16,Math.sqrt(nbT)-1))
 
   for(var i = 0; i < nbT; i++){
     ajouteRect(x,y, L, L,'none',"mm")
@@ -949,6 +964,14 @@ function chargeDonnees(){
 	lecteur.readAsText(fichier)
 }
 function redeploie(){
+  var zp1 = document.getElementById('echPolice1')
+  var zp2 = document.getElementById('echPolice2')
+  
+  tP1 = 9
+  if(zp1.value){ tP1 = tP1 *	zp1.value }
+  tP2 = 6
+  if(zp2.value){ tP2 = tP2 *	zp2.value }
+	
 	if(donnees){
 		// sauve scroll
 		var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
