@@ -380,10 +380,12 @@ function sauveSVG(){
 			n1.shift()
 			t1 = l.find(el => el.id == 'T_' + n1[0] + '_' + n1[1])
 			t2 = l.find(el => el.id == 'T_' + n1[1] + '_' + n1[0])
-			if(t1.innerHTML != t2.innerHTML){
-				redesignNum(t1, nv)
-				redesignNum(t2, nv)		
-				nv++
+			if(t2 !== undefined){
+				if(t1.innerHTML != t2.innerHTML){
+					redesignNum(t1, nv)
+					redesignNum(t2, nv)		
+					nv++
+				}
 			}
 		}
 		tT.map(x=> x.parentNode.removeChild( x ))
@@ -601,50 +603,68 @@ function decoSiRecherche(txt, t){
   }
 }
 function ajouteTexte2(pt1, pt2, pt3, p, t, coul = "yellow", source = "leSvg"){
-  if(t > -1){
-  var svg = document.getElementById(source)
-  var txt = document.createElementNS(svgNS, "text")
-  centre = milieu(pt1, pt2)
-  pt = deplace(centre[0], centre[1], tP2-3, centre[0], centre[1], pt3[0], pt3[1])
-  txt.setAttributeNS(null,"x", pt[0])
-  txt.setAttributeNS(null,"y", pt[1])
-  pt4 = deplace(centre[0], centre[1], (tP2 * 1.6)-7, centre[0], centre[1], pt3[0], pt3[1])
-  txt.dataset.ptx = pt4[0]//.toFixed(2)
-  txt.dataset.pty = pt4[1]//.toFixed(2)
-  txt.classList.add("attacher")
-
-  if(!poseCourant){
-		poseCourant = document.getElementById("courant").value
+  var typeAjout
+  if ((t > -1)&&(p > -1)){
+		typeAjout = 'A' // attacher
+	}else{
+		typeAjout = 'L' // longueur
 	}
+		
+	var svg = document.getElementById(source)
+	var txt = document.createElementNS(svgNS, "text")
+	centre = milieu(pt1, pt2)
+	pt = deplace(centre[0], centre[1], tP2-3, centre[0], centre[1], pt3[0], pt3[1])
+	txt.setAttributeNS(null,"x", pt[0])
+	txt.setAttributeNS(null,"y", pt[1])
+	pt4 = deplace(centre[0], centre[1], (tP2 * 1.6)-7, centre[0], centre[1], pt3[0], pt3[1])
+	txt.dataset.ptx = pt4[0]
+	txt.dataset.pty = pt4[1]
+
+	if(typeAjout == 'A'){
+		txt.classList.add("attacher")
 	
-	var v = donnees.pages[pCourante-1].find(x => x.n == poseCourant)
-	if(v.lies){
-		var v2 = v.lies.filter(x => x.l == t)
-		if((t == poseCourant) || v2.length > 0){
-			coul = "LightBlue"
+		if (!poseCourant){
+			poseCourant = document.getElementById("courant").value
 		}
+	
+		var v = donnees.pages[pCourante-1].find(x => x.n == poseCourant)
+		if(v.lies){
+			var v2 = v.lies.filter(x => x.l == t)
+			if((t == poseCourant) || v2.length > 0){
+				coul = "LightBlue"
+			}
+		}
+		txt.setAttribute("id", "T_" + p+'_'+t)
+	}else{
+		coul = "green"
 	}
 	 
-  txt.setAttribute("id", "T_" + p+'_'+t)
-  txt.setAttributeNS(null,"fill", coul)
-  txt.setAttributeNS(null,"font-size", tP2 + "px")
-  txt.setAttributeNS(null,"dominant-baseline", "middle")
-  txt.setAttributeNS(null,"text-anchor", "middle")
-  txt.setAttributeNS(null,"z-index", 2)  
-  var a = rad2deg(angle(pt1, pt2))
-  txt.setAttributeNS(null,"transform", "rotate(" 
-    + (a+180)
-    + "," + pt[0]
-    + "," + pt[1]
-    +")")
-  txt.innerHTML = t
+	txt.setAttributeNS(null,"fill", coul)
+	txt.setAttributeNS(null,"font-size", tP2 + "px")
+	txt.setAttributeNS(null,"dominant-baseline", "middle")
+	txt.setAttributeNS(null,"text-anchor", "middle")
+	txt.setAttributeNS(null,"z-index", 2)  
+	var a = rad2deg(angle(pt1, pt2))
+	txt.setAttributeNS(null,"transform", "rotate(" 
+		+ (a+180)
+		+ "," + pt[0]
+		+ "," + pt[1]
+		+")")
+	if(typeAjout == 'A'){
+		txt.innerHTML = t
+	}else{
+		var l = distance2d(pt1, pt2)
+		txt.innerHTML = l.toFixed(2)
+	}
 
-  decoSiRecherche(txt, t)
-  
-  svg.appendChild(txt)
-  txt.setAttribute("tag", p + "," + t)
-  //txt.addEventListener('click', clicAttacher);
-  txt.addEventListener('mousedown', clicAttacher);
+	if(typeAjout == 'A'){
+		decoSiRecherche(txt, t)
+	}
+	svg.appendChild(txt)
+	
+	if(typeAjout == 'A'){
+		txt.setAttribute("tag", p + "," + t)
+		txt.addEventListener('mousedown', clicAttacher)
 	}
 } 
 function clicAttacher(evt){
