@@ -129,6 +129,7 @@ input[type="text"] {
 			<button class="b1" onclick="basculeMap()"><i class="fa fa-th"></i></button>
 			<input class="i1" type="text" id="echPolice1" value="" onchange="redeploie()">
 			<input class="i1" type="text" id="echPolice2" value="" onchange="redeploie()">
+			<button class="b1" onclick="auto()"><i class="fa fa-gears"></i></button>
 		</div>
 		<div class="main, full-height" style="overflow:scroll">
 			<svg xmlns="http://www.w3.org/2000/svg" id="leSvg" height="594mm" width="840mm">
@@ -141,7 +142,8 @@ input[type="text"] {
 	</body>
 	<script>
 var map = document.getElementById("map"),
-		docFichier = document.getElementById("fichier")
+		docFichier = document.getElementById("fichier"),
+		dA = []
 
 function basculeMap(){
 	etat = map.style.visibility
@@ -599,7 +601,7 @@ function decoSiRecherche(txt, t){
   var r = document.getElementById("rech").value
   if(r &&(r == t)){
     txt.setAttributeNS(null,"font-weight", "bolder")
-    txt.setAttributeNS(null,"fill", "red")
+    txt.setAttributeNS(null,"fill", "green")
   }
 }
 function ajouteTexte2(pt1, pt2, pt3, p, t, coul = "yellow", source = "leSvg"){
@@ -666,7 +668,27 @@ function ajouteTexte2(pt1, pt2, pt3, p, t, coul = "yellow", source = "leSvg"){
 		txt.setAttribute("tag", p + "," + t)
 		txt.addEventListener('mousedown', clicAttacher)
 	}
-} 
+}
+
+function auto(){
+	var c = Array.from(document.querySelectorAll(".attacher[fill~='yellow']"))
+	var ll = c.map(x=> parseInt(x.id.split('_')[2]))
+/*	
+	for(var i =0; i<dA.length; i++){
+		var daI = ll.indexOf(dA[i])
+		ll.splice(daI, 1)
+	}
+*/	
+	var m = Math.min(...ll)
+//	console.log('auto', m, dA, ll)
+	
+	var objet = c[ll.findIndex(x=> x == m)]
+	var event = new MouseEvent('mousedown', {
+    'view': window, 'bubbles': true, 'cancelable': true
+  })
+  objet.dispatchEvent(event)
+}
+ 
 function clicAttacher(evt){
 	el = evt.target
 	b = evt.button
@@ -891,7 +913,7 @@ function lieTriangle(nTPose, nTALier){
 
   var pts = d2ize(tALier.map(x=> vol.vertices[x]))
   var leT = creeTriangle(nTALier, pts, tALier)
-  Triangles.push(leT)
+  //Triangles.push(leT)
 
   nv1 = leT.voisins.indexOf(nTPose)
   nv1b = (nv1 + 1) % 3
@@ -922,30 +944,74 @@ function lieTriangle(nTPose, nTALier){
   if(dist2 > epsilon){
     pts = sauvePts.map(x => rotation(PP2[0], PP2[1], x[0], x[1], -ang))
   }
+  
+  // test intersection
+  /*var c = centroid(pts)
+  
+  //var ptn = pts
+  var ptn = []
+  for(var j = 0; j< pts.length; j++){
+		ptn.push([((pts[j][0] - c[0])*0.99) + c[0], 
+		  ((pts[j][1] - c[1])*0.99) + c[1] ])
+	}
+  var t1l = [
+    {d:{x:ptn[0][0], y:ptn[0][1]}, f:{x:ptn[1][0], y:ptn[1][1]}},
+		{d:{x:ptn[1][0], y:ptn[1][1]}, f:{x:ptn[2][0], y:ptn[2][1]}},
+		{d:{x:ptn[2][0], y:ptn[2][1]}, f:{x:ptn[0][0], y:ptn[0][1]}}]
+  
+  var ko = false
+  for(var j = 0; (j < Triangles.length) && (!ko); j++){
 
-  leT.pts = pts
-  for(var i = 0; i < pts.length; i++){
-    editeLigne(nTALier, leT.voisins[i], pts[i], pts[(i+1)%3], pts[(i+2)%3], 'C')
-  }
+		var pta = Triangles[j].pts
+		var t2l = [
+		  {d:{x:pta[0][0], y:pta[0][1]}, f:{x:pta[1][0], y:pta[1][1]}},
+			{d:{x:pta[1][0], y:pta[1][1]}, f:{x:pta[2][0], y:pta[2][1]}},
+			{d:{x:pta[2][0], y:pta[2][1]}, f:{x:pta[0][0], y:pta[0][1]}}]
 
-  Nums.push({pt:centroid(pts), n:nTALier, c:"white"})
+		ko = intersectLineLine(t1l[0].d,t1l[0].f, t2l[0].d, t2l[0].f)
+		if(!ko) ko = intersectLineLine(t1l[0].d,t1l[0].f, t2l[1].d, t2l[1].f)
+		if(!ko) ko = intersectLineLine(t1l[0].d,t1l[0].f, t2l[2].d, t2l[2].f)  
+	} 
+	//console.log(nTALier, ko)
+	*/
+	//if(ko){
+		//var t = donnees.pages[pCourante-1].find(x=>x.n == poseCourant)
+		//var n = t.lies.findIndex(x=> x.p == nTPose && x.l == nTALier)
+		//t.lies.splice(n, 1)
+		//if(dA.indexOf(nTALier) == -1){
+		//	dA.push(nTALier)
+		//}
+	//} else {
+		//var daI = dA.indexOf(nTALier)
+		//if(daI > -1){
+		//	dA.splice(daI, 1)
+		//}
+		Triangles.push(leT)
+		lec = lec.concat(nTALier)
+		leT.pts = pts
+		for(var i = 0; i < pts.length; i++){
+			editeLigne(nTALier, leT.voisins[i], pts[i], pts[(i+1)%3], pts[(i+2)%3], 'C')
+		}
 
-  // coplanaire
-  t1 = tPose.faces.map(x => vol.vertices[x])
-  t2 = tALier.map(x => vol.vertices[x])
+		Nums.push({pt:centroid(pts), n:nTALier, c:"white"})
 
-  cp = estCoplanaire(t1, t2[(nv1b + 1)%3])
-  if (cp === 0){
-    editeLigne(nTPose, nTALier, PP1, PP2, PP3, "P" )
-  } else {
-    if (cp < 0){
-      coul = "maroon"
-      editeLigne(nTPose, nTALier, PP1, PP2, PP3, "M" )
-    } else {
-      coul = "green"
-      editeLigne(nTPose, nTALier, PP1, PP2, PP3, "V" )
-    }
-  }
+		// coplanaire
+		t1 = tPose.faces.map(x => vol.vertices[x])
+		t2 = tALier.map(x => vol.vertices[x])
+
+		cp = estCoplanaire(t1, t2[(nv1b + 1)%3])
+		if (cp === 0){
+			editeLigne(nTPose, nTALier, PP1, PP2, PP3, "P" )
+		} else {
+			if (cp < 0){
+				coul = "maroon"
+				editeLigne(nTPose, nTALier, PP1, PP2, PP3, "M" )
+			} else {
+				coul = "green"
+				editeLigne(nTPose, nTALier, PP1, PP2, PP3, "V" )
+			}
+		//}
+	}	 
 }
 function faitTableauManquants(nP, nbT, coul){
   const L = 20
@@ -1069,5 +1135,33 @@ function definitPage(nP){
 		}
 	}
 }
+
+function intersectLineLine (a1, a2, b1, b2) {
+	var result = false;
+  var ua_t = (b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x);
+  var ub_t = (a2.x - a1.x) * (a1.y - b1.y) - (a2.y - a1.y) * (a1.x - b1.x);
+  var u_b  = (b2.y - b1.y) * (a2.x - a1.x) - (b2.x - b1.x) * (a2.y - a1.y);
+
+  if ( u_b !== 0 ) {
+	  var ua = ua_t / u_b;
+    var ub = ub_t / u_b;
+
+    if ( 0 <= ua && ua <= 1 && 0 <= ub && ub <= 1 ) {
+      result = true
+    //} else {
+      //result = new Intersection();
+    }
+    //} else {
+    //  if ( ua_t === 0 || ub_t === 0 ) {
+    //    result = true
+    //  } else {
+    //    //result = new Intersection("Parallel");
+    //  }
+  }
+
+  return result;
+}
+
+
 </script>
 </html>
