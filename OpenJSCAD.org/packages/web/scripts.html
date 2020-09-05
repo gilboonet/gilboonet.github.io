@@ -1323,12 +1323,12 @@ if (params.mode == 2){ // rendu 2d
   } 
  
 	var dexport = JSON.stringify(data);
-//	try{
-	localStorage.setItem("tr1_data", dexport);
-	localStorage.setItem("tr1_dx", params.larg);
-	localStorage.setItem("tr1_dy", params.haut);
-//	}catch(err){};
-//  console.log(dexport);
+	try{
+	window.localStorage.setItem("tr1_data", dexport);
+	window.localStorage.setItem("tr1_dx", params.larg);
+	window.localStorage.setItem("tr1_dy", params.haut);
+	}catch(err){};
+  console.log(dexport);
 
   return r;
     
