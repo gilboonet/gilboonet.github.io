@@ -1,33 +1,36 @@
 const jscad = require('@jscad/modeling')
 const { curves, maths, extrusions, primitives, transforms, booleans, 
-	colors, geometries, measurements } = jscad
+	colors, geometries, measurements, utils } = jscad
 const { bezier } = curves
 const { slice, extrudeLinear } = extrusions
 const { cuboid, polygon, polyhedron } = primitives
 const { intersect, subtract,union } = booleans
-const { center, scale, translateX, translateY, translateZ, translate } = transforms
+const { center, scale, translateX, translateY, translateZ, translate
+		,rotateX, rotateY, rotateZ } = transforms
 const { colorize } = colors
 const { geom3, poly3 } = geometries
 const { vec3 } = maths
-const { measureBoundingBox } = measurements
+const { measureBoundingBox, measureArea } = measurements
+const { degToRad } = utils
 
-const main = () => {
-  //var vol = extrudeWobble(30);
-  var vol = center({axes:[true,true,true]}, table());
+function main () {
+  var vol = center({axes:[true,true,true]}, rotateX(degToRad(90), table()));
   var r = [], rH = [];
   
+  //r= vol;
+
   console.log(measureBoundingBox(vol));
   
   const ep = 1.2;
   
-  var trH = translateZ(15, cuboid({size: [ep, 32, 32]}));
+  var trH = translateZ(0, cuboid({size: [ep, 32, 32]}));
   for (var i = -15; i< 16; i += 4){
 	  var t = intersect(vol, translateX(i, trH));
 	  if (t.polygons.length > 0)
 			rH.push(colorize([0, 1, 0, 1], t));
 	}
   rV = [];
-  var trV = translateZ(15, cuboid({size: [32, ep, 32]}));
+  var trV = translateZ(0, cuboid({size: [32, ep, 32]}));
   for (var i = -15; i< 16; i += 4){
 	  var t = intersect(vol, translateY(i, trV));
 	  if (t.polygons.length > 0)
@@ -54,11 +57,11 @@ const main = () => {
 	rH = rH.map(x=> subtract(x, eV));
 	rV = rV.map(x=> subtract(x, eH));
 	
-	/*// 3d
-	r.push(colorize([0,1,0], vol));
-	r.push(colorize([1,0,0], translateX(30, rH)));
-	r.push(colorize([0,0,1], translateX(-30, rV)));
-	*/
+	// 3d
+	r.push(colorize([0,1,0], translateX(-70, vol)));
+	r.push(colorize([1,0,0], translateX(32-70, rH)));
+	r.push(colorize([0,0,1], translateX(-32-70, rV)));
+	
 	
 	// 2d
 	for(var i = 0; i< rH.length; i++){
@@ -709,7 +712,17 @@ function table() {
 	
 	var a = Cube1_default();
 	
-	return scale([8,8,8], polyhedron({points:a.points, faces:a.polygons}));
+	var tmp = [];
+	for(var i = 0; i < a.polygons.length; i++){
+		if (measureArea(a.polygons[i]) < 0){
+			a.polygons[i] = a.polygons[i].reverse();
+		}
+		for(var j = 1; j< a.polygons[i].length-1; j++){
+			tmp.push([a.polygons[i][0], a.polygons[i][j], a.polygons[i][j+1]]);
+		}
+	}
+	
+	return scale([8,8,8], polyhedron({points:a.points, faces:tmp}));
 	
 }
 
