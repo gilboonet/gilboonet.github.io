@@ -1065,8 +1065,8 @@ if(params.mode == 1){ // affiche le volume (avec echelle et rotations choisies)
         if (tmp.length >0){
           t2d = union(tmp);
           b2 = t2d.getBounds();
-          //t2d = translate(b2[0].times(-1), t2d);
-          t2d = translate([d.x/2, d.y/2], t2d);
+          t2d = translate(b2[0].times(-1), t2d);
+          //t2d = translate([d.x/2, d.y/2], t2d);
         }
 
         r.push(translate([dx, dy], t2d));
