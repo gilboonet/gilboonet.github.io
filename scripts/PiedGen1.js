@@ -33,7 +33,7 @@ const getParameterDefinitions = () => {
     { name: 'sgai6', type: 'slider', initial: 100, min: 0, max: 100, step: 1, caption: '6:' },
     { name: 'sgai7', type: 'slider', initial: 100, min: 0, max: 100, step: 1, caption: '7:' },
     { name: 'sgai8', type: 'slider', initial: 100, min: 0, max: 100, step: 1, caption: '8:' },
-    { name: 'sgai9', type: 'slider', initial: 100, min: 0, max: 100, step: 1, caption: '9:' },
+    //{ name: 'sgai9', type: 'slider', initial: 100, min: 0, max: 100, step: 1, caption: '9:' },
 
     { name: 'g3', type: 'group', caption: 'GALBE' },
     { name: 'sgal1', type: 'slider', initial: 50, min: 0, max: 100, step: 1, caption: '1:' },
@@ -44,7 +44,7 @@ const getParameterDefinitions = () => {
     { name: 'sgal6', type: 'slider', initial: 50, min: 0, max: 100, step: 1, caption: '6:' },
     { name: 'sgal7', type: 'slider', initial: 50, min: 0, max: 100, step: 1, caption: '7:' },
     { name: 'sgal8', type: 'slider', initial: 50, min: 0, max: 100, step: 1, caption: '8:' },
-    { name: 'sgal9', type: 'slider', initial: 50, min: 0, max: 100, step: 1, caption: '9:' },
+    //{ name: 'sgal9', type: 'slider', initial: 50, min: 0, max: 100, step: 1, caption: '9:' },
   ]
 }
 
@@ -68,7 +68,7 @@ const main = (params) => {
     ech.push(params.sgai6/100)
     ech.push(params.sgai7/100)
     ech.push(params.sgai8/100)
-    ech.push(params.sgai9/100)
+    //ech.push(params.sgai9/100)
     
 		dt.push((params.sgal1-50)/-10)
 		dt.push((params.sgal2-50)/-10)
@@ -78,7 +78,7 @@ const main = (params) => {
 		dt.push((params.sgal6-50)/-10)
 		dt.push((params.sgal7-50)/-10)
 		dt.push((params.sgal8-50)/-10)
-		dt.push((params.sgal9-50)/-10)
+		//dt.push((params.sgal9-50)/-10)
     
     const nbT = params.nb
     
@@ -86,7 +86,7 @@ const main = (params) => {
     return extrudeFromSlices({
       numberOfSlices: nbT,
       callback: (progress, count, base) => {
-        const i = nbT - count
+        const i = nbT - count -1
         let scaleFactor = params.avecGainage ? ech[i] : 1
         let dxy = dt[i]
         const scaleMatrix = mat4.fromScaling([scaleFactor, scaleFactor, 1])
