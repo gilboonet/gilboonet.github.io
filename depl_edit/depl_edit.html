@@ -360,7 +360,6 @@ function tourneTriangle(sens){
 		redeploie()
 	}
 }
-
 function redesignNum(t, n){
 	t.innerHTML = n
 	t.setAttributeNS(null,"x", t.dataset.ptx)
@@ -656,7 +655,7 @@ function ajouteTexte2(pt1, pt2, pt3, p, t, coul = "yellow", source = "leSvg"){
 		txt.innerHTML = t
 	}else{
 		var l = distance2d(pt1, pt2)
-		txt.innerHTML = l.toFixed(2)
+		txt.innerHTML = (l / 37.79527559055).toFixed(2)
 	}
 
 	if(typeAjout == 'A'){
