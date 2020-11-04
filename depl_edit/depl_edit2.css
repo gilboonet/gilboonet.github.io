@@ -1,0 +1,93 @@
+html,body{
+	height: 100%;
+}
+
+.full-height {
+	height: 100%;
+}
+
+body{ 
+	background-color:#121212;
+}
+
+.navbar {
+  overflow: hidden;
+  background-color: #121212;
+  position: fixed; /* Set the navbar to fixed position */
+  top: 0; /* Position the navbar at the top of the page */
+  width: 100%; /* Full width */
+}
+
+.navbar a {
+  float: left;
+  display: block;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  background: white;
+  color: black;
+}
+
+.main {
+  margin-top: 20px; /* Add a top margin to avoid content overlay */
+}
+
+svg { outline: 3px solid black;}
+
+.draggable { cursor: move;}
+
+.attacher { cursor: zoom-in;}
+
+.detacher { cursor: zoom-out;}
+
+.chercher { cursor: crosshair;}
+
+.i1 { width:24px; padding:2px; margin:0px;font-size:8px;}
+
+i { font-size: 10px; color:white;}
+
+.b1 { 
+	background-color: SkyBlue; 
+	border: none; 
+	color: white; 
+	cursor: pointer;
+	text-decoration: none; 
+	display: inline-block; 
+	text-align: center; 
+	vertical-align: middle;
+	height: 20px;
+	font-size: 10px;
+}
+
+.b1:hover { background-color: RoyalBlue; }
+.chercher:hover {color:white; }
+
+.b0 { 
+	background-color: LightGray; border: none; color: white; cursor: not-allowed;
+	text-decoration: none; display: inline-block; padding:4px; text-align: center; vertical-align: middle;
+}
+
+input[type="file"] { 
+  opacity: 0; /* make transparent */
+  z-index: -1; /* move under anything else */
+  position: absolute; /* don't let it take up space */
+}
+
+input[type="text"] {
+	border: 1px solid white;
+}
+
+#map {
+	position: fixed;
+	visibility: hidden;
+	top: 0; 
+	right: 0;
+}
+
+#main {
+	overflow: hidden;
+}
