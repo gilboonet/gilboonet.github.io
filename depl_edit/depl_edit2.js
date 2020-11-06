@@ -731,7 +731,10 @@ function faitTableauManquants(nP, nbT, coul){
   ajouteRect(L*2* parseInt(nP-1), 0, (L-4), L*2, coul,"mm")
   ajouteNb(L*2* parseInt(nP-1)+(L-1), 10, nP+":"+t.length, false)
   const xMax = L * (Math.min(16,Math.sqrt(nbT)-1))
-  map.width = (xMax * 8)+"mm"
+  console.log(SVG.clientWidth)
+  //map.style.width = (xMax)+"mm"
+  //map.style.right = 0 //SVG.clientWidth
+  //document.getElementById("mm").width = (xMax)+"mm"
   for(var i = 0; i < nbT; i++){
 		var actif = vol.groups[i] == pc
     ajouteRect(x,y, L, L,'none',"mm")
