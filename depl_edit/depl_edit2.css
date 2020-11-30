@@ -48,7 +48,7 @@ svg { outline: 3px solid black;}
 
 .i1 { width:24px; padding:2px; margin:0px;font-size:8px;}
 
-i { font-size: 10px; color:white;}
+i { font-size: 12px; color:white;}
 
 .b1 { 
 	background-color: SkyBlue; 
@@ -59,8 +59,8 @@ i { font-size: 10px; color:white;}
 	display: inline-block; 
 	text-align: center; 
 	vertical-align: middle;
-	height: 20px;
-	font-size: 10px;
+	height: 24px;
+	font-size: 12px;
 }
 
 .b1:hover { background-color: RoyalBlue; }
