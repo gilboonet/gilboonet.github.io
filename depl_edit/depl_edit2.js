@@ -730,7 +730,7 @@ function faitTableauManquants(nP, nbT, coul){
   var t = l.sort(function(a,b){return a > b})
   ajouteRect(L*2* parseInt(nP-1), 0, (L-4), L*2, coul,"mm")
   ajouteNb(L*2* parseInt(nP-1)+(L-1), 10, nP+":"+t.length, false)
-  const xMax = L * (Math.min(16,Math.sqrt(nbT)-1))
+  const xMax = L * (Math.min(18,Math.sqrt(nbT)-1)) // 18 vs 16
   console.log(SVG.clientWidth)
   //map.style.width = (xMax)+"mm"
   //map.style.right = 0 //SVG.clientWidth
