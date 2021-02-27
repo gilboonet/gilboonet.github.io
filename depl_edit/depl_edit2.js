@@ -115,7 +115,8 @@ function commencer(){
 	faitTableauManquants(pc, vol.faces.length, "lightCoral")
 	basculeMap()
 	var max = vol.faces.length -1
-	var n = prompt("Commencer par quelle facette (0 - "+ max +") ?", "0")
+	var dep = vol.groups.findIndex(n => n == pc)
+	var n = prompt("Commencer par quelle facette (0 - "+ max +") ?", dep)
 	if (n != null) {
 		n = parseInt(n)
 		if( (n<0) || (n > max)){ n = getRandomInt(max) }
