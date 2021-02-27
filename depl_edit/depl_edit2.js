@@ -1,6 +1,6 @@
 var Triangles = [], Pages = [], Lignes = [], Nums = [], lec = [],
 	vol, donnees, pCourante, sElOffset, sCoord, poseCourant, courant, pc,
-	fZoom, tP1 = 9, tP2 = 6, rechEnCours = false, selEl = null, ok = false
+	fZoom, tP1 = 9, tP2 = 6, rechEnCours = false, selEl = null, ok = false, autoEnCours = false
 
 const epsilon = 0.001, svgNS = "http://www.w3.org/2000/svg",
 	map = document.getElementById("map"),
@@ -470,12 +470,14 @@ function prochainTriangle(){
 	var objet = c[ll.findIndex(x=> x == m)]
 	if(!objet){
 		bAuto.style.backgroundColor = "Green"
+		autoEnCours = false
 	}
 	return objet
 }
 function auto(){
 	var objet = prochainTriangle()
 	if(objet) {
+		autoEnCours = true
 		var event = new MouseEvent('mousedown', {
 			'view': window, 'bubbles': true, 'cancelable': true
 		})
@@ -732,6 +734,7 @@ function faitTableauManquants(nP, nbT, coul){
   ajouteNb(L*2* parseInt(nP-1)+(L-1), 10, nP+":"+t.length, false)
   const xmx = Math.sqrt(nbT) - 1
   const xMax = L * ( xmx > 17 ? 17 : xmx)
+  console.log(SVG.clientWidth)
   //map.style.width = (xMax)+"mm"
   //map.style.right = 0 //SVG.clientWidth
   //document.getElementById("mm").width = (xMax)+"mm"
@@ -797,6 +800,8 @@ function redeploie(){
 		// restore scroll
 		document.documentElement.scrollTop = document.body.scrollTop = scrollLeft;
 		document.documentElement.scrollLeft = document.body.scrollLeft = scrollTop;
+		
+		if(autoEnCours)auto()
   }
 }	
 function getJSON(path) {
