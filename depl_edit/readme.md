@@ -19,5 +19,9 @@ Un volume simple peut être déplié en une seule pièce, de cette façon :
 - Le plus souvent il suffit alors de lancer un dépliage semi-automatique en cliquant sur le bouton **semi-auto (S)** qui va tenter de déplier toutes les facettes tant qu'elles sont accessibles. Attention, cette opération ne détecte pas les recouvrements (contrairement à la version de dépliage automatique en OpenJSCAD).
 
 ### Edition
+Voici les différentes opérations possibles :
+- déplacer la pièce en cours de dépliage soit en cliquant sur l'un des boutons **M,N,O,P**, soit en glissant-déplaçant le n° de la première facette qui est en orange.
+- tourner la pièce en cours de dépliage en cliquant sur l'un des boutons **I,J,K,L**
+- 
 
 ## Coloriage de zones à déplier séparément
