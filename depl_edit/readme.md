@@ -10,7 +10,7 @@ Le volume doit être au format .obj triangularisé. Les dimensions du gabarit co
 ## Volume en une pièce
 Un volume simple peut être déplié en une seule pièce, de cette façon :
 - accès à l'application depuis le navigateur internet : [ici](https://gilboonet.github.io/depl_edit/depl_edit2.html?page=1)
-- clic sur **.OBJ (B)**, sélection du volume
+- clic sur **->.OBJ (B)**, sélection du volume
 - La facette de départ est demandée : "Commencer par quelle facette (0 - 11) ?" (cas d'un volume avec 12 facettes), la première facette disponible est proposée par défaut, mais vous pouvez en choisir une autre.
 - Après validation de la facette de départ, celle-ci est posée et le dépliage peut commencer.
 - Sur le bord droit apparait la grille des numéros de facettes, avec celles dépliées en surbrillance. Le dépliage consiste à poser toutes les facettes restantes.
@@ -24,11 +24,20 @@ Un volume simple peut être déplié en une seule pièce, de cette façon :
 - Le plus souvent il suffit alors de lancer un dépliage semi-automatique en cliquant sur le bouton **semi-auto (S)** qui va tenter de déplier toutes les facettes tant qu'elles sont accessibles. Attention, cette opération ne détecte pas les recouvrements (contrairement à la version de dépliage automatique en OpenJSCAD).
 
 ### Edition
-Voici les différentes opérations possibles :
+Voici les différentes opérations possibles d'édition :
 - déplacer la pièce en cours de dépliage soit en cliquant sur l'un des boutons **M,N,O,P**, soit en glissant-déplaçant le n° de la première facette qui est en orange.
 - tourner la pièce en cours de dépliage en cliquant sur l'un des boutons **I,J,K,L**
 - enlever une facette en cliquant sur son n° (en blanc au centre de la facette), un **-** apparait. La facette doit être dégagée sinon elle ne bougera pas.
 - poser une facette en cliquant sur son n° (en jaune au bord de la facette voisine où elle sera attachée), un **+** apparait. La facette doit être dégagée sinon elle ne bougera pas.
 - déplacer une facette en cliquant sur son n° (en blanc au bord d'une facette qui lui est voisine), un **+** apparait. La facette doit être dégagée sinon elle ne bougera pas.
+
+### Autres opérations
+- Pour exporter le dépliage au format .svg, cliquer sur **<-.SVG (E)** et enregistrer le fichier. Si le dépliage est complet, le gabarit sera simplifié de façon à ne pas comporter d'informations inutiles.
+- Pour sauver le dépliage, cliquer sur **<-Data (F)** et enregistrer le fichier (format .json).
+- Pour charger un dépliage, cliquer sur **->Data (G)** et sélectionner le fichier (auparavant recharger la page et ouvrir le volume)
+- La sauvegarde d'un dépliage n'est utile que sur un dépliage qui pose problème, généralement cela n'est pas nécessaire.
+- cliquer sur un n° dans la grille de droite (ou entrer ce n° dans la zone **(H)** pour afficher un rouge les occurences de ce n° (penser à vider cette zone avant d'exporter en .svg).
+- cliquer sur **(C)** pour cacher/afficher la grille des numéros de facette.
+- selon le navigateur, il est possible de zoomer/dézoomer pour améliorer l'affichage (soit voir une zone plus importante, soit mieux voir les détails).
  
-## Volume en plusieurs pièces
+## Volume en plusieurs pièces (à venir)
