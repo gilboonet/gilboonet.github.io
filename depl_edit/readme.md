@@ -1,8 +1,6 @@
 # Editeur graphique de gabarit de dépliage
 **depl_edit** est une application **JavaScript** qui permet de créer de façon semi-automatique le gabarit/plan d'un volume dans le but de le reproduire sur carton par découpage, pliage et assemblage. C'est un outil créé dans le cadre du cartonnage numérique pour la création de statues et d'objets en facettes de carton ainsi que pour la création de l'habillage en facettes de carton de mobilier.
-
-## Interface
-![](depl_interface.png)
+## Interface ![](depl_interface.png)
 
 ## Volume
 Le volume doit être au format .obj triangularisé. Les dimensions du gabarit correspondront à une unité du volume pour 1 mm. Le paramètre **Echelle (D)** (1 par défaut) peut être modifié (recharger le volume après l'avoir modifié) pour créer un gabarit à une échelle différente de celle du volume.
