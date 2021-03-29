@@ -48,4 +48,4 @@ Voici les différentes opérations possibles d'édition :
   2. Sélection du volume
   3. Clic droit, Propriétés de sommet/Couleurs en matériaux
   4. Exporter en .obj
-- Puis accéder à depl_edit en vérifiant que le lien finit par **page=1** sinon le spécifier, charger le .obj, valider le n° par défaut, cliquer sur ** 
+- Puis accéder à [depl_edit](https://gilboonet.github.io/depl_edit/depl_edit2.html?page=1) en vérifiant que le lien finit par **page=1** sinon le spécifier, charger le .obj, valider le n° par défaut, cliquer sur **semi-auto (S)**, plus la pièce contient de facettes et plus cela peut prendre de temps, puis le dépliage est fait. La plupart du temps si le découpage a été bien fait il y aura toutes les pièces. Il peut être utile d'en déplacer certaines selon ce que l'on veut obtenir (privilégier la compacité, la facilité d'assemblage, l'aspect).  
