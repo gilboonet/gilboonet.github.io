@@ -38,4 +38,14 @@ Voici les différentes opérations possibles d'édition :
 - cliquer sur **(C)** pour cacher/afficher la grille des numéros de facette.
 - selon le navigateur, il est possible de zoomer/dézoomer pour améliorer l'affichage (soit voir une zone plus importante, soit mieux voir les détails).
  
-## Volume en plusieurs pièces (à venir)
+## Volume en plusieurs pièces
+- Quand il n'est pas possible de déplier toutes les facettes d'un volume en une seule pièce, celui-ci doit être préparé afin de pouvoir être déplié en plusieurs pièces. Pour cela il faut l'éditer avec un modeleur (j'utilise et recommande [**Wings 3d**](http://www.wings3d.com/)).
+- Les pièces doivent être coloriées chacune d'une couleur.
+- Si certaines facettes ne sont pas utiles à déplier, elles peuvent être coloriées en noir, et il suffira de ne pas déplier la pièce correspondant à cette couleur (avec Wings 3d c'est la pièce n° 1).
+- Avec wings 3d, le coloriage de facettes se fait en ouvrant la palette (menu Windows/Palette), puis en sélectionnant les facettes (clic sur une facette, ou passage en mode de sélection par facette, puis clic sur les facettes voulues), et enfin en cliquant sur la couleur. Généralement je commence par la première couleur de la palette puis je progresse, en évitant le noir que je n'utilise que si j'ai des facettes à ne pas déplier). Si vous avez des volumes comportant beaucoup de pièces, il peut être utile de vous faire une palette adaptée (clic droit sur la palette).
+- Afin que l'information de couleur des facettes soit présente dans le fichier .obj, avec Wings 3d il faut faire :
+  1. Passage en mode de sélection par Corps (raccourci B)
+  2. Sélection du volume
+  3. Clic droit, Propriétés de sommet/Couleurs en matériaux
+  4. Exporter en .obj
+- Puis accéder à depl_edit en vérifiant que le lien finit par **page=1** sinon le spécifier, charger le .obj, valider le n° par défaut, cliquer sur ** 
