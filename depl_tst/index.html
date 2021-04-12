@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Language" content="fr" />
+<meta http-equiv=“Pragma” content=”no-cache”>
+<meta http-equiv=“Expires” content=”-1″>
+<meta http-equiv=“CACHE-CONTROL” content=”NO-CACHE”>
+<html>
+	<head>
+		<title>Outil de dépliage numérique</title>
+		<link rel="shortcut icon" href="/favicon.ico">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> 
+		<link rel="stylesheet" href="index.css">
+	</head>
+	<body onload="debut()">
+		<div class="navbar">
+			<input id="fichier" type="file" accept=".obj"/>
+			<button class="b1"><label for="fichier"><i class="fa fa-upload"></i>.OBJ</label></button>
+			<button class="b1" id="bTEST"><i class="fa fa-gears"></i>TEST</button>
+			<i id="blaPrem">1ere face:</i><input class="i1" type="text" id="premFace" value="0">
+			<button id="sDonnees" class="b1" ><i class="fa fa-download"></i>Data</button>	
+	
+			<!--button class="b1" onclick="basculeMap()"><i class="fa fa-th"></i></button>
+			<i id="blaEchelle">Echelle:</i><input class="i1" type="text" id="echelle" value="" onchange="chargeEchelle()">
+			<button class="b1" onclick="sauveSVG()"><i class="fa fa-download"></i>SVG</button>
+			<button class="b1" onclick="sauveDonnees()"><i class="fa fa-download"></i>Data</button>	
+			<input id="fichierD" type="file" accept=".json"/>
+			<button class="b1"><label for="fichierD"><i class="fa fa-upload"></i>Data</label></button>			
+			<input class="i1" type="text" id="rech" value="" onchange="redeploie()"><button onclick="redeploie()" class="b1"><i class="fa fa-search"></i></button>
+			<button class="b1" onclick="tourneTriangle(30)"><i class="fa fa-rotate-left"></i></button>
+			<button class="b1" onclick="tourneTriangle(1)"><i class="fa fa-level-up"></i></button>
+			<button class="b1" onclick="tourneTriangle(-1)"><i class="fa fa-level-down"></i></button>
+			<button class="b1" onclick="tourneTriangle(-30)"><i class="fa fa-rotate-right"></i></button>
+			<button class="b1" onclick="bougePiece( 1, 0)"><i class="fa fa-arrow-left"></i></button>
+			<button class="b1" onclick="bougePiece( 0,-1)"><i class="fa fa-arrow-down"></i></button>
+			<button class="b1" onclick="bougePiece( 0, 1)"><i class="fa fa-arrow-up"></i></button>
+			<button class="b1" onclick="bougePiece(-1, 0)"><i class="fa fa-arrow-right"></i></button>
+			<input class="i1" type="text" id="echPolice1" value="" onchange="redeploie()">
+			<input class="i1" type="text" id="echPolice2" value="3" onchange="redeploie()">
+			<button class="b1" onclick="auto()" id="bAuto"><i class="fa fa-gears"></i></button-->
+		</div>
+		<div class="main, full-height" style="overflow:scroll">
+			<svg xmlns="http://www.w3.org/2000/svg" id="leSvg" height="594mm" width="840mm">
+			</svg>		
+		</div>
+		<div id="map" class="w3-col w3-right w3-container" style="float:right; width:116mm;">
+			<svg xmlns="http://www.w3.org/2000/svg" id="mm" height="297mm" width="116mm">
+			</svg>
+		</div>
+  	<script type="text/javascript" src="index.js"></script>
+	</body>
+</html>
