@@ -117,7 +117,10 @@ function debut(){
 	document.getElementById("fichier").addEventListener("change", chargeVolume, false)
 	document.getElementById("bTEST").addEventListener("click", deplie, false)
 	document.getElementById("premFace").value = "";
+	document.getElementById("premFace").addEventListener("dblclick", deplieUn, false)
 	document.getElementById("premFace").addEventListener("change", deplieUn, false)
+	document.getElementById("sRandom").addEventListener("click", deplieRnd, false)
+
 	document.getElementById("sDonnees").addEventListener("click", sauveDonnees, false)
 	dk[0] = SVG.width.baseVal.value /2
 	dk[1] = SVG.height.baseVal.value /2
@@ -274,7 +277,38 @@ function triangle(p){
 	ligne(p[1], p[2], 'yellow')
 	ligne(p[2], p[0], 'yellow')
 }
-function unw(){	
+
+function trieFU(){
+  let tfu = [], fmax = fu.length
+	for(let i = 0; i <  fmax; i++){
+		let fui = fu[i], ptF = pt[fui]
+		for(let j = 0; j <= 2 ; j++){
+			let p0 = ptF[j], p1 = ptF[suiv(j)]
+			tfu.push([fui,j, distance2d(p0,p1)])
+		}
+	}
+	if(mode ===0)return tfu
+	//return tfu
+	//return tfu.sort((a, b) => b[2] - a[2]) // plus grand
+	//return tfu.sort((a, b) => a[2] - b[2]) // plus petit
+	return tfu.sort(() => Math.random() - 0.5)
+}	
+
+function unw(mode = 0){
+	let f2 = trieFU(mode)	
+	let n =0, i, j
+	let fmax = f2.length
+	for(let k = 0; k < fmax; k++){
+		let fi = f2[k]
+		i = fi[0]
+		j = fi[1]
+		if(cacheKO.find(x=> (x[0] == i) && (x[1] == j)) === undefined)
+		  if(attacher(i, j))
+		    n++
+	}
+	return n
+}
+/*function unw(){
 	let n =0;
 	let fmax = fu.length
 	for(let i = 0; i < fmax; i++){
@@ -286,7 +320,7 @@ function unw(){
 		}
 	}
 	return n
-}
+}*/
 function sauveDonnees(){
 	donnees = { pages:[ [	{n:fu[0], x:1000, y:1000, a:0} ] ] }
 	
@@ -316,6 +350,21 @@ function deplie(){
 	deplieNum(r[0][0], true)
 }
 
+function deplieRnd(){
+	mode = mode_voir
+	let ncible = parseInt(document.getElementById("cible").value)
+	if(isNaN(ncible))ncible = 0
+
+	let n = parseInt(document.getElementById("premFace").value), rn
+	if(!isNaN(n)){
+	  let r = deplieNum(n, true, 1)
+	  rn = r[1]
+  	console.log(n + ' : ' + r[1] + ' / '+ vol.faces.length)
+	}
+	
+	if(rn < ncible)deplieRnd()
+}
+
 function deplieUn(){
 	mode = mode_voir
 	let n = parseInt(document.getElementById("premFace").value)
@@ -324,7 +373,7 @@ function deplieUn(){
   	console.log(n + ' : ' + r[1] + ' / '+ vol.faces.length)
 	}
 }
-function deplieNum(nF, voir = false){
+function deplieNum(nF, voir = false, mode = 0){
   if(voir){
     var elsT = document.getElementsByTagNameNS(svgNS, "text")
 	  var elsP = document.getElementsByTagNameNS(svgNS, "line")
@@ -350,7 +399,7 @@ function deplieNum(nF, voir = false){
 	
 	let u
 	do{
-	  u = unw()
+	  u = unw(mode)
 //	  console.log(u, fu.length, '/', nFaces)
 	}while(u>0);
 	
