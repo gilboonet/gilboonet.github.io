@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script src="svg-injector.min.js"></script>
+<meta charset="utf-8"/>
+<script type="text/javascript">
+const xlink = 'http://www.w3.org/1999/xlink', dsvg = 'http://www.w3.org/2000/svg'
+
+const chiffres = [
+"m 0,0 2.18724,-0.006 -0.0128,4.66436 -2.10214,0.0552 z",
+"m 0,0.5 1.72277,-0.42921 -0.113281,4.94614",
+"m 3.2,5 -3.5049,-0.0538 2.81349,-2.57102 0.31053,-2.17002 -1.66799,-0.28406 -1.56689,0.77147",
+"m -0.2,0 2.33491,-0.10912 0.5473,1.16251 -0.93349,1.07475 -1.19734,0.0246 1.21451,-0.0112 1.22053,1.53795 -1.34604,1.31176 -1.83782,-0.16803",
+"m 4,4 -4.16346,-0.0288 2.88735,-3.8307 0.0939,5.087899",
+"m 2.7,0 -2.67906,0.0323 -0.0307,1.99518 1.28219,-0.0584 1.60319,1.11759 -0.0584,0.9742 -1.26695,1.02877 -1.78177,-0.32989",
+"m 3.3,0 -1.95666,0.0189 -1.56753,2.41091 0.20748,1.78989 1.05724,0.89059 1.53208,-0.0443 0.72684,-1.03846 -0.0898,-1.43349 -1.14955,-0.50521 -1.02017,0.0448 -1.26714,0.303",
+"m -0.2,0 3.48105,0.0112 -2.32435,4.91153",
+"m 1.4,2.25 -1.07869,-0.81814 0.008,-1.0394 1.02448,-0.50792 1.25019,0.53748 0.0318,1.03552 -2.62796,1.78635 -0.0294,1.19022 0.91708,0.64722 1.46708,-0.0366 0.61995,-0.81539 -0.11776,-1.11288 z",
+"m -0.2,4.75 1.26971,0.29706 1.70176,-0.87149 0.32221,-2.81723 -0.82449,-1.34957 -1.39173,-0.12464 -0.92739,0.85677 -0.0373,1.49238 0.93502,0.63419 1.15378,-0.0978 1.00379,-0.34654"
+]
+
+function ajouteNombre(svgO, nb, x, y, coul = 'black'){
+	const DL = [2.6,2.5,3.2,3.5,3.7,3.5,3.6,3.5,3.5,3.8]
+	var nombres = nb.toString().split('').map(Number)
+	var d = 0
+	var ch = ""
+	for(var ni = 0; ni < nombres.length; ni++){
+		var chi = "M "+(x+d)+","+y+ " "+ chiffres[nombres[ni]]
+		ch = ch + ' ' + chi
+		d = d + DL[nombres[ni]]
+	}
+	var chem = document.createElementNS(dsvg, 'path')
+	chem.setAttribute('d', ch)
+	chem.setAttribute('fill', 'none')
+	chem.setAttribute('stroke', coul)
+	chem.setAttribute('stroke-width', '0.4')
+	svgO.appendChild(chem)
+}
+
+function change(svgO, coul){
+	var tl =  Array.from(svgO.querySelectorAll("text[fill='"+ coul + "']"))
+	console.log(tl.length)
+	for(var i = 0; i < tl.length; i++){
+		var g = document.createElementNS(dsvg, 'g')
+		var n = tl[i].textContent
+		g.appendChild(tl[i])
+		svgO.appendChild(g)
+		var b = g.getBBox()
+		ajouteNombre(svgO, n, b.x, b.y, coul)
+		g.removeChild(tl[i])
+		svgO.removeChild(g)		
+	}
+}
+
+function combine(svgO, coul, nom){
+	var query = "line[stroke='"+ coul + "']"
+	var lignes = Array.from(svgO.querySelectorAll(query))
+	console.log(lignes)
+	var chem = document.createElementNS(dsvg, 'path')
+	var ch = ""
+	for(var i = 0; i< lignes.length; i++){
+		var l = lignes[i],
+				x1 = parseFloat(l.getAttributeNS(null, 'x1')),
+				y1 = parseFloat(l.getAttributeNS(null, 'y1')),
+				x2 = parseFloat(l.getAttributeNS(null, 'x2')),
+				y2 = parseFloat(l.getAttributeNS(null, 'y2'))
+				
+		ch = ch + ' ' +'M '+ x1 +','+ y1 + ' L'+ x2 +','+ y2
+	}
+	//console.log(ch)
+	chem.setAttribute('d', ch)
+	chem.setAttribute('id', nom)
+	chem.setAttribute('fill', 'none')
+	chem.setAttribute('stroke', coul)
+	chem.setAttribute('stroke-width', '0.4')
+	svgO.appendChild(chem)
+	lignes.map(x=> x.parentNode.removeChild( x ))
+}	
+
+function sauveSVG(svgO, nom){	
+	var serializedSVG = new XMLSerializer().serializeToString(svgO);
+	const blob = new Blob([serializedSVG], {type: 'image/svg+xml'});
+	let objectURL = window.URL.createObjectURL(blob);
+	let anchor = document.createElement('a');
+	anchor.href = objectURL;
+	anchor.download = 'SIMPLIFIE_'+nom;
+	anchor.click();
+	URL.revokeObjectURL(objectURL);
+}
+
+function renum(){
+
+var elementsToInject = document.querySelectorAll('svg[data-src]')// Elements to inject
+var injectorOptions = { evalScripts: 'once', pngFallback: 'assets/png' }// Options
+
+var perInjectionCallback = function (svg) {// Callback after each SVG is injected
+	var svgObj = document.getElementsByTagName("svg")[0]
+	var nom = svgObj.getAttribute("data-src")
+
+	change(svgObj, "#008000")
+	change(svgObj, "#000000")
+		
+	combine(svgObj, '#ff0000', 'COUPE')
+	combine(svgObj, '#800000', 'PLIINT')
+	combine(svgObj, '#008000', 'PLIEXT')
+		
+	sauveSVG(svgObj, nom)
+};
+
+var injector = new SVGInjector(injectorOptions)
+injector.inject(elementsToInject, perInjectionCallback)
+	
+}
+</script>
+</head>
+
+<body onload="renum()">
+	<svg data-src="03.svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+	</svg>
+</body>
+</html>
+   
