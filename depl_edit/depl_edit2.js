@@ -1,6 +1,7 @@
-var Triangles = [], Pages = [], Lignes = [], Nums = [], lec = [],
-	vol, donnees, pCourante, sElOffset, sCoord, poseCourant, courant, pc,
-	fZoom, tP1 = 9, tP2 = 6, rechEnCours = false, selEl = null, ok = false, autoEnCours = false
+var Triangles = [], fTriangles = [], Pages = [], Lignes = [],
+	Nums = [], lec = [], vol, donnees, pCourante, sElOffset,
+	sCoord, poseCourant, courant, pc, fZoom, tP1 = 9, tP2 = 6,
+	rechEnCours = false, selEl = null, ok = false, autoEnCours = false
 
 const epsilon = 0.001, svgNS = "http://www.w3.org/2000/svg",
 	map = document.getElementById("map"),
@@ -402,11 +403,14 @@ function decoSiRecherche(txt, t){
 }
 function ajouteTexte2(pt1, pt2, pt3, p, t, coul = "yellow", source = "leSvg"){
   var typeAjout, g = vol.groups[t]
+  const petitN = petit(p,t), grandN = grand(p,t)
+  
   if ((t > -1)&&(p > -1)){
 		if(g == pc){
 			typeAjout = 'A' // attacher
 		} else {
-			typeAjour = 'L'
+			//typeAjour = 'L'
+			typeAjout = 'L'
 		}
 	}else{
 		typeAjout = 'L' // longueur (externe)
@@ -442,17 +446,30 @@ function ajouteTexte2(pt1, pt2, pt3, p, t, coul = "yellow", source = "leSvg"){
 	txt.setAttributeNS(null,"text-anchor", "middle")
 	txt.setAttributeNS(null,"z-index", 2)  
 	var a = rad2deg(angle(pt1, pt2))
-	txt.setAttributeNS(null,"transform", "rotate(" 
-		+ (a+180) + "," + pt[0] + "," + pt[1] +")")
+	//txt.setAttributeNS(null,"transformtransform", "rotate(" 
+	//	+ (a+180) + "," + pt[0] + "," + pt[1] +")")
+	//console.log(Lignes[trouveLigneIndex(petit(p,t),grand(p,t))])
+	//console.log(t, petitN, grandN)
+	var Tri = trouveTriangle(petitN, fTriangles), iAChercher, nCourant
+	if(Tri === undefined){
+		Tri = trouveTriangle(grandN)
+		nCourant = grandN
+		iAChercher = petitN
+	} else {
+		nCourant = petitN
+		iAChercher = grandN
+  }
+	var indice = Tri.voisins.findIndex(x => x == iAChercher)
 	if(typeAjout == 'A'){
 		txt.innerHTML = t
 	}else{
 		//txt.innerHTML = (distance2d(pt1, pt2) / 37.79527559055).toFixed(2)
-		if (pc < g){
+		txt.innerHTML = (nCourant*3) + indice
+		/*if (pc < g){
 			txt.innerHTML = g + '.' + vol.gN[t]
 		} else {
-			txt.innerHTML = pc + '.' + vol.gN[p]			
-		}
+			txt.innerHTML = pc + '.' + vol.gN[p]
+		}*/
 	}
 	if(typeAjout == 'A'){
 		decoSiRecherche(txt, t)
@@ -545,7 +562,8 @@ function creePage(nP, l, h){
   return { num: nP, largeur: l, hauteur: h,
            trianglesPoses: [], triangles: [], lignes: [] }
 }
-function creeTriangle(nT, pT, fT, dT){
+//function creeTriangle(nT, pT, fT, dT){
+function creeTriangle(nT, pT, fT){
   var triangle = { num: nT, pts: pT, faces: fT }
   // recherche voisins
   var voisins = []
@@ -555,6 +573,11 @@ function creeTriangle(nT, pT, fT, dT){
   }
   triangle.voisins = voisins
   return triangle
+}
+function creeFTriangles(){
+  for(var i = 0; i < vol.faces.length; i++){
+		fTriangles.push(creeTriangle(i, null, vol.faces[i]))
+	}
 }
 function poseTriangle(nT, delta = [0,0], angle = 0){
   var triangle = vol.faces[nT]
@@ -574,8 +597,8 @@ function poseTriangle(nT, delta = [0,0], angle = 0){
 }
 function petit(a, b){ return Math.min(a, b)}
 function grand(a, b){ return Math.max(a, b)}
-function trouveTriangle(n){
-  return Triangles.find(x => x.num === n)
+function trouveTriangle(n, tableau = Triangles){
+  return tableau.find(x => x.num === n)
 }
 function estCoplanaire(t, p){
 // Function to find equation of plane.
@@ -735,7 +758,7 @@ function faitTableauManquants(nP, nbT, coul){
   ajouteNb(L*2* parseInt(nP-1)+(L-1), 10, nP+":"+t.length, false)
   const xmx = Math.sqrt(nbT) - 1
   const xMax = L * ( xmx > 17 ? 17 : xmx)
-  console.log(SVG.clientWidth)
+  //console.log(SVG.clientWidth)
   //map.style.width = (xMax)+"mm"
   //map.style.right = 0 //SVG.clientWidth
   //document.getElementById("mm").width = (xMax)+"mm"
@@ -793,6 +816,7 @@ function redeploie(){
 		lec = []
 		definitPage(nPage)
 		faitTableauManquants("1", vol.faces.length, "lightcoral")
+		creeFTriangles()
 		// actions de finalisation
 		traceLignes()
 		traceNums()
