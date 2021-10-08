@@ -1,4 +1,4 @@
-Outils de création de meubles simples :
+# Outils de création de meubles simples
 
 <img src="https://github.com/gilboonet/gilboonet.github.io/blob/master/img/captureColonne.png" height="25%" width="25%"><img src="https://github.com/gilboonet/gilboonet.github.io/blob/master/img/captureCarre.png" height="25%" width="25%">
 
