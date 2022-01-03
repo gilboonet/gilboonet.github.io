@@ -1,6 +1,6 @@
 const jscad = require('@jscad/modeling')
 const { line, cube, rectangle, circle, polygon, sphere } = jscad.primitives
-const { measureBoundingBox, measureAggregateBoundingBox, measureCenter } = jscad.measurements
+const { measureBoundingBox, measureDimensions, measureAggregateBoundingBox, measureCenter } = jscad.measurements
 const { rotateZ, translate, translateX, scale, center, align } = jscad.transforms
 const { colorize, colorNameToRgb } = jscad.colors
 const { toPolygons } = jscad.geometries.geom3
@@ -13,23 +13,79 @@ const c_red   = [1  , 0, 0],
       c_green = [0  , 1, 0],
       c_maroon= [0.5, 0, 0],
       c_yellow= [1  , 1, 0],
-      c_black = [0  , 0, 0],
-      r180 = degToRad(180)
+      c_black = [0  , 0, 0]
 
-let cachedNum, cachedDig, cacheKO, lUNFOLD, lTri,
-		epsilon = 0.0001, frame
+let cachedNum, cachedDig, cacheKO, lUNFOLD, lTri, epsilon = 0.0001, frame
 
 var vol, lLINES, g_s, g_s2, g_s3, lNums
 
+ 
 function getParameterDefinitions(){
+
+var l = navigator.language, t
+if( /^fr\b/.test(navigator.language)){
+ t = [
+	'VOLUME',
+  'Fichier',
+  'Voir Dimensions',
+  'Voir N° Faces',
+  'DEPLIAGE',
+  '1ere Face',
+  'Echelle',
+  'Echelle N°',
+  'Voir Languettes',
+  'Hauteur Languettes',
+  'Format Page',
+  'Personnalise...',
+  'Page Largeur',
+  'Page Hauteur',
+  'Deplacer Languettes',
+  'Exclure Faces',
+  'Voir Volume'
+  ]
+ }else{
+ t = [ 
+	'MODEL',
+  'File',
+  'Show dimensions',
+  'Show Faces n°',
+  'UNFOLDING',
+  'Start Face',
+  'Scale',
+  'n° Scale',
+  'Show Flaps',
+  'Flap height',
+  'Frame Format',
+  'Custom...',
+  'Frame Width',
+  'Frame Height',
+  'Move Flaps',
+  'Exclude faces',
+  'Show Model'
+  ]
+ }
+
   return [
-    {name:'firstTriangle', type:'number', caption:'Start Face',initial:1, default:1, step:1},
-    {name:'Pscale', type:'number', caption:'Scale',initial:25, default:25},
-    {name:'Nscale', type:'number', caption:'# Scale',initial:0.25, default:0.25},
-    {name:'FlapH', type:'number', caption:'Flap height',initial:4, default:4},
-    {name:'frameX', type:'number', caption:'Frame X',initial:250, default:250},
-    {name:'frameY', type:'number', caption:'Frame Y',initial:250, default:250}
-    ,{name:'fileN', type:'text', caption:'File', initial:'ebp.obj', default:'file.obj'}
+    {name:'g1', type:'group', caption:t[0]},
+    {name:'fileN', type:'text', caption:t[1], default:'file.obj'},
+    {name:'Pscale', type:'number', caption:t[6], initial:8, default:8},
+    {name:'ShowVol', type:'checkbox', caption:t[16], checked:true},
+    {name:'ShowDims', type:'checkbox', caption:t[2], checked:true},
+    {name:'ShowNums', type:'checkbox', caption:t[3], checked:true},
+    
+    {name:'g2', type:'group', caption:t[4]},
+    {name:'firstTriangle', type:'number', caption:t[5], default:0, step:1},
+    {name:'Nscale', type:'number', caption:t[7],initial:1, default:1},
+    
+    {name:'ShowFlaps', type:'checkbox', caption:t[8], checked:true},
+    {name:'FlapH', type:'number', caption:t[9],initial:4, default:4},
+    {name:'FrameType', type:'choice', caption:t[10], 
+			captions:['A4','A3','A2','A1','A0', 'Cricut 30', 'Cricut 60', t[11]],
+			values: [0,1,2,3,4,5,6,-1], default:0},
+    {name:'frameX', type:'number', caption:t[12],initial:250, default:300},
+    {name:'frameY', type:'number', caption:t[13],initial:300, default:300},
+    {name:'Flap2', type:'text', caption:t[14], initial:'', default:''},
+    {name:'Excld', type:'text', caption:t[15], initial:'', default:''}
   ]
 } 
 
@@ -37,7 +93,24 @@ function main(params) {
   // INITS
   cachedNum = [], cachedDig = [], cacheKO = [], lUNFOLD = [], lNums = []
   g_s = params.Pscale, g_s2 = params.Nscale*g_s/30, g_s3 = g_s2 * 0.6
-  frame = [params.frameX, params.frameY]
+  
+  const frameSizes = [
+		[210, 297],
+		[297, 420],
+		[420, 594],
+		[594, 841],
+		[841, 1189],
+		[300, 300],
+		[300, 600]
+	]
+  console.log(params.FrameType)
+  if(params.FrameType.value === -1){
+    frame = [params.frameX, params.frameY]
+  } else {
+		frame = frameSizes[params.FrameType]
+	}
+	console.log(frame)
+	
   const vf = require('./'+ params.fileN)
   vol = toPolyhedron(vf[0])
   //vol = toPolyhedron(sphere({segments:8}))
@@ -51,29 +124,50 @@ function main(params) {
     vol.v2d.push(tmp[0])
     vol.v3d.push(tmp[1])
   }
+  
+  // Exclusions
+  var ex = params.Excld.split(',').map(x => x.split('-').map(Number))
+  for(var i = 0; i < ex.length; i++){
+    cacheKO.push(ex[i])
+  } 
 
+  rr = []
+  
+  
+  var volS = scale([g_s, g_s, g_s], vf[0])
+  if (params.ShowVol)
+		rr.push(translate([-100,0,0], volS))
+   
+  if(params.ShowDims)
+		rr.push(displayDims(volS))
+  
+  
   // START UNFOLDING  
   // center first triangle into frame
   var fT = params.firstTriangle, nf = 0, newCLimit = 0
-  var r, rr = []
+  var r
   do{ 
     r = []
     lLINES = []
     lTri = []
-    r.push(pose(fT)) // display first triangle
+    r.push(pose(fT, params.ShowNums)) // display first triangle
     var ok= true
     while(ok){
       var c = candidates(newCLimit)
       if(c.length > 0){
-        if(attach(c[0][0], c[0][1])){
-          ok = true
-          r.push(pose(c[0][1]))
-        }
+        var lok = true
+        for(var ai = 0; lok && (ai < c.length); ai++){
+					if(attach(c[ai][0], c[ai][1], newCLimit)){
+            ok = true
+            r.push(pose(c[ai][1], params.ShowNums))
+            lok = false
+          }
+			  }
       } else
         ok = false 
      }
   
-    r.push(render(params.FlapH))
+    r.push(render(params.FlapH, params.Flap2, params.ShowFlaps))
 
     var b = measureAggregateBoundingBox(r)
     var d = [ b[0][0] + (b[1][0]-b[0][0])/2,
@@ -84,13 +178,22 @@ function main(params) {
     r.push(rectangle({center: [frame[0]/2+frame[0]*nf, frame[1]/2]
 											, size: [frame[0], frame[1]]}))
     rr.push(r)
-    console.log(lUNFOLD.length, '/', vol.faces.length)
     newCLimit = lUNFOLD.length -1
 	  fT = findFaceToUnfold()
 	  nf++
   }while(fT > -1)
 
+  console.log(lUNFOLD.length, '/', vol.faces.length)
   return rr
+}
+
+function displayDims(V){
+	var r = []
+	var b = measureDimensions(V)
+	r.push(number(Math.round(b[0]), 1,0, -20))
+	r.push(number(Math.round(b[1]), 1,0, -50))
+	r.push(number(Math.round(b[2]), 1,0, -80))
+	return r
 }
 
 function findFaceToUnfold(){
@@ -149,8 +252,10 @@ function colorLine(l)	{
     return null
 }
 
-function render(s){
+function render(s, flap2, showF){
 	var r = []
+	var f2 = flap2.split(',').map(Number)
+	
   for(var i = 0; i < lLINES.length; i++){
     var l = lLINES[i]
     if(l[4] === 1){// border => add neighbour #
@@ -167,13 +272,10 @@ function render(s){
 				tmp = translate(m, rotateZ(a, number(num.n, g_s3, 0, -1 )))
 			}
 
-      if (num.isFirst){
+      if (showF
+       && (( num.isFirst && !f2.includes(num.n))
+       || (!num.isFirst &&  f2.includes(num.n)))){
         r.push(colorize(c_red, line(trapeze(l[0], l[1], s ))))
-				if(d1 < d2){
-					tmp = translate(m, rotateZ(a, number(num.n, g_s3, 0, 3 )))
-				} else {
-					tmp = translate(m, rotateZ(a, number(num.n, g_s3, 0, -3 )))					
-				}
         var rl = colorLine(l)
         if(rl !== null)
           r.push(rl)
@@ -205,9 +307,13 @@ function doLine(p1, p2, n, nf){
   }
 }
 
-function pose(n){
+function pose(n, showN){
   var r = [], pts = vol.v2d[n]
   lUNFOLD.push(n)
+  if (showN){
+		var c = centroid(pts)
+    r.push(colorize(c_blue, number(n, g_s2, c[0], c[1])))  
+  }
   for(var i = 0; i < 3; i++){
     doLine(pts[i], pts[suiv(i)], vol.voisins[n][i], n)
   }  
@@ -277,7 +383,7 @@ function candidates(first) {
  return r
 }
 
-function attach(nFace, nT){
+function attach(nFace, nT, nLimit){
   if(cacheKO.find(x => (x[0] === nFace) && (x[1] === nT)) !== undefined){
     return false
   }
@@ -312,7 +418,8 @@ function attach(nFace, nT){
 
   // check for overlaps
   var ok = false
-  for(var i = 0; i < lUNFOLD.length; i++){
+  //for(var i = 0; i < lUNFOLD.length; i++){
+  for(var i = nLimit; i < lUNFOLD.length; i++){
     ok = !overlap(ptV, vol.v2d[lUNFOLD[i]])
 		if(!ok){
       cacheKO.push([nFace, nT])
