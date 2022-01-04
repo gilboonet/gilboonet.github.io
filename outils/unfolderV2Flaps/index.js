@@ -13,33 +13,29 @@ const c_red   = [1  , 0, 0],
       c_green = [0  , 1, 0],
       c_maroon= [0.5, 0, 0],
       c_yellow= [1  , 1, 0],
-      c_black = [0  , 0, 0]
-
-let cachedNum, cachedDig, cacheKO, lUNFOLD, lTri, epsilon = 0.0001, frame
-
-var vol, lLINES, g_s, g_s2, g_s3, lNums
-
+      c_black = [0  , 0, 0],
+      epsilon = 0.0001
  
 function getParameterDefinitions(){
 
 var l = navigator.language, t
 if( /^fr\b/.test(navigator.language)){
  t = [
-	'VOLUME',
+  'VOLUME',
   'Fichier',
-  'Voir Dimensions',
+  'Voir Dim. (mm)',
   'Voir N° Faces',
   'DEPLIAGE',
   '1ere Face',
   'Echelle',
   'Echelle N°',
-  'Voir Languettes',
-  'Hauteur Languettes',
+  'Voir Lang.',
+  'Hauteur Lang.',
   'Format Page',
-  'Personnalise...',
+  'Personnalisé...',
   'Page Largeur',
   'Page Hauteur',
-  'Deplacer Languettes',
+  'Déplacer Lang.',
   'Exclure Faces',
   'Voir Volume'
   ]
@@ -47,7 +43,7 @@ if( /^fr\b/.test(navigator.language)){
  t = [ 
 	'MODEL',
   'File',
-  'Show dimensions',
+  'Show dim. (mm)',
   'Show Faces n°',
   'UNFOLDING',
   'Start Face',
@@ -80,8 +76,8 @@ if( /^fr\b/.test(navigator.language)){
     {name:'ShowFlaps', type:'checkbox', caption:t[8], checked:true},
     {name:'FlapH', type:'number', caption:t[9],initial:4, default:4},
     {name:'FrameType', type:'choice', caption:t[10], 
-			captions:['A4','A3','A2','A1','A0', 'Cricut 30', 'Cricut 60', t[11]],
-			values: [0,1,2,3,4,5,6,-1], default:0},
+			captions:['A6','A5','A4','A3','A2','A1','A0', 'Cricut 30', 'Cricut 60', t[11]],
+			values: [0,1,2,3,4,5,6,7,8,-1], default:2},
     {name:'frameX', type:'number', caption:t[12],initial:250, default:300},
     {name:'frameY', type:'number', caption:t[13],initial:300, default:300},
     {name:'Flap2', type:'text', caption:t[14], initial:'', default:''},
@@ -91,10 +87,9 @@ if( /^fr\b/.test(navigator.language)){
 
 function main(params) {
   // INITS
-  cachedNum = [], cachedDig = [], cacheKO = [], lUNFOLD = [], lNums = []
-  g_s = params.Pscale, g_s2 = params.Nscale*g_s/30, g_s3 = g_s2 * 0.6
-  
   const frameSizes = [
+		[105, 148],
+		[148, 210],
 		[210, 297],
 		[297, 420],
 		[420, 594],
@@ -103,24 +98,32 @@ function main(params) {
 		[300, 300],
 		[300, 600]
 	]
-  console.log(params.FrameType)
-  if(params.FrameType.value === -1){
-    frame = [params.frameX, params.frameY]
-  } else {
-		frame = frameSizes[params.FrameType]
-	}
-	console.log(frame)
-	
+
   const vf = require('./'+ params.fileN)
-  vol = toPolyhedron(vf[0])
+  var vol = toPolyhedron(vf[0])
   //vol = toPolyhedron(sphere({segments:8}))
   //vol = toPolyhedron(cube())
   
+  vol.lUNFOLD = [] // unfolded faces
+  vol.cacheKO = [] // rejected candidates from unfold
+  vol.lNums   = [] // numbers of linked edges
+ 
+  vol.frame = params.FrameType.value === -1 
+		? [params.frameX, params.frameY]
+		: frameSizes[params.FrameType]
+
+  vol.s  = params.Pscale
+  vol.s2 = params.Nscale* vol.s / 30
+  vol.s3 = vol.s2 * 0.6
+ 
   vol.voisins = getNeighbors(vol.faces)
-  vol.vertices = vol.vertices.map(v => [v[0]*g_s, v[1]*g_s, v[2]*g_s])
-  vol.v2d = [], vol.v3d = []
-  for (var i = 0; i < vol.faces.length; i++){
-    var tmp = create2dTriangleFromFace(vol.faces[i])
+  vol.vertices = vol.vertices.map(
+    v => [v[0] * vol.s, v[1] * vol.s, v[2] * vol.s]
+  )
+  vol.v2d = []
+  vol.v3d = []
+  for (var i = 0, il = vol.faces.length; i < il; i++){
+    var tmp = create2dTriangleFromFace(vol.faces[i], vol)
     vol.v2d.push(tmp[0])
     vol.v3d.push(tmp[1])
   }
@@ -128,38 +131,28 @@ function main(params) {
   // Exclusions
   var ex = params.Excld.split(',').map(x => x.split('-').map(Number))
   for(var i = 0; i < ex.length; i++){
-    cacheKO.push(ex[i])
+    vol.cacheKO.push(ex[i])
   } 
-
-  rr = []
-  
-  
-  var volS = scale([g_s, g_s, g_s], vf[0])
-  if (params.ShowVol)
-		rr.push(translate([-100,0,0], volS))
-   
-  if(params.ShowDims)
-		rr.push(displayDims(volS))
-  
   
   // START UNFOLDING  
   // center first triangle into frame
+  rr = []
   var fT = params.firstTriangle, nf = 0, newCLimit = 0
   var r
   do{ 
     r = []
-    lLINES = []
-    lTri = []
-    r.push(pose(fT, params.ShowNums)) // display first triangle
+    vol.lLINES = []
+    vol.lTri = []
+    r.push(pose(fT, params.ShowNums, vol)) // display first triangle
     var ok= true
     while(ok){
-      var c = candidates(newCLimit)
+      var c = candidates(newCLimit, vol)
       if(c.length > 0){
         var lok = true
         for(var ai = 0; lok && (ai < c.length); ai++){
-					if(attach(c[ai][0], c[ai][1], newCLimit)){
+					if(attach(c[ai][0], c[ai][1], newCLimit, vol)){
             ok = true
-            r.push(pose(c[ai][1], params.ShowNums))
+            r.push(pose(c[ai][1], params.ShowNums, vol))
             lok = false
           }
 			  }
@@ -167,23 +160,31 @@ function main(params) {
         ok = false 
      }
   
-    r.push(render(params.FlapH, params.Flap2, params.ShowFlaps))
+    r.push(render(params.FlapH, params.Flap2, params.ShowFlaps, vol))
 
     var b = measureAggregateBoundingBox(r)
     var d = [ b[0][0] + (b[1][0]-b[0][0])/2,
 		  				b[0][1] + (b[1][1]-b[0][1])/2 ]
     // frame
-    var delta = [ (frame[0] * (nf + 0.5)) -d[0] +1, (frame[1] * 0.5) -d[1] +1]
+    var delta = [ (vol.frame[0] * (nf + 0.5)) -d[0] +1, (vol.frame[1] * 0.5) -d[1] +1]
     r = translate(delta, r)
-    r.push(rectangle({center: [frame[0]/2+frame[0]*nf, frame[1]/2]
-											, size: [frame[0], frame[1]]}))
+    //r.push(rectangle({center: [frame[0]/2+frame[0]*nf, frame[1]/2]
+		//									, size: [frame[0], frame[1]]}))
     rr.push(r)
-    newCLimit = lUNFOLD.length -1
-	  fT = findFaceToUnfold()
+    newCLimit = vol.lUNFOLD.length -1
+	  fT = findFaceToUnfold(vol)
 	  nf++
   }while(fT > -1)
 
-  console.log(lUNFOLD.length, '/', vol.faces.length)
+  console.log(vol.lUNFOLD.length, '/', vol.faces.length)
+
+  var volS = scale([vol.s, vol.s, vol.s], vf[0])
+  if (params.ShowVol)
+		rr.push(translate([-100,0,0], volS))
+   
+  if(params.ShowDims)
+		rr.push(displayDims(volS))
+
   return rr
 }
 
@@ -192,15 +193,14 @@ function displayDims(V){
 	var b = measureDimensions(V)
 	r.push(number(Math.round(b[0]), 1,0, -20))
 	r.push(number(Math.round(b[1]), 1,0, -50))
-	r.push(number(Math.round(b[2]), 1,0, -80))
 	return r
 }
 
-function findFaceToUnfold(){
+function findFaceToUnfold(V){
 	var r = -1
 	var i = 0
-	while ( (i< vol.faces.length) && (r < 0)){
-	  if(!lUNFOLD.includes(i)){
+	while ( (i < V.faces.length) && (r < 0)){
+	  if(! V.lUNFOLD.includes(i)){
 			r = i
 		}else
 		  i++
@@ -208,13 +208,13 @@ function findFaceToUnfold(){
 	return r
 }
 
-function getLinkN(n1, n2){
+function getLinkN(n1, n2, L){
 	var nS = Math.min(n1, n2), 
 			nB = Math.max(n1, n2)
-	var n = lNums.findIndex(x => (x.min === nS ) && (x.max === nB))
+	var n = L.findIndex(x => (x.min === nS ) && (x.max === nB))
 	var isFirst = false
 	if (n === -1){
-		n = lNums.push({min:nS, max:nB}) -1
+		n = L.push({min:nS, max:nB}) -1
 		isFirst = true
   }
   return {n: n, isFirst: isFirst}
@@ -234,8 +234,8 @@ function trapeze(p1, p2, s){
 	return P
 }
 
-function colorLine(l)	{		
-	var tri1 = vol.v3d[l[2]], tri2 = vol.v3d[l[3]]
+function colorLine(l,  V)	{		
+	var tri1 = V.v3d[l[2]], tri2 = V.v3d[l[3]]
   var p
        if (eq3(tri1, tri2, 0))
      p = tri2[0]
@@ -244,7 +244,7 @@ function colorLine(l)	{
   else if (eq3(tri1, tri2, 2))
      p = tri2[2]      
      
-  var estCop = estCoplanaire(vol.v3d[l[2]], p)
+  var estCop = estCoplanaire(V.v3d[l[2]], p)
   if (estCop){
     col = estCop < 0 ? c_maroon : c_green
     return colorize(col, line([l[0], l[1]] ))
@@ -252,31 +252,31 @@ function colorLine(l)	{
     return null
 }
 
-function render(s, flap2, showF){
+function render(s, flap2, showF, V){
 	var r = []
 	var f2 = flap2.split(',').map(Number)
 	
-  for(var i = 0; i < lLINES.length; i++){
-    var l = lLINES[i]
+  for(var i = 0; i < V.lLINES.length; i++){
+    var l = V.lLINES[i]
     if(l[4] === 1){// border => add neighbour #
       var m = middle(l[0], l[1])
       var a = direction(l[0], l[1])
-			var c = centroid(vol.v2d[l[3]])
+			var c = centroid(V.v2d[l[3]])
 			var d1= distance2d(m, c)		
-			var num = getLinkN(l[2], l[3])
-			var tmp = translate(m, rotateZ(a, number(num.n, g_s3, 0, 1)))
+			var num = getLinkN(l[2], l[3], V.lNums)
+			var tmp = translate(m, rotateZ(a, number(num.n, V.s3, 0, 1)))
 			var b = measureAggregateBoundingBox(tmp)
 			var m2 = middle(b[0], b[1])
 			var d2 = distance2d(m2, c)
 			if(d1 < d2){
-				tmp = translate(m, rotateZ(a, number(num.n, g_s3, 0, -1 )))
+				tmp = translate(m, rotateZ(a, number(num.n, V.s3, 0, -1)))
 			}
 
       if (showF
        && (( num.isFirst && !f2.includes(num.n))
        || (!num.isFirst &&  f2.includes(num.n)))){
         r.push(colorize(c_red, line(trapeze(l[0], l[1], s ))))
-        var rl = colorLine(l)
+        var rl = colorLine(l, V)
         if(rl !== null)
           r.push(rl)
       }else{
@@ -285,7 +285,7 @@ function render(s, flap2, showF){
 
       r.push(colorize(c_black, tmp))
     }else{
-			var rl = colorLine(l)
+			var rl = colorLine(l, V)
 			if(rl !== null)
 			  r.push(rl)
     }
@@ -297,25 +297,25 @@ function direction(p1, p2){
 	return Math.atan2(p2[1] - p1[1], p2[0] - p1[0])
 }
 
-function doLine(p1, p2, n, nf){
-  var l = lLINES.find(v => (eq(v[0], p1) && eq(v[1], p2))
+function doLine(p1, p2, n, nf, L){
+  var l = L.find(v => (eq(v[0], p1) && eq(v[1], p2))
 												|| (eq(v[0], p2) && eq(v[1], p1)))
   if( l === undefined){
-    lLINES.push([p1, p2, n, nf, 1])
+    L.push([p1, p2, n, nf, 1])
   } else {
     l[4] = l[4] + 1
   }
 }
 
-function pose(n, showN){
-  var r = [], pts = vol.v2d[n]
-  lUNFOLD.push(n)
+function pose(n, showN, V){
+  var r = [], pts = V.v2d[n]
+  V.lUNFOLD.push(n)
   if (showN){
 		var c = centroid(pts)
-    r.push(colorize(c_blue, number(n, g_s2, c[0], c[1])))  
+    r.push(colorize(c_blue, number(n, V.s2, c[0], c[1])))  
   }
   for(var i = 0; i < 3; i++){
-    doLine(pts[i], pts[suiv(i)], vol.voisins[n][i], n)
+    doLine(pts[i], pts[suiv(i)], V.voisins[n][i], n, V.lLINES)
   }  
   
   return r
@@ -368,14 +368,14 @@ function toPolyhedron(O){
   return r
 }
 
-function candidates(first) {
+function candidates(first, V) {
  var r = []
- for(var i = first; i < lUNFOLD.length; i++){
-   var nFace = lUNFOLD[i]
+ for(var i = first, l = V.lUNFOLD.length; i < l; i++){
+   var nFace = V.lUNFOLD[i]
    for(var j = 0; j < 3; j++){
-     var n = vol.voisins[nFace][j]
-     if(!lUNFOLD.includes(n)){
-       if(cacheKO.find(x => (x[0] === nFace) && (x[1] === n)) === undefined)
+     var n = V.voisins[nFace][j]
+     if(! V.lUNFOLD.includes(n)){
+       if(V.cacheKO.find(x => (x[0] === nFace) && (x[1] === n)) === undefined)
          r.push([nFace, n])
      }
    }
@@ -383,31 +383,31 @@ function candidates(first) {
  return r
 }
 
-function attach(nFace, nT, nLimit){
-  if(cacheKO.find(x => (x[0] === nFace) && (x[1] === nT)) !== undefined){
+function attach(nFace, nT, nLimit, V){
+  if(V.cacheKO.find(x => (x[0] === nFace) && (x[1] === nT)) !== undefined){
     return false
   }
-  var nVP = vol.voisins[nT].findIndex(x => x === nFace),
-			ptV = vol.v2d[nT],
+  var nVP = V.voisins[nT].findIndex(x => x === nFace),
+			ptV = V.v2d[nT],
 			ptV0 = ptV[nVP], 
 			ptV1 = ptV[suiv(nVP)]
 
-  var nFP = vol.voisins[nFace].findIndex(x => x === nT),
-			ptF = vol.v2d[nFace],
+  var nFP = V.voisins[nFace].findIndex(x => x === nT),
+			ptF = V.v2d[nFace],
 			ptF0 = ptF[nFP],
 			ptF1 = ptF[suiv(nFP)]
   
   // put neighbor close
   var dx = ptF1[0] - ptV0[0], dy = ptF1[1] - ptV0[1]
-  vol.v2d[nT] = vol.v2d[nT].map(v => [v[0] + dx, v[1] + dy])
+  V.v2d[nT] = V.v2d[nT].map(v => [v[0] + dx, v[1] + dy])
       
-  ptV = vol.v2d[nT]
+  ptV = V.v2d[nT]
   ptV0 = ptV[nVP]
   ptV1 = ptV[suiv(nVP)]
     
   // rotate neighbor
   let a = calcAngle(ptF0, ptF1, ptV1)
-  let tmp = vol.v2d[nT]
+  let tmp = V.v2d[nT]
     .map(x => rotation(ptF1[0], ptF1[1], x[0], x[1], a))
   ptV1 = tmp[suiv(nVP)]
   let delta = Math.abs(distance2d(ptF0, ptV1))
@@ -418,27 +418,26 @@ function attach(nFace, nT, nLimit){
 
   // check for overlaps
   var ok = false
-  //for(var i = 0; i < lUNFOLD.length; i++){
-  for(var i = nLimit; i < lUNFOLD.length; i++){
-    ok = !overlap(ptV, vol.v2d[lUNFOLD[i]])
+  for(var i = nLimit, l = V.lUNFOLD.length; i < l; i++){
+    ok = !overlap(ptV, V.v2d[V.lUNFOLD[i]])
 		if(!ok){
-      cacheKO.push([nFace, nT])
+      V.cacheKO.push([nFace, nT])
       return false
     }
   } 
   
   if(ok){
-		lTri.push(polygon({points:ptV}))
-		var b = measureAggregateBoundingBox(lTri)
+		V.lTri.push(polygon({points:ptV}))
+		var b = measureAggregateBoundingBox(V.lTri)
 		var d = [ b[1][0]-b[0][0], b[1][1]-b[0][1] ]
-		if( (d[0] > frame[0]) || (d[1] > frame[1])){
-			lTri.pop()
-			cacheKO.push([nFace, nT])
+		if( (d[0] > V.frame[0]) || (d[1] > V.frame[1])){
+			V.lTri.pop()
+			V.cacheKO.push([nFace, nT])
 			return false
 		}
 	}
   
-  vol.v2d[nT] = ptV
+  V.v2d[nT] = ptV
   return true
 }
 
@@ -536,16 +535,7 @@ function middle(a, b){
   return [((a[0] + b[0]) / 2), ((a[1] + b[1]) / 2)]
 }
 
-function digit(num, scale = 1){ // look for cached
-  c = cachedDig.find(function (dig, index) {
-    if((dig.id == num) && (dig.s == scale))
-      return true
-  })
-  
-  if (c !== undefined){
-    return c.lines
-  }
-
+function digit(num, scale = 1){
   var np = [
 [[0,0],[0,16],[8,16],[8,0],[0,0]],
 [[0,8],[8,16],[8,0]],
@@ -591,15 +581,15 @@ function getNeighbors (f){
   return V
 }
 
-function create2dTriangleFromFace (face){
-  let pts3d = extractFacesVertices(face)
+function create2dTriangleFromFace (f, V){
+  let pts3d = extractFacesVertices(f, V)
   let pts2d = d2ize(pts3d)
   
   return [pts2d, pts3d]
 }
   
-function extractFacesVertices (f) {
-  return f.map(x=> vol.vertices[x])
+function extractFacesVertices (f, V) {
+  return f.map(x=> V.vertices[x])
 }
 
 function d2ize(p){
