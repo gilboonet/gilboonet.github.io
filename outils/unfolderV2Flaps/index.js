@@ -2,19 +2,13 @@ const jscad = require('@jscad/modeling')
 const { line, cube, rectangle, circle, polygon, sphere } = jscad.primitives
 const { measureBoundingBox, measureDimensions, measureAggregateBoundingBox, measureCenter } = jscad.measurements
 const { rotateZ, translate, translateX, scale, center, align } = jscad.transforms
-const { colorize, colorNameToRgb } = jscad.colors
+const { colorize, colorNameToRgb, cssColors } = jscad.colors
 const { toPolygons } = jscad.geometries.geom3
 const { union } = jscad.booleans
 const { vec3 } = jscad.maths
 const { radToDeg, degToRad } = jscad.utils
 
-const c_red   = [1  , 0, 0],
-      c_blue  = [0  , 0, 1],
-      c_green = [0  , 1, 0],
-      c_maroon= [0.5, 0, 0],
-      c_yellow= [1  , 1, 0],
-      c_black = [0  , 0, 0],
-      epsilon = 0.0001
+const epsilon = 0.0001
  
 function getParameterDefinitions(){
 
@@ -64,22 +58,22 @@ if( /^fr\b/.test(navigator.language)){
   return [
     {name:'g1', type:'group', caption:t[0]},
     {name:'fileN', type:'text', caption:t[1], default:'file.obj'},
-    {name:'Pscale', type:'number', caption:t[6], initial:8, default:8},
+    {name:'Pscale', type:'number', caption:t[6], default:1},
     {name:'ShowVol', type:'checkbox', caption:t[16], checked:true},
     {name:'ShowDims', type:'checkbox', caption:t[2], checked:true},
     {name:'ShowNums', type:'checkbox', caption:t[3], checked:true},
     
     {name:'g2', type:'group', caption:t[4]},
     {name:'firstTriangle', type:'number', caption:t[5], default:0, step:1},
-    {name:'Nscale', type:'number', caption:t[7],initial:1, default:1},
+    {name:'Nscale', type:'number', caption:t[7], default:1},
     
     {name:'ShowFlaps', type:'checkbox', caption:t[8], checked:true},
-    {name:'FlapH', type:'number', caption:t[9],initial:4, default:4},
+    {name:'FlapH', type:'number', caption:t[9], default:4},
     {name:'FrameType', type:'choice', caption:t[10], 
 			captions:['A6','A5','A4','A3','A2','A1','A0', 'Cricut 30', 'Cricut 60', t[11]],
 			values: [0,1,2,3,4,5,6,7,8,-1], default:2},
-    {name:'frameX', type:'number', caption:t[12],initial:250, default:300},
-    {name:'frameY', type:'number', caption:t[13],initial:300, default:300},
+    {name:'frameX', type:'number', caption:t[12], default:210},
+    {name:'frameY', type:'number', caption:t[13], default:297},
     {name:'Flap2', type:'text', caption:t[14], initial:'', default:''},
     {name:'Excld', type:'text', caption:t[15], initial:'', default:''}
   ]
@@ -191,8 +185,10 @@ function main(params) {
 function displayDims(V){
 	var r = []
 	var b = measureDimensions(V)
-	r.push(number(Math.round(b[0]), 1,0, -20))
-	r.push(number(Math.round(b[1]), 1,0, -50))
+	r.push(number(Math.round(b[0]), 1, 0, -20))
+	r.push(number(Math.round(b[1]), 1, 0, -50))
+	r.push(number(Math.round(b[2]), 1, 0, -80))
+
 	return r
 }
 
@@ -246,7 +242,7 @@ function colorLine(l,  V)	{
      
   var estCop = estCoplanaire(V.v3d[l[2]], p)
   if (estCop){
-    col = estCop < 0 ? c_maroon : c_green
+    col = estCop < 0 ? cssColors.maroon : cssColors.green
     return colorize(col, line([l[0], l[1]] ))
   } else
     return null
@@ -275,15 +271,15 @@ function render(s, flap2, showF, V){
       if (showF
        && (( num.isFirst && !f2.includes(num.n))
        || (!num.isFirst &&  f2.includes(num.n)))){
-        r.push(colorize(c_red, line(trapeze(l[0], l[1], s ))))
+        r.push(colorize(cssColors.red, line(trapeze(l[0], l[1], s ))))
         var rl = colorLine(l, V)
         if(rl !== null)
           r.push(rl)
       }else{
-        r.push(colorize(c_red, line([l[0], l[1]])))
+        r.push(colorize(cssColors.red, line([l[0], l[1]])))
       }
 
-      r.push(colorize(c_black, tmp))
+      r.push(colorize(cssColors.black, tmp))
     }else{
 			var rl = colorLine(l, V)
 			if(rl !== null)
@@ -312,7 +308,7 @@ function pose(n, showN, V){
   V.lUNFOLD.push(n)
   if (showN){
 		var c = centroid(pts)
-    r.push(colorize(c_blue, number(n, V.s2, c[0], c[1])))  
+    r.push(colorize(cssColors.blue, number(n, V.s2, c[0], c[1])))  
   }
   for(var i = 0; i < 3; i++){
     doLine(pts[i], pts[suiv(i)], V.voisins[n][i], n, V.lLINES)
