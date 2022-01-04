@@ -138,12 +138,12 @@ function main(params) {
     vol.lLINES = []
     vol.lTri = []
     r.push(pose(fT, params.ShowNums, vol)) // display first triangle
-    var ok= true
+    var ok = true
     while(ok){
-      var c = candidates(newCLimit, vol)
-      if(c.length > 0){
+      var c = candidates(newCLimit, vol), cl = c.length
+      if(cl > 0){
         //var lok = true
-        for(var ai = 0, cl = c.length, lok = true; lok && (ai < cl); ai++){
+        for(var ai = 0, lok = true; lok && (ai < cl); ai++){
 					if(attach(c[ai][0], c[ai][1], newCLimit, vol)){
             ok = true
             r.push(pose(c[ai][1], params.ShowNums, vol))
@@ -193,9 +193,8 @@ function displayDims(V){
 }
 
 function findFaceToUnfold(V){
-	var r = -1
-	var i = 0
-	while ( (i < V.faces.length) && (r < 0)){
+	var r = -1, i = 0, il = V.faces.length
+	while ( (i < il) && (r < 0)){
 	  if(! V.lUNFOLD.includes(i)){
 			r = i
 		}else
@@ -408,7 +407,7 @@ function attach(nFace, nT, nLimit, V){
   ptV1 = tmp[suiv(nVP)]
   let delta = Math.abs(distance2d(ptF0, ptV1))
   if(delta > epsilon){
-    ptV = ptV.map(x=> rotation(ptF1[0], ptF1[1], x[0], x[1], 360-a))
+    ptV = ptV.map(x=> rotation(ptF1[0], ptF1[1], x[0], x[1], 360 - a))
   }else
     ptV = tmp
 
@@ -551,8 +550,8 @@ function number(n, s, x, y){
  var ch = n.toString().split("").map(Number), r = [], dkX = 0
  for(var i = 0, il = ch.length; i < il; i++){
    var nl = line(digit(ch[i], s).map(v => [
-     v[0]+dkX+x-(6*s)*ch.length, 
-     v[1]+y-1.25*s
+     v[0]+ dkX + x - (6 * s) * il, 
+     v[1]+ y -1.25 * s
     ]))
    r.push(nl)
    var b = measureBoundingBox(nl)
