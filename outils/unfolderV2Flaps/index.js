@@ -124,7 +124,7 @@ function main(params) {
   
   // Exclusions
   var ex = params.Excld.split(',').map(x => x.split('-').map(Number))
-  for(var i = 0; i < ex.length; i++){
+  for(var i = 0, il = ex.length; i < il; i++){
     vol.cacheKO.push(ex[i])
   } 
   
@@ -142,8 +142,8 @@ function main(params) {
     while(ok){
       var c = candidates(newCLimit, vol)
       if(c.length > 0){
-        var lok = true
-        for(var ai = 0; lok && (ai < c.length); ai++){
+        //var lok = true
+        for(var ai = 0, cl = c.length, lok = true; lok && (ai < cl); ai++){
 					if(attach(c[ai][0], c[ai][1], newCLimit, vol)){
             ok = true
             r.push(pose(c[ai][1], params.ShowNums, vol))
@@ -252,7 +252,7 @@ function render(s, flap2, showF, V){
 	var r = []
 	var f2 = flap2.split(',').map(Number)
 	
-  for(var i = 0; i < V.lLINES.length; i++){
+  for(var i = 0, il = V.lLINES.length; i < il; i++){
     var l = V.lLINES[i]
     if(l[4] === 1){// border => add neighbour #
       var m = middle(l[0], l[1])
@@ -341,10 +341,10 @@ function toPolyhedron(O){
   var p = toPolygons(O)
   var r = {vertices:[], faces:[]}
   
-  for(var i = 0; i < p.length; i++){
+  for(var i = 0, il = p.length; i < il; i++){
     var f = []
     var poly = p[i]
-    for(j = 0; j < poly.vertices.length; j++){
+    for(j = 0, jl = poly.vertices.length; j < jl; j++){
       var v = poly.vertices[j]
       var n = r.vertices.findIndex(x => 
         eq2(x[0],v[0]) && eq2(x[1],v[1]) && eq2(x[2],v[2]) )    
@@ -356,7 +356,7 @@ function toPolyhedron(O){
     if(f.length == 3){
 	  r.faces.push(f)
 	  } else {
-	    for(var j = 1; j < f.length-1; j++){
+	    for(var j = 1, jl = f.length -1; j < jl; j++){
 		    r.faces.push([f[0], f[j], f[j+1]])
 	    }
 	  }    
@@ -549,7 +549,7 @@ function digit(num, scale = 1){
 
 function number(n, s, x, y){
  var ch = n.toString().split("").map(Number), r = [], dkX = 0
- for(var i = 0; i < ch.length; i++){
+ for(var i = 0, il = ch.length; i < il; i++){
    var nl = line(digit(ch[i], s).map(v => [
      v[0]+dkX+x-(6*s)*ch.length, 
      v[1]+y-1.25*s
@@ -564,7 +564,7 @@ function number(n, s, x, y){
 
 function getNeighbors (f){
   let V = []
-  for(let i = 0; i < f.length; i++){
+  for(let i = 0, il = f.length; i < il; i++){
     V[i] = []
     for(let j = 0; j < 3; j++){
       let p1 = f[i][j], p2 = f[i][j == 2 ? 0 : j+1]
