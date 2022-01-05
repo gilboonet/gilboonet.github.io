@@ -1,7 +1,7 @@
 const jscad = require('@jscad/modeling')
 const { line, cube, rectangle, circle, polygon, sphere } = jscad.primitives
 const { measureBoundingBox, measureDimensions, measureAggregateBoundingBox, measureCenter } = jscad.measurements
-const { rotateZ, translate, translateX, scale, center, align } = jscad.transforms
+const { rotateZ, translate, translateX, translateY, scale, center, align } = jscad.transforms
 const { colorize, colorNameToRgb, cssColors } = jscad.colors
 const { toPolygons } = jscad.geometries.geom3
 const { union } = jscad.booleans
@@ -155,22 +155,67 @@ function main(params) {
      }
   
     r.push(render(params.FlapH, params.Flap2, params.ShowFlaps, vol))
-
-    var b = measureAggregateBoundingBox(r)
-    var d = [ b[0][0] + (b[1][0]-b[0][0])/2,
-		  				b[0][1] + (b[1][1]-b[0][1])/2 ]
-    // frame
-    var delta = [ (vol.frame[0] * (nf + 0.5)) -d[0] +1, (vol.frame[1] * 0.5) -d[1] +1]
-    r = translate(delta, r)
-    //r.push(rectangle({center: [frame[0]/2+frame[0]*nf, frame[1]/2]
-		//									, size: [frame[0], frame[1]]}))
     rr.push(r)
     newCLimit = vol.lUNFOLD.length -1
 	  fT = findFaceToUnfold(vol)
 	  nf++
   }while(fT > -1)
 
-  console.log(vol.lUNFOLD.length, '/', vol.faces.length)
+
+	// join small pieces
+	function minX(a, b){ return a.x > b.x }
+	function minY(a, b){ return a.y > b.y }
+
+	var rt = []
+	for(var i = 0; i < rr.length; i++){
+	  var b = measureAggregateBoundingBox(rr[i])
+	  rt.push({d:align({modes:['center','center','none'], grouped:true}, rr[i]), x: b[1][0] - b[0][0], y: b[1][1] - b[0][1]})
+	}
+	
+ if (rt.length > 1){
+	var ok = true
+	do{
+	  rt.sort(minX)
+	  if ((rt[0].x + rt[1].x) < vol.frame[0]){
+			rt[0].d.push(translateX((rt[0].x + rt[1].x) / 2, rt[1].d))
+			rt[0].d = align({modes:['center','center','none'], grouped:true}, rt[0].d)
+			var b = measureGroup(rt[0].d)
+			rt[0].x = b[0]
+			rt[0].y = b[1]
+			rt[1].d = null
+			rt.splice(1, 1)
+		} else {
+			ok = false
+		}
+	}while (ok)
+	
+	var ok = true
+	do{
+	  rt.sort(minY)
+	  if ((rt[0].y + rt[1].y) < vol.frame[1]){
+			rt[0].d.push(translateY((rt[0].y + rt[1].y) / 2, rt[1].d))
+			rt[0].d = align({modes:['center','center','none'], grouped:true}, rt[0].d)
+			var b = measureGroup(rt[0].d)
+			rt[0].x = b[0]
+			rt[0].y = b[1]
+			rt[1].d = null
+			rt.splice(1, 1)
+		} else {
+			ok = false
+		}
+	}while (ok)
+ }
+
+	rr = []
+	for(var i = 0, li = rt.length; i < li; i++){
+		var b = measureAggregateBoundingBox(rt[i].d)
+    var d = [ b[0][0] + (b[1][0]-b[0][0])/2,
+		  				b[0][1] + (b[1][1]-b[0][1])/2 ]
+    // frame
+    var delta = [ (vol.frame[0] * (i + 0.5)) -d[0] +1, (vol.frame[1] * 0.5) -d[1] +1]
+		rr.push(translate(delta, rt[i].d))
+	}
+
 
   var volS = scale([vol.s, vol.s, vol.s], vf[0])
   if (params.ShowVol)
@@ -179,7 +224,13 @@ function main(params) {
   if(params.ShowDims)
 		rr.push(displayDims(volS))
 
+  console.log(vol.lUNFOLD.length, '/', vol.faces.length)
   return rr
+}
+
+function measureGroup(g){
+	var b = measureAggregateBoundingBox(g)
+	return [b[1][0] - b[0][0], b[1][1] - b[0][1]]
 }
 
 function displayDims(V){
