@@ -208,12 +208,13 @@ function main(params) {
 
 	rr = []
 	for(var i = 0, li = rt.length; i < li; i++){
-		var b = measureAggregateBoundingBox(rt[i].d)
+		var rd = rt[li-i-1].d
+		var b = measureAggregateBoundingBox(rd)
     var d = [ b[0][0] + (b[1][0]-b[0][0])/2,
 		  				b[0][1] + (b[1][1]-b[0][1])/2 ]
     // frame
     var delta = [ (vol.frame[0] * (i + 0.5)) -d[0] +1, (vol.frame[1] * 0.5) -d[1] +1]
-		rr.push(translate(delta, rt[i].d))
+		rr.push(translate(delta, rd))
 	}
 
 
