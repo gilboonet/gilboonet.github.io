@@ -6,6 +6,7 @@ const { colorize, colorNameToRgb, cssColors } = jscad.colors
 const { toPolygons } = jscad.geometries.geom3
 const { union } = jscad.booleans
 const { vec3 } = jscad.maths
+//const { lerp } = jscad.maths.vec2
 const { radToDeg, degToRad } = jscad.utils
 
 const epsilon = 0.0001
@@ -164,46 +165,27 @@ function main (params) {
 
 		// look for flaps
 		for (var i = 0; i < 3; i++) {
-			var nV = V.voisins[n][i]
-			
-			//if(V.lATTACH.findIndex(x => (x.f === n) && (x.t === nV)) === -1){
-				var nMin = Math.min(n, nV),
-						nMax = Math.max(n, nV)
+			var nV = V.voisins[n][i],
+					nMin = Math.min(n, nV),
+					nMax = Math.max(n, nV)
 
-				if(V.lFlaps.findIndex(x => 
-						(x.min === nMin) && (x.max === nMax)) === -1){
-						var ok = attach(n, nV, true)
-						if (!ok && V.lATTACH.findIndex(x => x.f === nV && x.t === n) === -1) {
-							var fPts = trapeze(pts[i], pts[suiv(i)], V.FlapH)
-							var t1 = [fPts[0], fPts[1], fPts[2]],
-									t2 = [fPts[2], fPts[3], fPts[0]]
-							var ok = false
-							if (checkOverlap(t1) && checkOverlap(t2)) {
-								if (checkOutBounds(fPts)) {
-									ok = true
-								}
-							} else {
-								var fPts = trapeze(pts[i], pts[suiv(i)], V.FlapH/2)
-								var t1 = [fPts[0], fPts[1], fPts[2]],
-										t2 = [fPts[2], fPts[3], fPts[0]]
-								var ok = false
-								if (checkOverlap(t1) && checkOverlap(t2)) {
-									if (checkOutBounds(fPts)) {
-										ok = true
-									}
-								}
-							}
-						//}
-						if(ok){
+			if(V.lFlaps.findIndex(x => x.min === nMin && x.max === nMax) === -1){
+				var ok = attach(n, nV, true)
+				if (!ok && V.lATTACH.findIndex(x => x.f === nV && x.t === n) === -1) {
+					var fPts = trapeze(pts[i], pts[suiv(i)], V.FlapH)
+					var t1 = [fPts[0], fPts[1], fPts[2]],
+							t2 = [fPts[2], fPts[3], fPts[0]]
+					var ok = false
+					if (checkOverlap(t1) && checkOverlap(t2)) {
+						if (checkOutBounds(fPts)) {
 							V.lTri.push(polygon({points:t1}))
 							V.lTri.push(polygon({points:t2}))
 							V.lPts.push(fPts)
-							V.lFlaps.push({min: nMin, max: nMax})
-						} else {
+							V.lFlaps.push({min: nMin, max: nMax, n:n, nT:nV})
 						}
 					}
 				}
-			//}
+			}
 		}
 
 		return r
@@ -306,30 +288,29 @@ function main (params) {
 
 					return Math.sqrt(a * a + b * b + c * c)
 				}
-
 				return	 (distance(t2[n], t1[0]) >= epsilon)
 							&& (distance(t2[n], t1[1]) >= epsilon)
 							&& (distance(t2[n], t1[2]) >= epsilon)
 			}
-		function isCoplanar (t, p) {
-		// Function to find equation of plane.
-		// https://www.geeksforgeeks.org/program-to-check-whether-4-points-in-a-3-d-plane-are-coplanar/
-			var x1 = t[0][0], y1 = t[0][1], z1 = t[0][2],
-					x2 = t[1][0], y2 = t[1][1], z2 = t[1][2],
-					x3 = t[2][0], y3 = t[2][1], z3 = t[2][2],
-					x  = p[0],    y  = p[1],    z  = p[2]
+			function isCoplanar (t, p) {
+			// Function to find equation of plane.
+			// https://www.geeksforgeeks.org/program-to-check-whether-4-points-in-a-3-d-plane-are-coplanar/
+				var x1 = t[0][0], y1 = t[0][1], z1 = t[0][2],
+						x2 = t[1][0], y2 = t[1][1], z2 = t[1][2],
+						x3 = t[2][0], y3 = t[2][1], z3 = t[2][2],
+						x  = p[0],    y  = p[1],    z  = p[2]
 
-			var a1 = x2 - x1, b1 = y2 - y1, c1 = z2 - z1,
-					a2 = x3 - x1, b2 = y3 - y1, c2 = z3 - z1,
-					a = b1 * c2 - b2 * c1,
-					b = a2 * c1 - a1 * c2,
-					c = a1 * b2 - b1 * a2,
-					d = (- a * x1 - b * y1 - c * z1)
-		// equation of plane is: a*x + b*y + c*z = 0
-		// checking if the 4th point satisfies  
-		// the above equation  
-			return a * x + b * y + c * z + d
-		}
+				var a1 = x2 - x1, b1 = y2 - y1, c1 = z2 - z1,
+						a2 = x3 - x1, b2 = y3 - y1, c2 = z3 - z1,
+						a = b1 * c2 - b2 * c1,
+						b = a2 * c1 - a1 * c2,
+						c = a1 * b2 - b1 * a2,
+						d = (- a * x1 - b * y1 - c * z1)
+			// equation of plane is: a*x + b*y + c*z = 0
+			// checking if the 4th point satisfies  
+			// the above equation  
+				return a * x + b * y + c * z + d
+			}
 
 			var tri1 = V.v3d[l[2]], tri2 = V.v3d[l[3]]
 			var p
@@ -378,7 +359,19 @@ function main (params) {
 					tmp = translate(m, rotateZ(a, number(num.n, V.s3, 0, -1)))
 				}
 
-				r.push(colorize(cssColors.red, line([l[0], l[1]])))
+				if (!V.ShowFlaps)
+					r.push(colorize(cssColors.red, line([l[0], l[1]])))
+				else {
+					if (V.lFlaps.findIndex(x => x.n === l[2] && x.nT === l[3]) !== -1
+					 || V.lFlaps.findIndex(x => x.min === Math.min(l[2], l[3])
+								&& x.max === Math.max(l[2], l[3])) === -1
+						) {
+						r.push(colorize(cssColors.red, line([l[0], l[1]])))
+					} else {
+						var rl = colorLine(l)
+						r.push(rl)
+					}
+				}  
 				r.push(colorize(cssColors.black, tmp))
 			} else {
 				var rl = colorLine(l)
@@ -388,7 +381,7 @@ function main (params) {
 		}
 
 		if (V.ShowFlaps) {
-			for (var i = 0, l = V.lPts.length; i < l; i++){
+			for (var i = 0, l = V.lPts.length; i < l; i++){ // Add flaps
 				var p = V.lPts[i]
 				if (p.length  === 4){
 					r.push(colorize(cssColors.red, line(p)))
@@ -498,6 +491,7 @@ function main (params) {
 	V.lNums   = [] // numbers of linked edges
 	V.lFlaps	= [] // {min, max}
 	V.lATTACH = []
+	V.saveL		= []
 
 	// Set parameters
 	V.frame = params.FrameType.value === -1 // frame dimensions
@@ -545,8 +539,53 @@ function main (params) {
 		rr.push(r)
 		newCLimit = V.lUNFOLD.length - 1
 		fT = findFaceToUnfold()
+		//V.saveL = V.saveL.concat(V.lLINES)
+		V.saveL.push(V.lLINES)
 	} while (fT > -1)
 
+	var mf = V.lNums.filter(x =>
+		V.lFlaps.findIndex(y => y.min === x.min && y.max === x.max) === -1)
+
+	var nOK = 0, tmp
+	
+	for (var vsn = 0; vsn < V.saveL.length; vsn++) {
+		for (var n = 0; n < mf.length; n++){
+			var ll = []
+			tmp = V.saveL[vsn].find(x => x[2] === mf[n].min && x[3] === mf[n].max)
+			if(tmp !== undefined)
+				ll.push(tmp)
+			tmp = V.saveL[vsn].find(x => x[3] === mf[n].min && x[2] === mf[n].max)
+			if(tmp !== undefined)
+				ll.push(tmp)
+
+			if(ll.length === 2){
+				var pts = [ll[0][0], ll[0][1], ll[1][0], ll[1][1]]
+				pts.sort(function(a,b){ return a[0] - b[0] || a[1] - b[1]})
+				var AB = []
+				var C = null
+				for (var i = 0; i < pts.length; i++){
+					var c = 0
+					for (var j = 0; j < pts.length; j++){
+						if (eq(pts[i], pts[j]))
+							c++
+					}
+					if(c === 1)
+						AB.push(pts[i])
+					else
+						if (C === null)
+							C = pts[i]
+				}
+				if(C){
+					AB[1] = [lerp(C[0], AB[1][0], 0.8), lerp(C[1], AB[1][1], 0.8)]
+					rr[vsn].push(colorize(cssColors.red, line(AB)))
+					nOK++
+				}
+			}
+		}
+	}
+
+	console.log(nOK)
+	
 	var rr = organize(aggregatePieces(rr))
 
 	var volS = scale([V.s, V.s, V.s], vf[0])
@@ -557,10 +596,11 @@ function main (params) {
 		rr.push(displayDims(volS))
 
 	console.log(V.lUNFOLD.length, '/', V.faces.length)
-	console.log(V.lFlaps.length, '/', V.lNums.length)
+
 	return rr
 }
 
+function lerp(start, end, amt) { return (1-amt)*start+amt*end }
 function measureGroup (g) { // return width, length, and min & max coordinates
 	var b = measureAggregateBoundingBox(g)
 	return [b[1][0] - b[0][0], b[1][1] - b[0][1], b[0], b[1]]
