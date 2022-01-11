@@ -31,7 +31,9 @@ function getParameterDefinitions () {
 			'Page Hauteur',
 			'Exclure Faces',
 			'Voir Volume',
-			'Voir Cadre'
+			'Voir Cadre',
+			'Déplier',
+			'Marge'
 		]
 	} else {
 		t = [ 
@@ -51,7 +53,9 @@ function getParameterDefinitions () {
 			'Frame Height',
 			'Exclude faces',
 			'Show Model',
-			'Show Frame'
+			'Show Frame',
+			'Unfold',
+			'Margin'
 		]
 	}
 
@@ -64,14 +68,15 @@ function getParameterDefinitions () {
 		{name:'ShowNums', type:'checkbox', caption:t[3], checked:true},
 
 		{name:'g2', type:'group', caption:t[4]},
+		{name:'doUnfold', type:'checkbox', caption:t[17], checked:false},
 		{name:'firstTriangle', type:'number', caption:t[5], default:0, step:1},
 		{name:'Nscale', type:'number', caption:t[7], default:1},
-
 		{name:'ShowFlaps', type:'checkbox', caption:t[8], checked:true},
 		{name:'FlapH', type:'number', caption:t[9], default:4},
 		{name:'FrameType', type:'choice', caption:t[10], 
 			captions:['A6','A5','A4','A3','A2','A1','A0', 'Cricut 30', 'Cricut 60', t[11]],
 			values: [0,1,2,3,4,5,6,7,8,-1], default:2},
+		{name:'margin', type:'number', caption:t[18], default:10},
 		{name:'frameX', type:'number', caption:t[12], default:210},
 		{name:'frameY', type:'number', caption:t[13], default:297},
 		{name:'ShowFrame', type:'checkbox', caption:t[16], checked:true},
@@ -202,7 +207,7 @@ function main (params) {
 	function checkOutBounds (pts) {
 		var b = measureAggregateBoundingBox([V.lTri, polygon({points:pts})])
 		var d = [ b[1][0] - b[0][0], b[1][1] - b[0][1] ]
-		return (d[0] <= V.frame[0]) && (d[1] <= V.frame[1])
+		return (d[0] <= V.frame[0]-1 - marge) && (d[1] <= V.frame[1] - marge)
 	}
 	function candidates (first) {
 		var r = []
@@ -472,7 +477,8 @@ function main (params) {
 	}
 	//function flapToggle(n)
 // INITS
-	const frameSizes = [
+	const marge = params.margin, 
+				frameSizes = [
 		[105, 148], // A6
 		[148, 210], // A5
 		[210, 297], // A4
@@ -488,7 +494,9 @@ function main (params) {
 	var V = toPolyhedron(vf[0])
 	//var V = toPolyhedron(sphere({segments:8}))
 	//var V = toPolyhedron(cube())
-
+	var rr = []
+	
+ if (params.doUnfold) {
 	V.lUNFOLD = [] // unfolded faces
 	V.lNums   = [] // numbers of linked edges
 	V.lFlaps	= [] // {min, max}
@@ -502,7 +510,6 @@ function main (params) {
 	V.s2 = params.Nscale * V.s / 30
 	V.s3 = V.s2 * 0.6
 	V.FlapH = params.FlapH
-	//V.Flap2 = params.Flap2.split(',').map(Number)
 	V.ShowFlaps = params.ShowFlaps
 	V.ShowNums = params.ShowNums
 
@@ -515,7 +522,7 @@ function main (params) {
 	setExclusions(params.Excld)
 
 // START UNFOLDING
-	var r, rr = [], fT = params.firstTriangle, newCLimit = 0
+	var r, fT = params.firstTriangle, newCLimit = 0
 	do {
 		r = []
 		V.lLINES = []
@@ -586,18 +593,16 @@ function main (params) {
 		}
 	}
 
-	console.log(nOK)
-	
 	var rr = organize(aggregatePieces(rr))
-
-	var volS = scale([V.s, V.s, V.s], vf[0])
+ }
+	var s = params.Pscale, volS = scale([s, s, s], vf[0])
 	if (params.ShowVol)
 		rr.push(translateX(-100, volS))
 
 	if (params.ShowDims)
 		rr.push(displayDims(volS))
 
-	console.log(V.lUNFOLD.length, '/', V.faces.length)
+	//console.log(V.lUNFOLD.length, '/', V.faces.length)
 
 	return rr
 }
