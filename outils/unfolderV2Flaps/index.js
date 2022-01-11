@@ -57,7 +57,7 @@ function getParameterDefinitions () {
 		{name:'g1', type:'group', caption:t[0]},
 		{name:'fileN', type:'text', caption:t[1], default:'file.obj'},
 		{name:'Pscale', type:'number', caption:t[6], default:1},
-		{name:'ShowVol', type:'checkbox', caption:t[16], checked:true},
+		{name:'ShowVol', type:'checkbox', caption:t[15], checked:true},
 		{name:'ShowDims', type:'checkbox', caption:t[2], checked:true},
 		{name:'ShowNums', type:'checkbox', caption:t[3], checked:true},
 
