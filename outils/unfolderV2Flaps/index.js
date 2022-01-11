@@ -458,9 +458,9 @@ function main (params) {
 	function displayDims (v) {
 		var r = []
 		var b = measureDimensions(v)
-		r.push(colorize(cssColors.black, number(Math.round(b[0]), 1, 0, -20)))
-		r.push(colorize(cssColors.black, number(Math.round(b[1]), 1, 0, -50)))
-		r.push(colorize(cssColors.black, number(Math.round(b[2]), 1, 0, -80)))
+		r.push(colorize(cssColors.black, number(Math.round(b[0]), 1, 100, -20)))
+		r.push(colorize(cssColors.black, number(Math.round(b[1]), 1, 100, -50)))
+		r.push(colorize(cssColors.black, number(Math.round(b[2]), 1, 100, -80)))
 
 		return r
 	}
