@@ -408,8 +408,9 @@ function main (params) {
 			var d = [b[2][0] + b[0] / 2, b[2][1] + b[1] / 2]
 			var e = [(V.frame[0] * (i + 0.5)) - d[0] +1, (V.frame[1] * 0.5) - d[1] +1]
 			r.push(translate(e, rd))
-			r.push(translate([V.frame[0]* (i+0.5), V.frame[1]/2], 
-				rectangle({size:V.frame})))
+			if (params.ShowFrame)
+				r.push(translate([V.frame[0]* (i+0.5), V.frame[1]/2], 
+					rectangle({size:V.frame})))
 		}
 		return r
 	}
