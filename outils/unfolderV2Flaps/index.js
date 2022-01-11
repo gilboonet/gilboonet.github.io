@@ -30,7 +30,8 @@ function getParameterDefinitions () {
 			'Page Largeur',
 			'Page Hauteur',
 			'Exclure Faces',
-			'Voir Volume'
+			'Voir Volume',
+			'Voir Cadre'
 		]
 	} else {
 		t = [ 
@@ -49,13 +50,14 @@ function getParameterDefinitions () {
 			'Frame Width',
 			'Frame Height',
 			'Exclude faces',
-			'Show Model'
+			'Show Model',
+			'Show Frame'
 		]
 	}
 
 	return [
 		{name:'g1', type:'group', caption:t[0]},
-		{name:'fileN', type:'text', caption:t[1], default:'file.obj'},
+		{name:'fileN', type:'text', caption:t[1], default:'c.obj'},
 		{name:'Pscale', type:'number', caption:t[6], default:1},
 		{name:'ShowVol', type:'checkbox', caption:t[15], checked:true},
 		{name:'ShowDims', type:'checkbox', caption:t[2], checked:true},
@@ -72,6 +74,7 @@ function getParameterDefinitions () {
 			values: [0,1,2,3,4,5,6,7,8,-1], default:2},
 		{name:'frameX', type:'number', caption:t[12], default:210},
 		{name:'frameY', type:'number', caption:t[13], default:297},
+		{name:'ShowFrame', type:'checkbox', caption:t[16], checked:true},
 		{name:'Excld', type:'text', caption:t[14], initial:'', default:''}
 	]
 }
@@ -405,6 +408,8 @@ function main (params) {
 			var d = [b[2][0] + b[0] / 2, b[2][1] + b[1] / 2]
 			var e = [(V.frame[0] * (i + 0.5)) - d[0] +1, (V.frame[1] * 0.5) - d[1] +1]
 			r.push(translate(e, rd))
+			r.push(translate([V.frame[0]* (i+0.5), V.frame[1]/2], 
+				rectangle({size:V.frame})))
 		}
 		return r
 	}
