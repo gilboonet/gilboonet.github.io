@@ -29,7 +29,6 @@ function getParameterDefinitions () {
 			'Personnalisé...',
 			'Page Largeur',
 			'Page Hauteur',
-			'Déplacer Lang.',
 			'Exclure Faces',
 			'Voir Volume'
 		]
@@ -49,7 +48,6 @@ function getParameterDefinitions () {
 			'Custom...',
 			'Frame Width',
 			'Frame Height',
-			'Move Flaps',
 			'Exclude faces',
 			'Show Model'
 		]
@@ -74,8 +72,7 @@ function getParameterDefinitions () {
 			values: [0,1,2,3,4,5,6,7,8,-1], default:2},
 		{name:'frameX', type:'number', caption:t[12], default:210},
 		{name:'frameY', type:'number', caption:t[13], default:297},
-		{name:'Flap2', type:'text', caption:t[14], initial:'', default:''},
-		{name:'Excld', type:'text', caption:t[15], initial:'', default:''}
+		{name:'Excld', type:'text', caption:t[14], initial:'', default:''}
 	]
 }
 
@@ -341,7 +338,6 @@ function main (params) {
 		}
 
 		var r = [], s = V.FlapH
-		var f2 = V.Flap2
 
 		for (var i = 0, il = V.lLINES.length; i < il; i++) {
 			var l = V.lLINES[i]
@@ -500,7 +496,7 @@ function main (params) {
 	V.s2 = params.Nscale * V.s / 30
 	V.s3 = V.s2 * 0.6
 	V.FlapH = params.FlapH
-	V.Flap2 = params.Flap2.split(',').map(Number)
+	//V.Flap2 = params.Flap2.split(',').map(Number)
 	V.ShowFlaps = params.ShowFlaps
 	V.ShowNums = params.ShowNums
 
