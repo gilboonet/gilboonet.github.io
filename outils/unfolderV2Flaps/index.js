@@ -33,7 +33,8 @@ function getParameterDefinitions () {
 			'Voir Volume',
 			'Voir Cadre',
 			'Déplier',
-			'Marge'
+			'Marge',
+			'Modèle', 'fichier...'
 		]
 	} else {
 		t = [ 
@@ -55,19 +56,91 @@ function getParameterDefinitions () {
 			'Show Model',
 			'Show Frame',
 			'Unfold',
-			'Margin'
+			'Margin',
+			'Model', 'file...'
 		]
 	}
+	
+	
 
 	return [
 		{name:'g1', type:'group', caption:t[0]},
+		{name:'modelType', type:'choice', caption:t[19], default:0,
+			captions:[
+				'bastet256',
+				'bulldog200',
+				'bunny146',
+				'canardBain274',
+				'charmander200',
+				'chat234',
+				'chat300',
+				'chien350',
+				'claptrex168',
+				'claptrex336',
+				'fauconM300',
+				'fm806',
+				'girafe464',
+				'gorille300',
+				'gorille500',
+				'koala275',
+				'moai156',
+				'moai312',
+				'oeuf220',
+				'ours350',
+				'ours500',
+				'panthere500',
+				'pikachu220',
+				'pikachu500',
+				'snoopy172',
+				'tdy236',
+				'teteCheval134',
+				'teteElephant300',
+				'teteLion358',
+				'teteRenard125',
+				'torseFemme400',
+				'venus1000',		
+				t[20]],
+			values:[
+				'bastet256.obj',
+				'bulldog200.obj',
+				'bunny146.obj',
+				'canardBain274.obj',
+				'charmander200.obj',
+				'chat234.obj',
+				'chat300.obj',
+				'chien350.obj',
+				'claptrex168.obj',
+				'claptrex336.obj',
+				'fauconM300.obj',
+				'fm806.obj',
+				'girafe464.obj',
+				'gorille300.obj',
+				'gorille500.obj',
+				'koala275.obj',
+				'moai156.obj',
+				'moai312.obj',
+				'oeuf220.obj',
+				'ours350.obj',
+				'ours500.obj',
+				'panthere500.obj',
+				'pikachu220.obj',
+				'pikachu500.obj',
+				'snoopy172.obj',
+				'tdy236.obj',
+				'teteCheval134.obj',
+				'teteElephant300.obj',
+				'teteLion358.obj',
+				'teteRenard125.obj',
+				'torseFemme400.obj',
+				'venus1000.obj',
+				0]},
 		{name:'fileN', type:'text', caption:t[1], default:'c.obj'},
 		{name:'Pscale', type:'number', caption:t[6], default:1},
 		{name:'ShowVol', type:'checkbox', caption:t[15], checked:true},
 		{name:'ShowDims', type:'checkbox', caption:t[2], checked:true},
 
 		{name:'g2', type:'group', caption:t[4]},
-		{name:'doUnfold', type:'checkbox', caption:t[17], checked:false},
+		{name:'doUnfold', type:'checkbox', caption:t[17], initial:false, default:false, checked:false},
 		{name:'firstTriangle', type:'number', caption:t[5], default:0, step:1},
 		{name:'Nscale', type:'number', caption:t[7], default:1},
 		{name:'ShowNums', type:'checkbox', caption:t[3], checked:true},
@@ -490,7 +563,11 @@ function main (params) {
 		[300, 600]  // Cricut Large
 	]
 
-	const vf = require('./' + params.fileN)
+	const fileName = params.modelType === 0
+		? params.fileN
+		: params.modelType
+	
+	const vf = require('./' + fileName)
 	var V = toPolyhedron(vf[0])
 	//var V = toPolyhedron(sphere({segments:8}))
 	//var V = toPolyhedron(cube())
@@ -512,13 +589,10 @@ function main (params) {
 	V.FlapH = params.FlapH
 	V.ShowFlaps = params.ShowFlaps
 	V.ShowNums = params.ShowNums
-
 	V.voisins = getNeighbors(V.faces)
-
 	V.vertices = V.vertices.map(v => [v[0] * V.s, v[1] * V.s, v[2] * V.s])
-	V.v3d = createTriangles3dFromFaces()
+ 	V.v3d = createTriangles3dFromFaces()
 	V.v2d = createTriangles2dFrom3d()
-	
 	setExclusions(params.Excld)
 
 // START UNFOLDING
@@ -605,7 +679,7 @@ function main (params) {
 		rr.push(displayDims(volS))
 
 	//console.log(V.lUNFOLD.length, '/', V.faces.length)
-
+ console.log(rr)
 	return rr
 }
 
