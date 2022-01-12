@@ -65,12 +65,12 @@ function getParameterDefinitions () {
 		{name:'Pscale', type:'number', caption:t[6], default:1},
 		{name:'ShowVol', type:'checkbox', caption:t[15], checked:true},
 		{name:'ShowDims', type:'checkbox', caption:t[2], checked:true},
-		{name:'ShowNums', type:'checkbox', caption:t[3], checked:true},
 
 		{name:'g2', type:'group', caption:t[4]},
 		{name:'doUnfold', type:'checkbox', caption:t[17], checked:false},
 		{name:'firstTriangle', type:'number', caption:t[5], default:0, step:1},
 		{name:'Nscale', type:'number', caption:t[7], default:1},
+		{name:'ShowNums', type:'checkbox', caption:t[3], checked:true},
 		{name:'ShowFlaps', type:'checkbox', caption:t[8], checked:true},
 		{name:'FlapH', type:'number', caption:t[9], default:4},
 		{name:'FrameType', type:'choice', caption:t[10], 
@@ -548,10 +548,11 @@ function main (params) {
 		rr.push(r)
 		newCLimit = V.lUNFOLD.length - 1
 		fT = findFaceToUnfold()
-		//V.saveL = V.saveL.concat(V.lLINES)
-		V.saveL.push(V.lLINES)
+		if (params.ShowFlaps)
+			V.saveL.push(V.lLINES)
 	} while (fT > -1)
 
+ if (params.ShowFlaps) {
 	var mf = V.lNums.filter(x =>
 		V.lFlaps.findIndex(y => y.min === x.min && y.max === x.max) === -1)
 
@@ -592,6 +593,7 @@ function main (params) {
 			}
 		}
 	}
+ }
 
 	var rr = organize(aggregatePieces(rr))
  }
