@@ -67,6 +67,7 @@ function getParameterDefinitions () {
 		{name:'g1', type:'group', caption:t[0]},
 		{name:'modelType', type:'choice', caption:t[19], default:0,
 			captions:[
+				t[20],
 				'bastet256',
 				'bulldog200',
 				'bunny146',
@@ -98,9 +99,9 @@ function getParameterDefinitions () {
 				'teteLion358',
 				'teteRenard125',
 				'torseFemme400',
-				'venus1000',		
-				t[20]],
+				'venus1000'],
 			values:[
+				'',
 				'bastet256.obj',
 				'bulldog200.obj',
 				'bunny146.obj',
@@ -132,8 +133,7 @@ function getParameterDefinitions () {
 				'teteLion358.obj',
 				'teteRenard125.obj',
 				'torseFemme400.obj',
-				'venus1000.obj',
-				0]},
+				'venus1000.obj']},
 		{name:'fileN', type:'text', caption:t[1], default:'c.obj'},
 		{name:'Pscale', type:'number', caption:t[6], default:1},
 		{name:'ShowVol', type:'checkbox', caption:t[15], checked:true},
@@ -563,10 +563,8 @@ function main (params) {
 		[300, 600]  // Cricut Large
 	]
 
-	const fileName = params.modelType === 0
-		? params.fileN
-		: params.modelType
-	
+	const fileName = params.modelType === '' ? params.fileN : params.modelType
+	console.log(fileName)
 	const vf = require('./' + fileName)
 	var V = toPolyhedron(vf[0])
 	//var V = toPolyhedron(sphere({segments:8}))
