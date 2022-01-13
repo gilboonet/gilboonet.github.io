@@ -1,7 +1,7 @@
 **DEPLIEUR** est un script pour OpenJSCAD (v2) permettant de déplier un volume afin d'en faire une version en papier ou carton.
 
 **INSTALLATION** :
-- récupérez l'archive deplieur.zip
+- récupérez l'archive [ici](deplieur.zip)
 - décompressez la dans un dossier
 - ouvrez https://openjscad.xyz
 - cliquez sur "Charger Projet" et accédez au dossier
