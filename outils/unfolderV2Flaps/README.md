@@ -1,14 +1,19 @@
-- DEPLIEUR est un script pour OpenJSCAD (v2) permettant de déplier un volume afin d'en faire une version en papier ou carton.
-- J'y ai inclus plusieurs modèles directement accessibles depuis la liste "Modèle"
+**DEPLIEUR** est un script pour OpenJSCAD (v2) permettant de déplier un volume afin d'en faire une version en papier ou carton.
+
+**INSTALLATION** :
+- récupérez l'archive deplieur.zip
+- décompressez la dans un dossier
+- ouvrez https://openjscad.xyz
+- cliquez sur "Charger Projet" et accédez au dossier
+
+**REMARQUES** :
 - Il accepte les fichiers 3d au format .OBJ ou .STL (choisir "Fichier... dans la liste)
 - Pour pouvoir exporter en 2D (.DXF de préférence, ou .STL) il faut décocher "Voir Volume"
 - Décocher "Actualisation Instantanée" si vous avez une machine peu puissante (cliquer sur "Actualiser" pour lancer un rendu)
 - De trop petits modèles peuvent empêcher le calcul (agrandir l'échelle)
 - Certaines languettes peuvent être manquantes (si elles sont très proches mais ne se touchent pas)
 
-
 <img src="capture3.png" width=50% height=50%>
-
 - A) **Modèle** : Choix du modèle (si fichier... voir B)
 - B) **Fichier** : Zone de saisie du fichier (.obj ou .stl)
 - C) **Echelle** : 1 par défaut (< 1 pour rétrécir, > 1 pour agrandir)
