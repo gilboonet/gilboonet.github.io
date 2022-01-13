@@ -7,7 +7,7 @@
 - cliquez sur "Charger Projet" et accédez au dossier
 
 **REMARQUES** :
-- Il accepte les fichiers 3d au format .OBJ ou .STL (choisir "Fichier... dans la liste)
+- Il accepte les fichiers 3d au format .OBJ ou .SVG (choisir "Fichier... dans la liste)
 - Pour pouvoir exporter en 2D (.DXF de préférence, ou .STL) il faut décocher "Voir Volume"
 - Décocher "Actualisation Instantanée" si vous avez une machine peu puissante (cliquer sur "Actualiser" pour lancer un rendu)
 - De trop petits modèles peuvent empêcher le calcul (agrandir l'échelle)
