@@ -14,6 +14,7 @@
 - Certaines languettes peuvent être manquantes (si elles sont très proches mais ne se touchent pas)
 
 <img src="capture3.png" width=50% height=50%>
+
 - A) **Modèle** : Choix du modèle (si fichier... voir B)
 - B) **Fichier** : Zone de saisie du fichier (.obj ou .stl)
 - C) **Echelle** : 1 par défaut (< 1 pour rétrécir, > 1 pour agrandir)
