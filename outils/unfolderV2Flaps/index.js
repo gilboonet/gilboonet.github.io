@@ -583,7 +583,7 @@ function main (params) {
 	V.saveL		= []
 
 	// Set parameters
-	V.frame = params.FrameType.value === -1 // frame dimensions
+	V.frame = params.FrameType === -1 // frame dimensions
 		? [params.frameX, params.frameY] : frameSizes[params.FrameType]
 	V.s  = params.Pscale
 	V.s2 = params.Nscale * V.s / 30
