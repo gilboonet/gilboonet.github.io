@@ -503,38 +503,43 @@ function main (params) {
 			r.push({d:align({modes:align_centerXY, grouped:true}, P[i]), 
 							x: b[1][0] - b[0][0], y: b[1][1] - b[0][1]})
 		}
-
 		if (r.length > 1) {
 			var ok = true
 			do { // try to group smallest X pieces
 				r.sort(minX)
-				if ((r[0].x + r[1].x) < V.frame[0]) {
-					r[0].d.push(translateX((r[0].x + r[1].x) / 2, r[1].d))
-					r[0].d = align({modes:align_centerXY, grouped:true}, r[0].d)
-					var b = measureGroup(r[0].d)
-					r[0].x = b[0]
-					r[0].y = b[1]
-					r[1].d = null
-					r.splice(1, 1)
-				} else {
+				if (r[1] !== undefined) {
+					if ((r[0].x + r[1].x) < V.frame[0]) {
+						r[0].d.push(translateX((r[0].x + r[1].x) / 2, r[1].d))
+						r[0].d = align({modes:align_centerXY, grouped:true}, r[0].d)
+						var b = measureGroup(r[0].d)
+						r[0].x = b[0]
+						r[0].y = b[1]
+						r[1].d = null
+						r.splice(1, 1)
+					} else {
+						ok = false
+					}
+				} else
 					ok = false
-				}
 			} while (ok)
 
 			var ok = true
 			do { // try to group smallest Y pieces
 				r.sort(minY)
-				if ((r[0].y + r[1].y) < V.frame[1]) {
-					r[0].d.push(translateY((r[0].y + r[1].y) / 2, r[1].d))
-					r[0].d = align({modes:align_centerXY, grouped:true}, r[0].d)
-					var b = measureGroup(r[0].d)
-					r[0].x = b[0]
-					r[0].y = b[1]
-					r[1].d = null
-					r.splice(1, 1)
-				} else {
+				if (r[1] !== undefined) {
+					if ((r[0].y + r[1].y) < V.frame[1]) {
+						r[0].d.push(translateY((r[0].y + r[1].y) / 2, r[1].d))
+						r[0].d = align({modes:align_centerXY, grouped:true}, r[0].d)
+						var b = measureGroup(r[0].d)
+						r[0].x = b[0]
+						r[0].y = b[1]
+						r[1].d = null
+						r.splice(1, 1)
+					} else {
+						ok = false
+					}
+				} else
 					ok = false
-				}
 			} while (ok)
 		}
 		return r
@@ -564,7 +569,6 @@ function main (params) {
 	]
 
 	const fileName = params.modelType === '' ? params.fileN : params.modelType
-	console.log(fileName)
 	const vf = require('./' + fileName)
 	var V = toPolyhedron(vf[0])
 	//var V = toPolyhedron(sphere({segments:8}))
@@ -677,7 +681,6 @@ function main (params) {
 		rr.push(displayDims(volS))
 
 	//console.log(V.lUNFOLD.length, '/', V.faces.length)
- console.log(rr)
 	return rr
 }
 
