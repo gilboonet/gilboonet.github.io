@@ -5,7 +5,7 @@ const { rotateZ, translate, translateX, translateY, scale, center, align } = jsc
 const { colorize, colorNameToRgb, cssColors } = jscad.colors
 const { toPolygons } = jscad.geometries.geom3
 const { union } = jscad.booleans
-const { vec3 } = jscad.maths
+const { vec3, vec4 } = jscad.maths
 //const { lerp } = jscad.maths.vec2
 const { radToDeg, degToRad } = jscad.utils
 
@@ -161,7 +161,7 @@ function main (params) {
 	function toPolyhedron (O) {
 		function eq2 (v1, v2) {return Math.abs(v1 - v2) < epsilon}
 
-		var p = toPolygons(O), r = {vertices:[], faces:[]}
+		var p = toPolygons(O), r = {vertices:[], faces:[], color:[]}
 		for (var i = 0, il = p.length; i < il; i++){
 			var f = [], poly = p[i]
 			for(j = 0, jl = poly.vertices.length; j < jl; j++){
@@ -173,11 +173,14 @@ function main (params) {
 				f.push(n)
 			}
 
+			let fc = poly.color === undefined ? [1,1,1,1] : poly.color
 			if (f.length == 3) {
 				r.faces.push(f)
+				r.color.push(fc)
 			} else {
 				for (var j = 1, jl = f.length -1; j < jl; j++) {
 					r.faces.push([f[0], f[j], f[j+1]])
+					r.color.push(fc)
 				}
 			}
 		}
@@ -282,25 +285,26 @@ function main (params) {
 		var d = [ b[1][0] - b[0][0], b[1][1] - b[0][1] ]
 		return (d[0] <= V.frame[0]-1 - marge) && (d[1] <= V.frame[1] - marge)
 	}
-	function candidates (first) {
+	function candidates (first, nf) {
 		var r = []
 		for (var i = first, l = V.lUNFOLD.length; i < l; i++) {
 			var nFace = V.lUNFOLD[i]
 			for (var j = 0; j < 3; j++) {
 				var n = V.voisins[nFace][j]
-				if (! V.lUNFOLD.includes(n)) {
-					if (V.cacheKO.find(x => (x[0] === nFace) && (x[1] === n)) === undefined)
-						r.push([nFace, n])
-				}
+				if (vec4.equals(V.color[nf], V.color[n]))
+					if (! V.lUNFOLD.includes(n)) {
+						if (V.cacheKO.find(x => (x[0] === nFace) && (x[1] === n)) === undefined)
+							r.push([nFace, n])
+					}
 			}
 		}
 		return r
 	}
 	function attach (nFace, nT, checkOnly = false) {
 		function calcAngle (A,B,C) {
-			var AB = Math.sqrt(Math.pow(B[0]-A[0],2)+ Math.pow(B[1]-A[1],2))
-			var BC = Math.sqrt(Math.pow(B[0]-C[0],2)+ Math.pow(B[1]-C[1],2))
-			var AC = Math.sqrt(Math.pow(C[0]-A[0],2)+ Math.pow(C[1]-A[1],2))
+			var AB = Math.sqrt(Math.pow(B[0]-A[0], 2)+ Math.pow(B[1]-A[1], 2))
+			var BC = Math.sqrt(Math.pow(B[0]-C[0], 2)+ Math.pow(B[1]-C[1], 2))
+			var AC = Math.sqrt(Math.pow(C[0]-A[0], 2)+ Math.pow(C[1]-A[1], 2))
 
 			return Math.acos((BC*BC+AB*AB-AC*AC) / (2*BC*AB))
 		}
@@ -569,10 +573,20 @@ function main (params) {
 	]
 
 	const fileName = params.modelType === '' ? params.fileN : params.modelType
-	const vf = require('./' + fileName)
-	var V = toPolyhedron(vf[0])
+	let vf = require('./' + fileName)
+	var vf2 = vf[0]
+	if (vf.length > 1) {
+		for (var i = 1; i < vf.length; i++){
+			vf[i].polygons.forEach(function(p){ vf2.polygons.push(p) })
+		}
+	}
+	var V = toPolyhedron(vf2)
 	//var V = toPolyhedron(sphere({segments:8}))
 	//var V = toPolyhedron(cube())
+
+	// handle multi-pieces file
+	console.log(V)
+
 	var rr = []
 	
  if (params.doUnfold) {
@@ -607,7 +621,7 @@ function main (params) {
 		r.push(pose(fT, params.ShowNums)) // display first triangle
 		var ok = true
 		while (ok) {
-			var c = candidates(newCLimit), cl = c.length
+			var c = candidates(newCLimit, fT), cl = c.length
 			if (cl > 0) {
 				for (var ai = 0, lok = true; lok && (ai < cl); ai++) {
 					if (attach(c[ai][0], c[ai][1])) {
