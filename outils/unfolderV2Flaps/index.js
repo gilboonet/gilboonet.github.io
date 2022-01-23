@@ -1,4 +1,4 @@
-#DEPLIEUR JSCAD V2 v 22-01-23
+//DEPLIEUR JSCAD V2 v 22-01-23
 const jscad = require('@jscad/modeling')
 const { line, cube, rectangle, circle, polygon, sphere } = jscad.primitives
 const { measureBoundingBox, measureDimensions, measureAggregateBoundingBox, measureCenter } = jscad.measurements
