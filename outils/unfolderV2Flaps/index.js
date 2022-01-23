@@ -1,3 +1,4 @@
+#DEPLIEUR JSCAD V2 v 22-01-23
 const jscad = require('@jscad/modeling')
 const { line, cube, rectangle, circle, polygon, sphere } = jscad.primitives
 const { measureBoundingBox, measureDimensions, measureAggregateBoundingBox, measureCenter } = jscad.measurements
@@ -491,8 +492,7 @@ function main (params) {
 			var e = [(V.frame[0] * (i + 0.5)) - d[0] +1, (V.frame[1] * 0.5) - d[1] +1]
 			r.push(translate(e, rd))
 			if (params.ShowFrame)
-				r.push(translate([V.frame[0]* (i+0.5), V.frame[1]/2], 
-					rectangle({size:V.frame})))
+				r.push(translateX(V.frame[0]*i, line([ [0, 0], [V.frame[0], 0], [V.frame[0], V.frame[1]], [0, V.frame[1]], [0, 0]])))
 		}
 		return r
 	}
