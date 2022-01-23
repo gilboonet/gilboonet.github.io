@@ -12,6 +12,7 @@
 - Décocher "Actualisation Instantanée" si vous avez une machine peu puissante (cliquer sur "Actualiser" pour lancer un rendu)
 - De trop petits modèles peuvent empêcher le calcul (agrandir l'échelle)
 - Certaines languettes peuvent être manquantes (si elles sont très proches mais ne se touchent pas)
+- Si le modèle 3d contient des faces coloriées de couleurs différentes elles seront dépliées séparément (par couleur)
 
 <img src="capture3.png" width=50% height=50%>
 
