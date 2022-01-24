@@ -360,41 +360,36 @@ function main (params) {
 
 		return true
 	}
-	function render (){
-		function middle (a, b) {
-			return [((a[0] + b[0]) / 2), ((a[1] + b[1]) / 2)]
+	function eq3 (t1, t2, n) {
+		function distance (p1, p2) {
+			var a = p2[0] - p1[0], b = p2[1] - p1[1], c = p2[2] - p1[2]
+
+			return Math.sqrt(a * a + b * b + c * c)
 		}
-		function colorLine (l) {
-			function eq3 (t1, t2, n) {
-				function distance (p1, p2) {
-					var a = p2[0] - p1[0], b = p2[1] - p1[1], c = p2[2] - p1[2]
+		return (distance(t2[n], t1[0]) >= epsilon)
+				&& (distance(t2[n], t1[1]) >= epsilon)
+				&& (distance(t2[n], t1[2]) >= epsilon)
+	}
+	function isCoplanar (t, p) {
+	// Function to find equation of plane.
+	// https://www.geeksforgeeks.org/program-to-check-whether-4-points-in-a-3-d-plane-are-coplanar/
+		var x1 = t[0][0], y1 = t[0][1], z1 = t[0][2],
+				x2 = t[1][0], y2 = t[1][1], z2 = t[1][2],
+				x3 = t[2][0], y3 = t[2][1], z3 = t[2][2],
+				x  = p[0],    y  = p[1],    z  = p[2]
 
-					return Math.sqrt(a * a + b * b + c * c)
-				}
-				return	 (distance(t2[n], t1[0]) >= epsilon)
-							&& (distance(t2[n], t1[1]) >= epsilon)
-							&& (distance(t2[n], t1[2]) >= epsilon)
-			}
-			function isCoplanar (t, p) {
-			// Function to find equation of plane.
-			// https://www.geeksforgeeks.org/program-to-check-whether-4-points-in-a-3-d-plane-are-coplanar/
-				var x1 = t[0][0], y1 = t[0][1], z1 = t[0][2],
-						x2 = t[1][0], y2 = t[1][1], z2 = t[1][2],
-						x3 = t[2][0], y3 = t[2][1], z3 = t[2][2],
-						x  = p[0],    y  = p[1],    z  = p[2]
-
-				var a1 = x2 - x1, b1 = y2 - y1, c1 = z2 - z1,
-						a2 = x3 - x1, b2 = y3 - y1, c2 = z3 - z1,
-						a = b1 * c2 - b2 * c1,
-						b = a2 * c1 - a1 * c2,
-						c = a1 * b2 - b1 * a2,
-						d = (- a * x1 - b * y1 - c * z1)
-			// equation of plane is: a*x + b*y + c*z = 0
-			// checking if the 4th point satisfies  
-			// the above equation  
-				return a * x + b * y + c * z + d
-			}
-
+		var a1 = x2 - x1, b1 = y2 - y1, c1 = z2 - z1,
+				a2 = x3 - x1, b2 = y3 - y1, c2 = z3 - z1,
+				a = b1 * c2 - b2 * c1,
+				b = a2 * c1 - a1 * c2,
+				c = a1 * b2 - b1 * a2,
+				d = (- a * x1 - b * y1 - c * z1)
+	// equation of plane is: a*x + b*y + c*z = 0
+	// checking if the 4th point satisfies  
+	// the above equation  
+		return a * x + b * y + c * z + d
+	}
+	function coplanarColor (l) {
 			var tri1 = V.v3d[l[2]], tri2 = V.v3d[l[3]]
 			var p
 					if (eq3(tri1, tri2, 0))
@@ -407,6 +402,17 @@ function main (params) {
 			var estCop = isCoplanar(V.v3d[l[2]], p)
 			if (estCop) {
 				col = estCop < 0 ? cssColors.maroon : cssColors.green
+				return col
+			} else
+				return null
+		}
+	function render (){
+		function middle (a, b) {
+			return [((a[0] + b[0]) / 2), ((a[1] + b[1]) / 2)]
+		}
+		function colorLine (l) {
+			var col = coplanarColor(l)
+			if (col) {
 				return colorize(col, line([l[0], l[1]]))
 			} else
 				return null
@@ -451,13 +457,13 @@ function main (params) {
 						r.push(colorize(cssColors.red, line([l[0], l[1]])))
 					} else {
 						var rl = colorLine(l)
-						r.push(rl)
+						if(rl)r.push(rl)
 					}
 				}  
 				r.push(colorize(cssColors.black, tmp))
 			} else {
 				var rl = colorLine(l)
-				if (rl !== null)
+				if (rl)
 					r.push(rl)
 			}
 		}
@@ -584,9 +590,6 @@ function main (params) {
 	//var V = toPolyhedron(sphere({segments:8}))
 	//var V = toPolyhedron(cube())
 
-	// handle multi-pieces file
-	console.log(V)
-
 	var rr = []
 	
  if (params.doUnfold) {
@@ -641,12 +644,41 @@ function main (params) {
 		if (params.ShowFlaps)
 			V.saveL.push(V.lLINES)
 	} while (fT > -1)
+	// remove empty elements
+	for (var ri = 0 ; ri < rr.length; ri++){
+		for (var rj = rr[ri].length-1; rj >= 0; rj--){
+			if (rr[ri][rj].length === 0)
+				rr[ri].splice(rj, 1)
+		} 
+	}
+	// flatten
+	var r2 = []
+	for (var ri = 0; ri < rr.length; ri++){
+		var tmp = []
+		for (var rj = 0; rj < rr[ri].length; rj++){
+			var rL = rr[ri][rj]
+			if (Array.isArray(rL)){
+				for (rk = 0; rk < rL.length; rk++){
+					var rL2 = rL[rk]
+					if (Array.isArray(rL2)){
+						for (rl = 0; rl < rL2.length; rl++){
+							tmp.push(rL2[rl])
+						}
+					} else
+						tmp.push(rL2)
+				}
+			} else
+				tmp.push(rl)
+		}
+		r2.push(tmp)
+	}
+	rr = r2
 
  if (params.ShowFlaps) {
 	var mf = V.lNums.filter(x =>
 		V.lFlaps.findIndex(y => y.min === x.min && y.max === x.max) === -1)
 
-	var nOK = 0, tmp
+	var nOK = 0, tmp, nko = 0
 	
 	for (var vsn = 0; vsn < V.saveL.length; vsn++) {
 		for (var n = 0; n < mf.length; n++){
@@ -678,13 +710,25 @@ function main (params) {
 				if(C){
 					AB[1] = [lerp(C[0], AB[1][0], 0.8), lerp(C[1], AB[1][1], 0.8)]
 					rr[vsn].push(colorize(cssColors.red, line(AB)))
+					// find line (C-AB[0]) and set its color (coplanar)
+					var rf = rr[vsn].find(l => l.points.length === 2
+						&& vec4.equals(l.color, [1,0,0,1])
+						&& ( (eq(l.points[0], C) && eq(l.points[1], AB[0]))
+							|| (eq(l.points[1], C) && eq(l.points[0], AB[0]))))
+					if (rf !== undefined){
+						var col = coplanarColor(tmp)
+						if (col === null)
+							col = cssColors.maroon
+						col.push(1)
+						rf.color = col
+						nko++
+					}
 					nOK++
 				}
 			}
 		}
 	}
  }
-
 	var rr = organize(aggregatePieces(rr))
  }
 	var s = params.Pscale, volS = scale([s, s, s], vf[0])
