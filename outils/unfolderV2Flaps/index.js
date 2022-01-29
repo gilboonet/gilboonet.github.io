@@ -646,13 +646,15 @@ function main (params) {
 		if (params.ShowFlaps)
 			V.saveL.push(V.lLINES)
 	} while (fT > -1)
+	
 	// remove empty elements
+	/*console.log(rr.length)
 	for (var ri = 0 ; ri < rr.length; ri++){
 		for (var rj = rr[ri].length-1; rj >= 0; rj--){
 			if (rr[ri][rj].length === 0)
 				rr[ri].splice(rj, 1)
 		} 
-	}
+	}*/
 	// flatten
 	var r2 = []
 	for (var ri = 0; ri < rr.length; ri++){
@@ -675,6 +677,7 @@ function main (params) {
 		r2.push(tmp)
 	}
 	rr = r2
+	console.log(rr)
 
  if (params.ShowFlaps) {
 	var mf = V.lNums.filter(x =>
