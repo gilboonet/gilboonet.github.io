@@ -498,7 +498,7 @@ function main (params) {
 			var e = [(V.frame[0] * (i + 0.5)) - d[0] +1, (V.frame[1] * 0.5) - d[1] +1]
 			r.push(translate(e, rd))
 			if (params.ShowFrame)
-				r.push(translateX(V.frame[0]*i, line([ [0, 0], [V.frame[0], 0], [V.frame[0], V.frame[1]], [0, V.frame[1]], [0, 0]])))
+				r.push(colorize(cssColors.orange, translateX(V.frame[0]*i, line([ [0, 0], [V.frame[0], 0], [V.frame[0], V.frame[1]], [0, V.frame[1]], [0, 0]]))))
 		}
 		return r
 	}
