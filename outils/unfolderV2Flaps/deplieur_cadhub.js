@@ -494,7 +494,7 @@ function main (params) {
 				r.sort(minY)
 				if (r[1] !== undefined) {
 					var yl = r[0].y + r[1].y
-					if (yl) < V.frame[1]) {
+					if (yl < V.frame[1]) {
 						r[0].d.push(translateY(yl / 2, r[1].d))
 						r[0].d = align({modes:align_centerXY, grouped:true}, r[0].d)
 						var b = measureGroup(r[0].d)
