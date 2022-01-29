@@ -1,4 +1,4 @@
-//DEPLIEUR JSCAD V2 v 22-01-23
+//DEPLIEUR JSCAD V2 v 22-01-29
 const jscad = require('@jscad/modeling')
 const { line, cube, rectangle, circle, polygon, sphere } = jscad.primitives
 const { measureBoundingBox, measureDimensions, measureAggregateBoundingBox, measureCenter } = jscad.measurements
@@ -503,8 +503,8 @@ function main (params) {
 		return r
 	}
 	function aggregatePieces (P) {// join small pieces
-		function minX (a, b) { return a.x > b.x }
-		function minY (a, b) { return a.y > b.y }
+		function minX (a, b) { return a.x - b.x }
+		function minY (a, b) { return a.y - b.y }
 		const align_centerXY = ['center','center','none']
 
 		var r = []
@@ -518,8 +518,9 @@ function main (params) {
 			do { // try to group smallest X pieces
 				r.sort(minX)
 				if (r[1] !== undefined) {
-					if ((r[0].x + r[1].x) < V.frame[0]) {
-						r[0].d.push(translateX((r[0].x + r[1].x) / 2, r[1].d))
+					var xl = r[0].x + r[1].x
+					if (xl < V.frame[0]) {
+						r[0].d.push(translateX(xl / 2, r[1].d))
 						r[0].d = align({modes:align_centerXY, grouped:true}, r[0].d)
 						var b = measureGroup(r[0].d)
 						r[0].x = b[0]
@@ -537,8 +538,9 @@ function main (params) {
 			do { // try to group smallest Y pieces
 				r.sort(minY)
 				if (r[1] !== undefined) {
-					if ((r[0].y + r[1].y) < V.frame[1]) {
-						r[0].d.push(translateY((r[0].y + r[1].y) / 2, r[1].d))
+					var yl = r[0].y + r[1].y
+					if (yl < V.frame[1]) {
+						r[0].d.push(translateY(yl / 2, r[1].d))
 						r[0].d = align({modes:align_centerXY, grouped:true}, r[0].d)
 						var b = measureGroup(r[0].d)
 						r[0].x = b[0]
