@@ -2,7 +2,7 @@
 const jscad = require('@jscad/modeling')
 const { line, cube, rectangle, circle, polygon, sphere } = jscad.primitives
 const { measureBoundingBox, measureDimensions, measureAggregateBoundingBox, measureCenter } = jscad.measurements
-const { rotateZ, translate, translateX, translateY, scale, center, align } = jscad.transforms
+const { rotateZ, translate, translateX, translateY, scale, center, centerX, align } = jscad.transforms
 const { colorize, colorNameToRgb, cssColors } = jscad.colors
 const { toPolygons } = jscad.geometries.geom3
 const { union } = jscad.booleans
@@ -440,12 +440,12 @@ function main (params) {
 				var d1= distance2d(m, c)
 				var num = getLinkN(l[2], l[3])
 				var tmp = translate(m, rotateZ(a, number(num.n, V.s3, 0, 1)))
-				var b = measureAggregateBoundingBox(tmp)
-				var m2 = middle(b[0], b[1])
-				var d2 = distance2d(m2, c)
-				if (d1 < d2) {
+				//var b = measureAggregateBoundingBox(tmp)
+				//var m2 = middle(b[0], b[1])
+				//var d2 = distance2d(m2, c)
+				/*if (d1 < d2) {
 					tmp = translate(m, rotateZ(a, number(num.n, V.s3, 0, -1)))
-				}
+				}*/
 
 				if (!V.ShowFlaps)
 					r.push(colorize(cssColors.red, line([l[0], l[1]])))
@@ -459,7 +459,7 @@ function main (params) {
 						var rl = colorLine(l)
 						if(rl)r.push(rl)
 					}
-				}  
+				}
 				r.push(colorize(cssColors.black, tmp))
 			} else {
 				var rl = colorLine(l)
@@ -565,8 +565,124 @@ function main (params) {
 
 		return r
 	}
-	//function flapToggle(n)
+	function lerp(start, end, amt) { return (1-amt)*start+amt*end }
+	function measureGroup (g) { // return width, length, and min & max coordinates
+		var b = measureAggregateBoundingBox(g)
+		return [b[1][0] - b[0][0], b[1][1] - b[0][1], b[0], b[1]]
+	}
+	function overlap (t1, t2) {
+		function li (l1S, l1E, l2S, l2E) {// true if the lines intersect
+			if (eq(l1S, l2S) || eq(l1S, l2E) || eq(l1E, l2S) || eq(l1E, l2E)) {
+				return false
+			}
+
+			var denominator = ((l2E[1] - l2S[1]) * (l1E[0] - l1S[0]))
+											- ((l2E[0] - l2S[0]) * (l1E[1] - l1S[1]))
+
+			if (denominator === 0) {
+				return false
+			}
+
+			var a = l1S[1] - l2S[1],
+					b = l1S[0] - l2S[0],
+					numerator1 = ((l2E[0] - l2S[0]) * a) - ((l2E[1] - l2S[1]) * b),
+					numerator2 = ((l1E[0] - l1S[0]) * a) - ((l1E[1] - l1S[1]) * b)
+			a = numerator1 / denominator
+			b = numerator2 / denominator
+
+			if ((a > 0 && a < 1) && (b > 0 && b < 1)) {
+				return true
+			} else {
+				return false
+			}
+		}
+
+		let r = li(t1[0], t1[1], t2[0], t2[1])
+		|| li(t1[0], t1[1], t2[1], t2[2])
+		|| li(t1[0], t1[1], t2[2], t2[0])
+		|| li(t1[1], t1[2], t2[0], t2[1])
+		|| li(t1[1], t1[2], t2[1], t2[2])
+		|| li(t1[1], t1[2], t2[2], t2[0])
+		|| li(t1[2], t1[0], t2[0], t2[1])
+		|| li(t1[2], t1[0], t2[1], t2[2])
+		|| li(t1[2], t1[0], t2[2], t2[0])
+
+		return r
+	}
+	function eq (p1, p2) {return distance2d(p1, p2) < epsilon}
+	function suiv (n) {return n < 2 ? n + 1 : 0}
+	function rotation (cx, cy, x, y, angle) {
+		var cos = Math.cos(angle),
+				sin = Math.sin(angle)
+
+		return [(cos * (x - cx)) + (sin * (y - cy)) + cx,
+						(cos * (y - cy)) - (sin * (x - cx)) + cy]
+	}
+	function distance2d (p1, p2) {
+		var a = p2[0] - p1[0], b = p2[1] - p1[1]
+
+		return Math.sqrt(a * a + b * b)
+	}
+	function centroid (pts) {
+		var a = pts[0], b = pts[1], c = pts[2]
+
+		return [((a[0] + b[0] + c[0]) / 3), ((a[1] + b[1] + c[1]) / 3)]
+	}
+	function direction (p1, p2) {
+		return Math.atan2(p2[1] - p1[1], p2[0] - p1[0])
+	}
+function number (nb, ech, x, y) {
+  const LC = 9, sep = [[8,0],[9,0]]
+  var l = [], ch = nb.toString().split("").map(Number)
+  
+  var n1 = 2
+  if (ech === V.s3) {
+		if (V.sid.includes(nb)){
+			n1 = 1
+		} else {
+			n1 = 0
+			V.sid.push(nb)
+		}
+	}
+
+  var lid = nb + '_'+ n1
+  for (var i = 0; i < ch.length; i++){
+    var tmp = translateX(LC*i, line(digit[ch[i]]))
+		if(ch.length === 1)
+		  tmp.id = lid
+		else
+		  tmp.class = lid
+    l.push(tmp)
+  }
+  return translate([x, y], align({modes:['center','none','none'], grouped:true}, scale([ech, ech], l)))
+}
+function trapeze (p1, p2, s) {
+	const d = distance2d(p1, p2)
+	const a = degToRad(90) - direction(p1, p2)
+
+	var P = [
+		rotation(p1[0], p1[1], p1[0],   p1[1], a),
+		rotation(p1[0], p1[1], p1[0]+s, p1[1]+ d * 0.35, a),
+		rotation(p1[0], p1[1], p1[0]+s, p1[1]+ d * 0.65, a),
+		rotation(p1[0], p1[1], p1[0],   p1[1]+ d, a)
+	]
+
+	return P
+}
+
 // INITS
+	const digit = [
+	[[0,0],[0,16],[8,16],[8,0],[0,0]],
+	[[0,8],[8,16],[8,0]],
+	[[0,12],[0,16],[8,16],[8,8],[0,8],[0,0],[8,0]],
+	[[0,13],[0,16],[8,16],[8,11],[4,8],[8,5],[8,0],[0,0],[0,3]],
+	[[8,8],[0,8],[6,16],[6,0]],
+	[[8,16],[0,16],[0,8],[8,8],[8,0],[0,0]],
+	[[8,16],[0,8],[0,0],[8,0],[8,8],[0,8]],
+	[[0,16],[8,16],[0,0]],
+	[[4,9],[1,12],[1,16],[7,16],[7,12],[4,9],[8,7],[8,0],[0,0],[0,7],[4,9]],
+	[[8,8],[0,8],[0,16],[8,16],[8,0],[0,0]]
+]
 	const marge = params.margin, 
 				frameSizes = [
 		[105, 148], // A6
@@ -600,12 +716,13 @@ function main (params) {
 	V.lFlaps	= [] // {min, max}
 	V.lATTACH = []
 	V.saveL		= []
+	V.sid			= []
 
 	// Set parameters
 	V.frame = params.FrameType === -1 // frame dimensions
 		? [params.frameX, params.frameY] : frameSizes[params.FrameType]
 	V.s  = params.Pscale
-	V.s2 = params.Nscale * V.s / 30
+	V.s2 = params.Nscale * V.s / 3
 	V.s3 = V.s2 * 0.6
 	V.FlapH = params.FlapH
 	V.ShowFlaps = params.ShowFlaps
@@ -747,114 +864,5 @@ function main (params) {
 	return rr
 }
 
-function lerp(start, end, amt) { return (1-amt)*start+amt*end }
-function measureGroup (g) { // return width, length, and min & max coordinates
-	var b = measureAggregateBoundingBox(g)
-	return [b[1][0] - b[0][0], b[1][1] - b[0][1], b[0], b[1]]
-}
-function overlap (t1, t2) {
-	function li (l1S, l1E, l2S, l2E) {// true if the lines intersect
-		if (eq(l1S, l2S) || eq(l1S, l2E) || eq(l1E, l2S) || eq(l1E, l2E)) {
-			return false
-		}
-
-		var denominator = ((l2E[1] - l2S[1]) * (l1E[0] - l1S[0]))
-										- ((l2E[0] - l2S[0]) * (l1E[1] - l1S[1]))
-
-		if (denominator === 0) {
-			return false
-		}
-
-		var a = l1S[1] - l2S[1],
-				b = l1S[0] - l2S[0],
-				numerator1 = ((l2E[0] - l2S[0]) * a) - ((l2E[1] - l2S[1]) * b),
-				numerator2 = ((l1E[0] - l1S[0]) * a) - ((l1E[1] - l1S[1]) * b)
-		a = numerator1 / denominator
-		b = numerator2 / denominator
-
-		if ((a > 0 && a < 1) && (b > 0 && b < 1)) {
-			return true
-		} else {
-			return false
-		}
-	}
-
-	let r = li(t1[0], t1[1], t2[0], t2[1])
-	|| li(t1[0], t1[1], t2[1], t2[2])
-	|| li(t1[0], t1[1], t2[2], t2[0])
-	|| li(t1[1], t1[2], t2[0], t2[1])
-	|| li(t1[1], t1[2], t2[1], t2[2])
-	|| li(t1[1], t1[2], t2[2], t2[0])
-	|| li(t1[2], t1[0], t2[0], t2[1])
-	|| li(t1[2], t1[0], t2[1], t2[2])
-	|| li(t1[2], t1[0], t2[2], t2[0])
-
-	return r
-}
-function eq (p1, p2) {return distance2d(p1, p2) < epsilon}
-function suiv (n) {return n < 2 ? n + 1 : 0}
-function rotation (cx, cy, x, y, angle) {
-	var cos = Math.cos(angle),
-			sin = Math.sin(angle)
-
-	return [(cos * (x - cx)) + (sin * (y - cy)) + cx,
-					(cos * (y - cy)) - (sin * (x - cx)) + cy]
-}
-function distance2d (p1, p2) {
-	var a = p2[0] - p1[0], b = p2[1] - p1[1]
-
-	return Math.sqrt(a * a + b * b)
-}
-function centroid (pts) {
-	var a = pts[0], b = pts[1], c = pts[2]
-
-	return [((a[0] + b[0] + c[0]) / 3), ((a[1] + b[1] + c[1]) / 3)]
-}
-function direction (p1, p2) {
-	return Math.atan2(p2[1] - p1[1], p2[0] - p1[0])
-}
-function number (n, s, x, y) {
-	function digit (num, scale = 1) {
-		var np = [
-	[[0,0],[0,16],[8,16],[8,0],[0,0]],
-	[[0,8],[8,16],[8,0]],
-	[[0,12],[0,16],[8,16],[8,8],[0,8],[0,0],[8,0]],
-	[[0,13],[0,16],[8,16],[8,11],[4,8],[8,5],[8,0],[0,0],[0,3]],
-	[[8,8],[0,8],[6,16],[6,0]],
-	[[8,16],[0,16],[0,8],[8,8],[8,0],[0,0]],
-	[[8,16],[0,8],[0,0],[8,0],[8,8],[0,8]],
-	[[0,16],[8,16],[0,0]],
-	[[4,9],[1,12],[1,16],[7,16],[7,12],[4,9],[8,7],[8,0],[0,0],[0,7],[4,9]],
-	[[8,8],[0,8],[0,16],[8,16],[8,0],[0,0]]
-	]
-		return np[num].map(x => x.map(y => y * scale))
-	}
-
-	var ch = n.toString().split("").map(Number), r = [], dkX = 0
-	for (var i = 0, il = ch.length; i < il; i++) {
-		var nl = line(digit(ch[i], s).map(v => [
-			v[0]+ dkX + x -(6*s)*il, 
-			v[1]+ y -1.25*s
-		]))
-		r.push(nl)
-		var b = measureBoundingBox(nl)
-		dkX += b[1][0] - b[0][0] + 4 * s
-	}
-
-	return r
-}
-function trapeze (p1, p2, s) {
-	const d = distance2d(p1, p2)
-	const a = degToRad(90) - direction(p1, p2)
-
-	var P = [
-		rotation(p1[0], p1[1], p1[0],   p1[1], a),
-		rotation(p1[0], p1[1], p1[0]+s, p1[1]+ d * 0.35, a),
-		rotation(p1[0], p1[1], p1[0]+s, p1[1]+ d * 0.65, a),
-		rotation(p1[0], p1[1], p1[0],   p1[1]+ d, a)
-	]
-
-	return P
-}
 
 module.exports = { main, getParameterDefinitions }
