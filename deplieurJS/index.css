@@ -1,0 +1,14 @@
+input[type="file"] { 
+  opacity: 0; /* make transparent */
+  z-index: -1; /* move under anything else */
+  position: absolute; /* don't let it take up space */
+}
+
+canvas {
+	border:1px solid beige;
+}
+
+button {	
+	margin:0px 0px 0px;
+	padding:0px 0px 0px;
+}

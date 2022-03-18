@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset="UTF-8">
+	<title>Le DEPLIEUR</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<link rel="shortcut icon" href="../favicon.ico">
+	<link rel="stylesheet" href="index.css">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<script src="fonctions.js"></script>
+	<script src="index.js"></script>
+	<script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+</head>
+
+<body onload="debut()">
+	<div class="w3-sidebar w3-bar-block w3-animate-left w3-large w3-padding-small" 
+	style="display:none width:5%; overflow:hidden" id="mySidebar">
+		<span onclick="w3_close()" class="w3-button w3-black w3-display-topright">&times;</span>
+		<input id="fichierOBJ" type="file" accept=".obj"/>
+		<button class="w3-button w3-xxlarge">
+			<label for="fichierOBJ">&#128228; .obj</label>
+		</button>
+		<input id="fichierPDF" type="file" accept=".pdf"/>
+		<button id="bPDF" class="w3-button w3-xxlarge" disabled="disabled">
+			<label for="fichierPDF">&#128229; .pdf</label>
+		</button>
+		<label>Format de Page</label>
+		<select class="w3-select" name="optFormat">
+			<option value="A4">A4</option>
+			<option value="A3">A3</option>
+			<option value="A2">A2</option>
+			<option value="A1">A1</option>
+			<option value="A0">A0</option>
+		</select> 		
+		<input id="voirGroupes" class="w3-check w3-xxlarge" type="checkbox" checked="checked">
+		<label>Groupes</label>
+		<br/>
+		<input id="voirCouleurs" class="w3-check w3-xxlarge" type="checkbox" checked="checked">
+		<label>Couleurs</label>
+		<br/>
+		<label>Languettes</label>
+		<br/>
+		<select id="voirLanguettes" class="w3-select">
+			<option value="0">Aucune</option>
+			<option value="1">1/paire</option>
+			<option value="2">2/paire</option>
+		</select> 
+		<br/>
+		<label>- Hauteur (mm) :</label>
+		<input id="hauteurLANG" class="w3-input" type="number" min="5" step="10" placeholder="5">
+
+	</div>
+	<div id="main" class="w3-container w3-padding-small">
+		<button id="openNav" class="w3-button w3-xlarge" onclick="w3_open()"
+			style="display:block">&#9776;</button>
+		</div><! &#9776;-->
+	</div>
+</body>
+</html>
