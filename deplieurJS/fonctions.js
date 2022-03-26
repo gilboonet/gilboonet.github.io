@@ -398,5 +398,6 @@ for (let i = 0; i < lf.length; i++){
     groupes.push(nfg);
   }
 }
+console.log(groupes)
 return { faces : faces, vertices: pts, groups: groupes, usemtl: usemtl }
 }
