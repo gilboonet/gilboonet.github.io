@@ -373,7 +373,8 @@ for (let i = 0; i < lf.length; i++){
   if (lf[i].startsWith('g ')) {
     nfg++;
   } else if (lf[i].startsWith('usemtl ')) {
-    if (!(lf[i-1].startsWith('g '))) {
+    let lfip = lf[i-1];
+    if (!(lfip.startsWith('g '))) {
       nfg++;
     }
     usemtl.push(lf[i].split(' ')[1].trim())
