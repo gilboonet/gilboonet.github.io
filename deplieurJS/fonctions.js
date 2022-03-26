@@ -369,19 +369,21 @@ let pts = lv.map(x => {
 let lf = d.filter(l => l.startsWith('g ') || l.startsWith('f ')
 	|| l.startsWith('usemtl '));
 let faces = [], groupes = [], nfg = 0, usemtl = [];
+var lfip = ''
 for (let i = 0; i < lf.length; i++){
-  if (lf[i].startsWith('g ')) {
+  lfi = lf[i]
+  if (lfi.startsWith('g ')) {
     nfg++;
-  } else if (lf[i].startsWith('usemtl ')) {
-    let lfip = lf[i-1];
-    if (!(lfip.startsWith('g '))) {
-      nfg++;
-    }
-    usemtl.push(lf[i].split(' ')[1].trim())
-  } else {
-    var tmp = lf[i].split(/\s/);
-    tmp.shift();
-    let f = tmp.map(x => {
+  } else if (lfi.startsWith('usemtl ')) {
+		//if (i> 0 && !lfip.startsWith('g ')){
+		if (!lfip.startsWith('g ')){
+			nfg++;
+		}
+		usemtl.push(lfi.split(' ')[1].trim())
+	} else {
+		var tmp = lfi.split(/\s/);
+		tmp.shift();
+		let f = tmp.map(x => {
 			var n = x.split(/\//);
 			return Number(n[0])-1;
 		});
@@ -389,16 +391,16 @@ for (let i = 0; i < lf.length; i++){
 		if ((nd == -1) || !(Number.isInteger(nd))){
 			f.pop();
 		}
-    if(f.length == 3){
+		if(f.length == 3){
 			faces.push(f);
 		} else {
 			for(j = 1; j< f.length-1; j++){
 				faces.push([f[0], f[j], f[j+1]])
 			}
 		}
-    groupes.push(nfg);
+		groupes.push(nfg);
   }
+  lfip = lfi
 }
-console.log(groupes)
 return { faces : faces, vertices: pts, groups: groupes, usemtl: usemtl }
 }
