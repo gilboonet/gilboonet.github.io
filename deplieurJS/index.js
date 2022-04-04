@@ -85,9 +85,18 @@ function deplie() {
 	const echN = 0.8
 	const marge = 6 *pxmm()
 	const formats = [
-		[210 *pxmm(), 297 *pxmm()]
-	]
-	let nFace = 0, nT, nPage = 0, nFormat = 0, ok
+		 [210*1 *pxmm(), 297*1 *pxmm()] // A4
+		,[297*1 *pxmm(), 210*2 *pxmm()] // A3
+		,[210*2 *pxmm(), 297*2 *pxmm()] // A2
+		,[297*2 *pxmm(), 210*4 *pxmm()] // A1
+		,[210*4 *pxmm(), 297*4 *pxmm()] // A0
+		
+		,[300*1 *pxmm(), 300*1 *pxmm()] // Cricut tapis simple
+		,[300*1 *pxmm(), 300*2 *pxmm()] // Cricut tapis double
+]
+	const nFormat = document.querySelector("#optFormat").selectedIndex
+	
+	let nFace = 0, nT, nPage = 0, ok
 	w3_close()
 
 	let vol = obj2jscad(this.result)
