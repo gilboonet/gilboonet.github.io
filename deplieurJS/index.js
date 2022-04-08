@@ -92,6 +92,7 @@ function deplie() {
 		,[210*4 *pxmm(), 297*4 *pxmm()] // A0
 		
 		,[300*1 *pxmm(), 300*1 *pxmm()] // Cricut tapis simple
+		,[300*0.75 *pxmm(), 300*0.75 *pxmm()] // Cricut tapis simple 3/4
 		,[300*1 *pxmm(), 300*2 *pxmm()] // Cricut tapis double
 ]
 	const nFormat = document.querySelector("#optFormat").selectedIndex
