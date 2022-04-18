@@ -97,6 +97,7 @@ function deplie() {
 ]
 	const nFormat = document.querySelector("#optFormat").selectedIndex
 	const nPremFace = document.querySelector("#premFace").value
+	console.log(nPremFace)
 	
 	let nFace = nPremFace, nT, nPage = 0, ok
 	w3_close()
