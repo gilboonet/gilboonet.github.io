@@ -96,8 +96,9 @@ function deplie() {
 		,[300*1 *pxmm(), 300*2 *pxmm()] // Cricut tapis double
 ]
 	const nFormat = document.querySelector("#optFormat").selectedIndex
+	const nPremFace = document.querySelector("#premFace").value
 	
-	let nFace = 0, nT, nPage = 0, ok
+	let nFace = nPremFace, nT, nPage = 0, ok
 	w3_close()
 
 	let vol = obj2jscad(this.result)
