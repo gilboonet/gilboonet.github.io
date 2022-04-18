@@ -97,9 +97,9 @@ function deplie() {
 ]
 	const nFormat = document.querySelector("#optFormat").selectedIndex
 	const nPremFace = document.querySelector("#premFace").value
-	console.log(nPremFace)
-	
-	let nFace = nPremFace, nT, nPage = 0, ok
+	if (nPremFace === '') nPremFace = 0
+	//console.log(nPremFace+1)
+	let nFace = parseInt(nPremFace), nT, nPage = 0, ok
 	w3_close()
 
 	let vol = obj2jscad(this.result)
