@@ -96,7 +96,7 @@ function deplie() {
 		,[300*1 *pxmm(), 300*2 *pxmm()] // Cricut tapis double
 ]
 	const nFormat = document.querySelector("#optFormat").selectedIndex
-	const nPremFace = document.querySelector("#premFace").value
+	let nPremFace = document.querySelector("#premFace").value
 	if (nPremFace === '') nPremFace = 0
 	//console.log(nPremFace+1)
 	let nFace = parseInt(nPremFace), nT, nPage = 0, ok
