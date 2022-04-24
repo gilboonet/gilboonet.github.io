@@ -374,18 +374,18 @@ function deplie() {
 			ctx.strokeStyle = "blue"
 			number(ctx, null, x, centroid(p), echN, null)
 			if (avecCouleurs.checked) { // triangle
-				ctx.fillStyle = coul
+				let c = couleurFr(coul), crgb = c.v.join(',')
+				ctx.fillStyle = c.c
 				ctx.beginPath()
-				let c = couleurFr(coul).v, crgb = c.join(',')
 				ctx.fillStyle = `rgba(${crgb}, 0.66)`
 				ctx.moveTo(p[0][0], p[0][1])
 				ctx.lineTo(p[1][0], p[1][1])
 				ctx.lineTo(p[2][0], p[2][1])
 				ctx.closePath()
 				ctx.fill()
-					
-				doc.setDrawColor(coul)
-				doc.setFillColor(coul)
+							
+				doc.setDrawColor(c.c)
+				doc.setFillColor(c.c)
 				p = p.map(v => v.map(w => w/pxmm()))
 				doc.triangle(p[0][0], p[0][1], p[1][0], p[1][1], p[2][0], p[2][1], "FD")
 				doc.fillStroke()
