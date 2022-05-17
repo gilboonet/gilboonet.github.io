@@ -82,7 +82,8 @@ function calculeCOP(V) { // remplit r pour chaque arête (n1, n2)
 }
 
 function deplie() {
-	const echN = 0.8
+	//const echN = 0.5
+	const echN = 1
 	const marge = 6 *pxmm()
 	const formats = [
 		 [210*1 *pxmm(), 297*1 *pxmm()] // A4
@@ -138,6 +139,20 @@ function deplie() {
 		vol.groups = vol.groups.map(x => x-1)
 	else
 		vol.groups = vol.groups.map(x => 0)
+		
+	// charge KO si besoin
+	const sKO = document.getElementById("exclusions").value
+	if (sKO !== ''){
+		//console.log(sKO)
+		let sEL = sKO.split(",")
+		//console.log(sEL)
+		sEL.map(x => {
+			let d = x.split("-").map(Number)
+			//console.log(d)
+			vol.KO.push({n1:d[0], n2:d[1]})
+		})
+	}
+	
 
 	// supprime anciens canvas
 	main.querySelectorAll("canvas").forEach(c => main.removeChild(c))
@@ -147,7 +162,7 @@ function deplie() {
 		vol.lPOSE = [nFace]
 		ajouteTriangle(vol.LIGNES, nPage, vol.v2d[nFace], nFace, vol.voisins[nFace])
 		vol.TRIS.push(vol.v2d[nFace])
-		console.log(`POSE:${nFace}`)
+//		console.log(`POSE:${nFace}`)
 		let c_nf, c_nt, c_g = vol.groups[nFace]
 		do {
 			ok = false
@@ -192,10 +207,8 @@ function deplie() {
 							let nV = vol.voisins[nT][v]
 							if (ok) {
 								let estPOSE = estPose(vol, nV)
-								let estKO = KOFind(vol.KO, nT, nV)
-								
-								
-								
+								let estKO = KOFind(vol.KO, nT, nV)				
+
 								let a2 = attache(vol, nT, nV)
 								if (!estPOSE && !estKO) {
 									ok = a2.ok
@@ -212,7 +225,7 @@ function deplie() {
 						})
 					}
 					if (ok) {
-						console.log(`attache ${nT}`)
+//						console.log(`attache ${nT}`)
 						ajouteTriangle(vol.LIGNES, nPage, a.pt, nT, vol.voisins[nT])
 						vol.lPOSE.push(nT)
 						vol.TRIS.push(a.pt)
@@ -372,6 +385,7 @@ function deplie() {
 			let p = vol.v2d[x].map(x => [x[0] - b[0][0]+marge, x[1] - b[0][1]+marge])
 			// n°
 			ctx.strokeStyle = "blue"
+			//number(ctx, null, x, centroid(p), echN *0.5, null)
 			number(ctx, null, x, centroid(p), echN, null)
 			if (avecCouleurs.checked) { // triangle
 				let c = couleurFr(coul), crgb = c.v.join(',')
@@ -429,6 +443,7 @@ function deplie() {
 						col = "red"
 				doc.setDrawColor("black")
 				ctx.strokeStyle = "black"
+				//number(ctx, doc, getNum(vol.NUMS, l.n1, l.n2), milieu(ptA, ptB), echN*.5, direction(ptA, ptB), pxmm())
 				number(ctx, doc, getNum(vol.NUMS, l.n1, l.n2), milieu(ptA, ptB), echN, direction(ptA, ptB), pxmm())
 			}
 			
