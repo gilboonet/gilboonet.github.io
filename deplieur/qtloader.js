@@ -9,9 +9,14 @@
  * - environment: { [name:string] : string }
  *      environment variables set on the instance
  * - onExit: (exitStatus: { text: string, code?: number, crashed: bool }) => void
- *      called when the application has exited for any reason. exitStatus.code is defined in
- *      case of a normal application exit. This is not called on exit with return code 0, as
- *      the program does not shutdown its runtime and technically keeps running async.
+ *      called when the application has exited for any reason. There are two cases:
+ *      aborted: crashed is true, text contains an error message.
+ *      exited: crashed is false, code contians the exit code.
+ *
+ *      Note that by default Emscripten does not exit when main() returns. This behavior
+ *      is controlled by the EXIT_RUNTIME linker flag; set "-s EXIT_RUNTIME=1" to make
+ *      Emscripten tear down the runtime and exit when main() returns.
+ *
  * - containerElements: HTMLDivElement[]
  *      Array of host elements for Qt screens. Each of these elements is mapped to a QScreen on
  *      launch.
@@ -21,15 +26,35 @@
  *      Called when the module has loaded.
  * - entryFunction: (emscriptenConfig: object) => Promise<EmscriptenModule>
  *      Qt always uses emscripten's MODULARIZE option. This is the MODULARIZE entry function.
+ * - module: Promise<WebAssembly.Module>
+ *      The module to create the instance from (optional). Specifying the module allows optimizing
+ *      use cases where several instances are created from a single WebAssembly source.
+ * - qtdir: string
+ *      Path to Qt installation. This path will be used for loading Qt shared libraries and plugins.
+ *      The path is set to 'qt' by default, and is relative to the path of the web page's html file.
+ *      This property is not in use when static linking is used, since this build mode includes all
+ *      libraries and plugins in the wasm file.
+ * - preload: [string]: Array of file paths to json-encoded files which specifying which files to preload.
+ *      The preloaded files will be downloaded at application startup and copied to the in-memory file
+ *      system provided by Emscripten.
  *
- * @return Promise<{
- *             instance: EmscriptenModule,
- *             exitStatus?: { text: string, code?: number, crashed: bool }
- *         }>
+ *      Each json file must contain an array of source, destination objects:
+ *      [
+ *           {
+ *               "source": "path/to/source",
+ *               "destination": "/path/to/destination"
+ *           },
+ *           ...
+ *      ]
+ *      The source path is relative to the html file path. The destination path must be
+ *      an absolute path.
+ *
+ *      $QTDIR may be used as a placeholder for the "qtdir" configuration property (see @qtdir), for instance:
+ *          "source": "$QTDIR/plugins/imageformats/libqjpeg.so"
+ *
+ * @return Promise<instance: EmscriptenModule>
  *      The promise is resolved when the module has been instantiated and its main function has been
- *      called. The returned exitStatus is defined if the application crashed or exited immediately
- *      after its entry function has been called. Otherwise, config.onExit will get called at a
- *      later time when (and if) the application exits.
+ *      called.
  *
  * @see https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/emscripten for
  *      EmscriptenModule
@@ -46,12 +71,25 @@ async function qtLoad(config)
             throw new Error('ENV must be exported if environment variables are passed');
     };
 
+    const throwIfFsUsedButNotExported = (instance, config) =>
+    {
+        const environment = config.environment;
+        if (!environment || Object.keys(environment).length === 0)
+            return;
+        const isFsExported = typeof instance.FS === 'object';
+        if (!isFsExported)
+            throw new Error('FS must be exported if preload is used');
+    };
+
     if (typeof config !== 'object')
         throw new Error('config is required, expected an object');
     if (typeof config.qt !== 'object')
         throw new Error('config.qt is required, expected an object');
     if (typeof config.qt.entryFunction !== 'function')
-        config.qt.entryFunction = window.createQtAppInstance;
+        throw new Error('config.qt.entryFunction is required, expected a function');
+
+    config.qt.qtdir ??= 'qt';
+    config.qt.preload ??= [];
 
     config.qtContainerElements = config.qt.containerElements;
     delete config.qt.containerElements;
@@ -65,11 +103,11 @@ async function qtLoad(config)
     const circuitBreaker = new Promise((_, reject) => { circuitBreakerReject = reject; });
 
     // If module async getter is present, use it so that module reuse is possible.
-    if (config.qt.modulePromise) {
+    if (config.qt.module) {
         config.instantiateWasm = async (imports, successCallback) =>
         {
             try {
-                const module = await config.qt.modulePromise;
+                const module = await config.qt.module;
                 successCallback(
                     await WebAssembly.instantiate(module, imports), module);
             } catch (e) {
@@ -86,30 +124,51 @@ async function qtLoad(config)
         throwIfEnvUsedButNotExported(instance, config);
         for (const [name, value] of Object.entries(config.qt.environment ?? {}))
             instance.ENV[name] = value;
+
+        const makeDirs = (FS, filePath) => {
+            const parts = filePath.split("/");
+            let path = "/";
+            for (let i = 0; i < parts.length - 1; ++i) {
+                const part = parts[i];
+                if (part == "")
+                    continue;
+                path += part + "/";
+                try {
+                    FS.mkdir(path);
+                } catch (error) {
+                    const EEXIST = 20;
+                    if (error.errno != EEXIST)
+                        throw error;
+                }
+            }
+        }
+
+        throwIfFsUsedButNotExported(instance, config);
+        for ({destination, data} of self.preloadData) {
+            makeDirs(instance.FS, destination);
+            instance.FS.writeFile(destination, new Uint8Array(data));
+        }
     };
 
     config.onRuntimeInitialized = () => config.qt.onLoaded?.();
 
-    // This is needed for errors which occur right after resolving the instance promise but
-    // before exiting the function (i.e. on call to main before stack unwinding).
-    let loadTimeException = undefined;
-    // We don't want to issue onExit when aborted
-    let aborted = false;
-    const originalQuit = config.quit;
-    config.quit = (code, exception) =>
+    const originalLocateFile = config.locateFile;
+    config.locateFile = filename =>
     {
-        originalQuit?.(code, exception);
+        const originalLocatedFilename = originalLocateFile ? originalLocateFile(filename) : filename;
+        if (originalLocatedFilename.startsWith('libQt6'))
+            return `${config.qt.qtdir}/lib/${originalLocatedFilename}`;
+        return originalLocatedFilename;
+    }
 
-        if (exception)
-            loadTimeException = exception;
-        if (!aborted && code !== 0) {
-            config.qt.onExit?.({
-                text: exception.message,
-                code,
-                crashed: false
-            });
-        }
-    };
+    const originalOnExit = config.onExit;
+    config.onExit = code => {
+        originalOnExit?.();
+        config.qt.onExit?.({
+            code,
+            crashed: false
+        });
+    }
 
     const originalOnAbort = config.onAbort;
     config.onAbort = text =>
@@ -123,12 +182,89 @@ async function qtLoad(config)
         });
     };
 
+    const fetchPreloadFiles = async () => {
+        const fetchJson = async path => (await fetch(path)).json();
+        const fetchArrayBuffer = async path => (await fetch(path)).arrayBuffer();
+        const loadFiles = async (paths) => {
+            const source = paths['source'].replace('$QTDIR', config.qt.qtdir);
+            return {
+                destination: paths['destination'],
+                data: await fetchArrayBuffer(source)
+            };
+        }
+        const fileList = (await Promise.all(config.qt.preload.map(fetchJson))).flat();
+        self.preloadData = (await Promise.all(fileList.map(loadFiles))).flat();
+    }
+
+    await fetchPreloadFiles();
+
     // Call app/emscripten module entry function. It may either come from the emscripten
     // runtime script or be customized as needed.
-    const instance = await Promise.race(
-        [circuitBreaker, config.qt.entryFunction(config)]);
-    if (loadTimeException && loadTimeException.name !== 'ExitStatus')
-        throw loadTimeException;
+    let instance;
+    try {
+        instance = await Promise.race(
+            [circuitBreaker, config.qt.entryFunction(config)]);
+    } catch (e) {
+        config.qt.onExit?.({
+            text: e.message,
+            crashed: true
+        });
+        throw e;
+    }
 
     return instance;
 }
+
+// Compatibility API. This API is deprecated,
+// and will be removed in a future version of Qt.
+function QtLoader(qtConfig) {
+
+    const warning = 'Warning: The QtLoader API is deprecated and will be removed in ' +
+                    'a future version of Qt. Please port to the new qtLoad() API.';
+    console.warn(warning);
+
+    let emscriptenConfig = qtConfig.moduleConfig || {}
+    qtConfig.moduleConfig = undefined;
+    const showLoader = qtConfig.showLoader;
+    qtConfig.showLoader = undefined;
+    const showError = qtConfig.showError;
+    qtConfig.showError = undefined;
+    const showExit = qtConfig.showExit;
+    qtConfig.showExit = undefined;
+    const showCanvas = qtConfig.showCanvas;
+    qtConfig.showCanvas = undefined;
+    if (qtConfig.canvasElements) {
+        qtConfig.containerElements = qtConfig.canvasElements
+        qtConfig.canvasElements = undefined;
+    } else {
+        qtConfig.containerElements = qtConfig.containerElements;
+        qtConfig.containerElements = undefined;
+    }
+    emscriptenConfig.qt = qtConfig;
+
+    let qtloader = {
+        exitCode: undefined,
+        exitText: "",
+        loadEmscriptenModule: _name => {
+            try {
+                qtLoad(emscriptenConfig);
+            } catch (e) {
+                showError?.(e.message);
+            }
+        }
+    }
+
+    qtConfig.onLoaded = () => {
+        showCanvas?.();
+    }
+
+    qtConfig.onExit = exit => {
+        qtloader.exitCode = exit.code
+        qtloader.exitText = exit.text;
+        showExit?.();
+    }
+
+    showLoader?.("Loading");
+
+    return qtloader;
+};

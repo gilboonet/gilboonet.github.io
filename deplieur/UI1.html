@@ -57,14 +57,14 @@
                                 exitData.text !== undefined ? ` (${exitData.text})` : '';
                             showUi(spinner);
                         },
-                        entryFunction: window.createQtAppInstance,
+                        entryFunction: window.UI1_entry,
                         containerElements: [screen],
+                        
                     }
                 });
             } catch (e) {
                 console.error(e);
-                status.innerHTML = e.message;
-                showUi(spinner);
+                console.error(e.stack);
             }
         }
     </script>
