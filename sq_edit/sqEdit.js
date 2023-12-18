@@ -1,3 +1,4 @@
+// https://3d.hrg.hr/jscad/app1/#https://raw.githubusercontent.com/gilboonet/gilboonet.github.io/master/sq_edit/sqEdit.js
 const jscad = require('@jscad/modeling')
 const { curves, maths, extrusions, primitives, transforms, booleans, 
 	colors, geometries, measurements, utils } = jscad
@@ -53,7 +54,7 @@ const main = (params) => {
   //const vv = require('./' + params.v + '.obj')
   const vv = params.v ? params.v : cube({size:100})
 
-  const vol = center({}, rotateX(degToRad(90), vv))
+  const vol = center({}, geom3.invert(rotateX(degToRad(90), vv)))
   
   let r = [], rH = [], rV = []
   let bV = measureBoundingBox(vol)
@@ -67,15 +68,12 @@ const main = (params) => {
   fH = bV[1][0] - bV[0][0]
   mH = (bV[1][0] + bV[0][0]) / 2
   var trH = cuboid( {
-		size: [ ep, 1+bV[1][1]- bV[0][1], 1+bV[1][2] - bV[0][2] ]} )
-	for (let i = 0; i < lH.length; i++){
-		var t = intersect(vol, translateX(fH * lH[i], trH))
-        console.log('--')
-        console.log(t)
-        console.log('--')
-		if (t.polygons.length > 0)
-			rH.push(t)
-	}
+    size: [ ep, 1+bV[1][1]- bV[0][1], 1+bV[1][2] - bV[0][2] ]} )
+  for (let i = 0; i < lH.length; i++){
+    var t = intersect(vol, translateX(fH * lH[i], trH))
+    if (t.polygons.length > 0)
+      rH.push(t)
+  }
 
 	// 2°) Traverses en Y (V)
 	fV = bV[1][1] - bV[0][1]
