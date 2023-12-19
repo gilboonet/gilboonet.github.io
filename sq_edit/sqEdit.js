@@ -7,7 +7,7 @@ const { slice, extrudeLinear } = extrusions
 const { cuboid, polygon, polyhedron, cube } = primitives
 const { intersect, subtract,union } = booleans
 const { center, scale, translateX, translateY, translateZ, translate
-		,rotateX, rotateY, rotateZ } = transforms
+		,rotateX, rotateY, rotateZ, rotate } = transforms
 const { colorize } = colors
 const { geom3, poly3 } = geometries
 const { vec3 } = maths
@@ -42,19 +42,24 @@ const getParameterDefinitions = () => {
 
     {name: 'g3', caption: 'Parametres', type: 'group'},
     {name: 'v', type:'file', caption: 'volume:', check: false},
+    {name: 'rx', type:'slider', caption: 'rotation X :', min:"-359", max:"359", step:"1", initial: "0"},
+    {name: 'ry', type:'slider', caption: 'rotation X :', min:"-359", max:"359", step:"1", initial: "0"},
+    {name: 'rz', type:'slider', caption: 'rotation X :', min:"-359", max:"359", step:"1", initial: "0"},
+    
     {name: 'mode', type:'choice', caption:'mode:', captions:["2d","3d"], values:[2,3], initial:2},
     {name: 'ep', type:'float', caption: 'ep (mm):', initial: 6.0},
-    {name: 'dky', type:'float', caption: 'decalage Y (mm):', initial: 30}
+    {name: 'dky', type:'float', caption: 'decalage Y (mm):', initial: 30},
+    {name: 'inv', type:'choice', caption:'Sens:', captions:["normal","inverse"], values:[1, -1], initial:1}
    ];
 }
 
 const main = (params) => {
   const sc = 1, ep = params.ep *2
   
-  //const vv = require('./' + params.v + '.obj')
   const vv = params.v ? params.v : cube({size:100})
-
-  const vol = center({}, geom3.invert(rotateX(degToRad(90), vv)))
+  const vvr0 = rotate([degToRad(params.rx), degToRad(params.ry), degToRad(params.rz)], vv)
+  const vvr = center({}, rotateX(degToRad(90), vvr0))
+  const vol = params.inv == 1 ? vvr : geom3.invert(vvr)
   
   let r = [], rH = [], rV = []
   let bV = measureBoundingBox(vol)
