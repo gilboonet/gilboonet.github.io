@@ -42,9 +42,9 @@ const getParameterDefinitions = () => {
 
     {name: 'g3', caption: 'Parametres', type: 'group'},
     {name: 'v', type:'file', caption: 'volume:', check: false},
-    {name: 'rx', type:'slider', caption: 'rotation X :', min:"-359", max:"359", step:"1", initial: "0"},
-    {name: 'ry', type:'slider', caption: 'rotation X :', min:"-359", max:"359", step:"1", initial: "0"},
-    {name: 'rz', type:'slider', caption: 'rotation X :', min:"-359", max:"359", step:"1", initial: "0"},
+    {name: 'rx', type:'float', caption: 'rotation X :', initial: 0},
+    {name: 'ry', type:'float', caption: 'rotation Y :', initial: 0},
+    {name: 'rz', type:'float', caption: 'rotation Z :', initial: 0},
     
     {name: 'mode', type:'choice', caption:'mode:', captions:["2d","3d"], values:[2,3], initial:2},
     {name: 'ep', type:'float', caption: 'ep (mm):', initial: 6.0},
