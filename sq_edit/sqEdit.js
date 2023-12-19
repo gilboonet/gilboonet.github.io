@@ -1,4 +1,4 @@
-// https://3d.hrg.hr/jscad/app1/#https://raw.githubusercontent.com/gilboonet/gilboonet.github.io/master/sq_edit/sqEdit.js
+// https://jscad.app/#https://raw.githubusercontent.com/gilboonet/gilboonet.github.io/master/sq_edit/sqEdit.js
 const jscad = require('@jscad/modeling')
 const { curves, maths, extrusions, primitives, transforms, booleans, 
 	colors, geometries, measurements, utils } = jscad
