@@ -4,7 +4,7 @@ const { curves, maths, extrusions, primitives, transforms, booleans,
 	colors, geometries, measurements, utils } = jscad
 const { bezier } = curves
 const { slice, extrudeLinear } = extrusions
-const { cuboid, polygon, polyhedron, cube } = primitives
+const { cuboid, polygon, polyhedron, cube, sphere } = primitives
 const { intersect, subtract,union } = booleans
 const { center, scale, translateX, translateY, translateZ, translate
 		,rotateX, rotateY, rotateZ, rotate } = transforms
@@ -42,6 +42,7 @@ const getParameterDefinitions = () => {
 
     {name: 'g3', caption: 'Parametres', type: 'group'},
     {name: 'v', type:'file', caption: 'volume:', check: false},
+    {name: 'ech', type:'float', caption: 'échelle (1=100%):', initial:1},
     {name: 'rx', type:'float', caption: 'rotation X :', initial: 0},
     {name: 'ry', type:'float', caption: 'rotation Y :', initial: 0},
     {name: 'rz', type:'float', caption: 'rotation Z :', initial: 0},
@@ -57,7 +58,11 @@ const main = (params) => {
   const sc = 1, ep = params.ep *2
   
   const vv = params.v ? params.v : cube({size:100})
-  const vvr0 = rotate([degToRad(params.rx), degToRad(params.ry), degToRad(params.rz)], vv)
+  //const vv = subtract(sphere({radius:50}), sphere({radius:25}))
+  //const vv = subtract(sphere({radius:50}), cube({size:40}))
+  
+  const vvr0 = rotate([degToRad(params.rx), degToRad(params.ry), degToRad(params.rz)], 
+                 scale([params.ech, params.ech, params.ech], vv))
   const vvr = center({}, rotateX(degToRad(90), vvr0))
   const vol = params.inv == 1 ? vvr : geom3.invert(vvr)
   
@@ -114,7 +119,7 @@ const main = (params) => {
 
 	
 	if(params.mode == '3'){ // 3d
-		r.push(colorize([0,1,0,0.8], translateX(-70, subtract(vol, [rH,rV]))));
+		r.push(colorize([0,1,0,0.6], translateX(-70, subtract(vol, [rH,rV]))));
 		
 		r.push(colorize([0.5,0.0,0], translateX(-70, rH.shift())));
 		if(rH.length > 0){
